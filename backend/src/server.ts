@@ -7,6 +7,7 @@ import { config } from "./config/app.config";
 import { connectToMongoDB } from "./config/mongoDB.config";
 import { initializeSocketServer } from "./utils/socket";
 
+import { handleError } from "./middlewares/error.middleware";
 import authRouter from "./routes/auth.route";
 
 async function startServer() {
@@ -25,8 +26,8 @@ async function startServer() {
       cors({
         origin:
           config.node_env === "production"
-            ? [config.allowed_origins]
-            : [config.allowed_origins],
+            ? config.allowed_origins
+            : config.allowed_origins,
         methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
         allowedHeaders: ["Content-Type", "Authorization"],
         credentials: true,
@@ -41,6 +42,8 @@ async function startServer() {
 
     //API Routes
     app.use("/api/v2/auth", authRouter);
+
+    app.use(handleError);
 
     const PORT = config.port;
     const httpServer = http.createServer(app);
