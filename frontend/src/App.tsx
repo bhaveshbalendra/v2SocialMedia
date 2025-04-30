@@ -1,15 +1,29 @@
-import { Routes } from "react-router";
-import { Button } from "./components/ui/button";
+import { Provider } from "react-redux";
+import { Route, BrowserRouter as Router, Routes } from "react-router";
+import SignupPage from "./pages/SignupPage";
+import { store } from "./store/store";
 const AppRouter = () => {
-  return <Routes>{/* <Route path="/" element={} /> */}</Routes>;
+  return (
+    <Routes>
+      {/* protected routes */}
+      <Route path="/" element={<div>Home</div>} />
+      <Route path="/about" element={<div>About</div>} />
+      <Route path="/contact" element={<div>Contact</div>} />
+
+      {/* public routes */}
+      <Route path="/login" element={<div>Login</div>} />
+      <Route path="/signup" element={<SignupPage />} />
+    </Routes>
+  );
 };
 
 const App = () => {
   return (
-    <div>
-      App
-      <Button />
-    </div>
+    <Provider store={store}>
+      <Router>
+        <AppRouter />
+      </Router>
+    </Provider>
   );
 };
 
