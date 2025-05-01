@@ -1,6 +1,12 @@
 import baseURL from "@/constants/baseurl";
-import { IAuthResponse, ILoginRequest } from "@/types/auth.types";
+import {
+  ILoginRequest,
+  ILoginResponseWithToken,
+  ISignupRequest,
+  ISignupResponseWithToken,
+} from "@/types/auth.types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
@@ -8,14 +14,14 @@ export const authApi = createApi({
     credentials: "include",
   }),
   endpoints: (builder) => ({
-    login: builder.mutation<IAuthResponse, ILoginRequest>({
+    login: builder.mutation<ILoginResponseWithToken, ILoginRequest>({
       query: (credentials) => ({
         url: "/auth/login",
         method: "POST",
         body: credentials,
       }),
     }),
-    signup: builder.mutation({
+    signup: builder.mutation<ISignupResponseWithToken, ISignupRequest>({
       query: (credentials) => ({
         url: "/auth/signup",
         method: "POST",

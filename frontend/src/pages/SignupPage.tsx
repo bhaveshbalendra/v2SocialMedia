@@ -15,8 +15,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { FaGoogle } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
+import { ImSpinner2 } from "react-icons/im";
 import { Link } from "react-router";
 import { z } from "zod";
+
 const credentials = {
   firstName: "",
   lastName: "",
@@ -24,12 +26,13 @@ const credentials = {
   username: "",
   password: "",
   confirmPassword: "",
+  terms: false,
 };
 
 type SignupFormData = z.infer<typeof signupSchema>;
 
 const SignupPage = () => {
-  const { handleSignup, error, isLoading } = useSignup();
+  const { handleSignup, isLoading } = useSignup();
 
   const {
     register,
@@ -40,7 +43,9 @@ const SignupPage = () => {
     defaultValues: credentials,
   });
 
-  const onSubmit = async (data: SignupFormData) => {};
+  const onSubmit = async (data: SignupFormData) => {
+    await handleSignup(data);
+  };
 
   return (
     <div className="flex justify-center items-center min-h-dvh p-6 md:p-10">
@@ -60,62 +65,100 @@ const SignupPage = () => {
                 <div className="flex flex-col items-start gap-2">
                   <Label htmlFor="firstName">First Name</Label>
                   <Input id="firstName" {...register("firstName")} required />
+                  {errors.firstName && (
+                    <span className="text-red-500 text-sm">
+                      {errors.firstName.message}
+                    </span>
+                  )}
                 </div>
                 <div className="flex flex-col items-start gap-2">
                   <Label htmlFor="lastName">Last Name</Label>
-                  <Input id="lastName" name="lastName" required />
+                  <Input
+                    id="lastName"
+                    type="text"
+                    required
+                    {...register("lastName")}
+                  />
+                  {errors.lastName && (
+                    <span className="text-red-500 text-sm">
+                      {errors.lastName.message}
+                    </span>
+                  )}
                 </div>
                 <div className="flex flex-col items-start gap-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" name="email" type="email" required />
+                  <Input
+                    id="email"
+                    type="email"
+                    {...register("email")}
+                    required
+                  />
+                  {errors.email && (
+                    <span className="text-red-500 text-sm">
+                      {errors.email.message}
+                    </span>
+                  )}
                 </div>
                 <div className="flex flex-col items-start gap-2">
                   <Label htmlFor="username">Username</Label>
-                  <Input id="username" name="username" required />
+                  <Input id="username" {...register("username")} required />
+                  {errors.username && (
+                    <span className="text-red-500 text-sm">
+                      {errors.username.message}
+                    </span>
+                  )}
                 </div>
                 <div className="flex flex-col items-start gap-2">
                   <Label htmlFor="password">Password</Label>
                   <Input
                     id="password"
-                    name="password"
+                    {...register("password")}
                     type="password"
                     required
                   />
+                  {errors.password && (
+                    <span className="text-red-500 text-sm">
+                      {errors.password.message}
+                    </span>
+                  )}
                 </div>
                 <div className="flex flex-col items-start gap-2">
                   <Label htmlFor="confirmPassword">Confirm Password</Label>
                   <Input
                     id="confirmPassword"
-                    name="confirmPassword"
+                    {...register("confirmPassword")}
                     type="password"
                     required
                   />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Button type="submit">Signup</Button>
-                  <Button type="button">
-                    <FaGoogle /> Signup with Google
-                  </Button>
-                  <Button type="button">
-                    <FaXTwitter /> Signup with X
-                  </Button>
+                  {errors.confirmPassword && (
+                    <span className="text-red-500 text-sm">
+                      {errors.confirmPassword.message}
+                    </span>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="newsletter"
-                    name="newsletter"
-                    className="h-3 w-3"
-                  />
-                  <Label htmlFor="newsletter">Subscribe to newsletter</Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Checkbox id="terms" name="terms" className="h-3 w-3" />
+                  <Checkbox id="terms" className="h-3 w-3" />
                   <Label htmlFor="terms">
                     I agree to the
                     <Link to="/terms" className="text-blue-500 underline">
                       terms and conditions
                     </Link>
                   </Label>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Button type="submit" disabled={isLoading}>
+                    {isLoading ? (
+                      <ImSpinner2 className="animate-spin" />
+                    ) : (
+                      "Signup"
+                    )}
+                  </Button>
+                  <Button type="button" disabled={isLoading}>
+                    <FaGoogle /> Continue with Google
+                  </Button>
+                  <Button type="button" disabled={isLoading}>
+                    <FaXTwitter /> Continue with X
+                  </Button>
                 </div>
               </div>
             </form>

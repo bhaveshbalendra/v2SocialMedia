@@ -1,15 +1,11 @@
 export interface User {
   _id: string;
-  username: string;
-  email: string;
   firstName: string;
   lastName: string;
+  username: string;
+  email: string;
   profilePicture?: string;
-  bio?: string;
   isVerified: boolean;
-  isAdmin?: boolean;
-  createdAt: string;
-  updatedAt: string;
 }
 
 export interface IAuthUser {
@@ -35,14 +31,14 @@ export interface ISignupRequest {
   confirmPassword: string;
 }
 
-export interface ISignupResponse {
+export interface ILoginResponseWithToken {
   success: boolean;
   message?: string;
   user: User;
   accessToken: string;
 }
 
-export interface IAuthResponse {
+export interface ISignupResponseWithToken {
   success: boolean;
   message?: string;
   user: User;

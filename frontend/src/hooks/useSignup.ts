@@ -1,20 +1,29 @@
 import { useSignupMutation } from "@/store/apis/auth.Api";
+import { setCredentials } from "@/store/slices/auth.Slice";
+import { ISignupRequest } from "@/types/auth.types";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
+import { useAppDispatch } from "./useAppDispatch";
 
 export function useSignup() {
-  const [login, { isLoading, error }] = useSignupMutation();
+  const [signup, { isLoading }] = useSignupMutation();
   const navigate = useNavigate();
-  const handleSignup = async (credentials) => {
-    const response = await login(credentials).unwrap();
-    if (response.error) {
-      toast.error(error);
-      return;
+  const dispatch = useAppDispatch();
+
+  const handleSignup = async (credentials: ISignupRequest) => {
+    const result = await signup(credentials);
+    if ("data" in result && result?.data?.success) {
+      dispatch(
+        setCredentials({
+          user: result.data.user,
+          accessToken: result.data.accessToken,
+        })
+      );
+      toast.success(result.data.message || "Signup successful");
+      navigate("/dashboard"); // Adjust to your protected route
     }
-    navigate("/login");
-    toast.success("Signup successful");
-    return;
+    // Errors are handled globally by errorMiddleware
   };
 
-  return { handleSignup, isLoading, error };
+  return { handleSignup, isLoading };
 }

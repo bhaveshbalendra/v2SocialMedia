@@ -9,7 +9,7 @@ export const config = {
   port: process.env.PORT || 8000,
 
   allowed_origins:
-    process.env.ALLOWED_ORIGINS?.split(", ") || "http://localhost:5173",
+    process.env.ALLOWED_ORIGINS?.split(",") || "http://localhost:5173",
 
   // MongoDB Configuration
   db: {

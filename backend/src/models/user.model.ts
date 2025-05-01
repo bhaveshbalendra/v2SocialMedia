@@ -51,8 +51,8 @@ const userSchema: Schema = new Schema<IUser>(
       unique: true,
       trim: true,
       lowercase: true,
-      minlength: [5, "Username must be at least 5 character long"],
-      maxlength: [20, "Username must be at most 20 character long"],
+      // minlength: [5, "Username must be at least 5 character long"],
+      // maxlength: [20, "Username must be at most 20 character long"],
     },
     email: {
       type: String,
@@ -69,8 +69,8 @@ const userSchema: Schema = new Schema<IUser>(
       type: String,
       required: [true, "Password is required"],
       trim: true,
-      minlength: [8, "Password must be at least 8 character long"],
-      maxlength: [20, "Password must be at most 20 character long"],
+      // minlength: [8, "Password must be at least 8 character long"],
+      // maxlength: [20, "Password must be at most 20 character long"],
       select: false, // Do not return password in queries
     },
     firstName: {

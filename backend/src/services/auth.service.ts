@@ -61,9 +61,59 @@ class AuthService {
 
     //Remove the password field from the user object before sending the response
     //toObject() converts the Mongoose document to a plain JavaScript object
-    const { password, ...userResponse } = newUser.toObject();
+    const {
+      _id,
+      username,
+      profilePicture,
+      isVerified,
+      firstName,
+      lastName,
+      email,
+    } = newUser.toObject();
 
-    return { userResponse, accessToken, refreshToken };
+    return {
+      userResponse: {
+        _id,
+        firstName,
+        lastName,
+        username,
+        email,
+        profilePicture,
+        isVerified,
+      },
+      accessToken,
+      refreshToken,
+    };
+
+    // newUser
+    //   {
+    //     "success": true,
+    //     "message": "User registered successfully",
+    //     "user": {
+    //         "username": "",
+    //         "email": "",
+    //         "firstName": "",
+    //         "lastName": "",
+    //         "profilePicture": "",
+    //         "location": {
+    //             "type": "Point"
+    //         },
+    //         "isVerified": false,
+    //         "isPrivate": false,
+    //         "isPremium": false,
+    //         "isBlocked": false,
+    //         "isDeleted": false,
+    //         "isEmailVerified": false,
+    //         "isMobileVerified": false,
+    //         "isAdmin": false,
+    //         "isSuperAdmin": false,
+    //         "_id": "",
+    //         "createdAt": "",
+    //         "updatedAt": "",
+    //         "__v": 0
+    //     },
+    //     "accessToken": ""
+    // }
   }
 
   /**

@@ -1,13 +1,13 @@
-import { isRejectedWithValue } from "@reduxjs/toolkit";
+import { isRejectedWithValue, Middleware } from "@reduxjs/toolkit";
 import { toast } from "sonner";
 
-export const rtkQueryErrorLogger = (store) => (next) => (action) => {
+export const errorMiddleware: Middleware = () => (next) => (action) => {
   if (isRejectedWithValue(action)) {
     const errorMessage =
-      action.payload?.data?.message ||
+      (action as { payload?: { data?: { message?: string } } }).payload?.data
+        ?.message ||
       action.error?.message ||
-      "Something went wrong";
-
+      "An unknown error occurred";
     toast.error(errorMessage);
   }
   return next(action);
