@@ -9,6 +9,7 @@ import { initializeSocketServer } from "./utils/socket";
 
 import { handleError } from "./middlewares/error.middleware";
 import authRouter from "./routes/auth.route";
+import postRouter from "./routes/post.route";
 
 async function startServer() {
   try {
@@ -42,6 +43,7 @@ async function startServer() {
 
     //API Routes
     app.use("/api/v2/auth", authRouter);
+    app.use("/api/v2/post", postRouter);
 
     app.use(handleError);
 

@@ -1,9 +1,12 @@
 import { Document, Model, model, Schema } from "mongoose";
 
 export interface IBookmark extends Document {
+  _id: string;
+  __v: number;
+  createdAt: Date;
+  updatedAt: Date;
   user: Schema.Types.ObjectId;
   post: Schema.Types.ObjectId;
-  createdAt: Date;
 }
 
 const bookmarkSchema = new Schema<IBookmark>(

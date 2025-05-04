@@ -1,12 +1,14 @@
 import { Document, Model, Schema, model } from "mongoose";
 export interface IComment extends Document {
+  _id: string;
+  __v: number;
+  createdAt: Date;
+  updatedAt: Date;
   user: Schema.Types.ObjectId;
   post: Schema.Types.ObjectId;
   content: string;
   likesCount: number;
   parentComment?: Schema.Types.ObjectId;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 const commentSchema = new Schema<IComment>(

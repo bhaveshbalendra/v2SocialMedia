@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-interface IUIState {
-  theme: "light" | "dark" | "system";
-}
+// interface IUIState {
+//   theme: "light" | "dark" | "system";
+// }
 
 const getInitialTheme = () => {
   const savedTheme = localStorage.getItem("theme");
@@ -32,4 +32,4 @@ const uiSlice = createSlice({
 });
 
 export const { setTheme } = uiSlice.actions;
-export default uiSlice.reducer;
+export const uiReducer = uiSlice.reducer;

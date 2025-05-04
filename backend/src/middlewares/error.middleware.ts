@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { MulterError } from "multer";
 import { config } from "../config/app.config";
 
 /**
@@ -24,6 +25,15 @@ export class AppError extends Error {
   }
 
   /**
+   * Create an authentication error instance
+   * @param message Error message
+   * @returns AppError instance
+   */
+  static authError(message = "Authentication required"): AppError {
+    return new AppError(message, 401);
+  }
+
+  /**
    * Creating a validation error instance
    * @param {string} message - Error message
    * @param {Record<string, any>} errors - Validation errors object
@@ -45,6 +55,14 @@ export class AppError extends Error {
    */
   static notFoundError(entity = "Resource"): AppError {
     return new AppError(`${entity} not found`, 404);
+  }
+
+  /**
+   * Creating 400 Invalid data or empty
+   *
+   */
+  static emptyOrInvalidData(): AppError {
+    return new AppError("Data Invalid or Empty", 400);
   }
 
   /**
@@ -156,6 +174,25 @@ export const handleError = (
       success: false,
       message: `Invalid ${error.path || "field"}: ${error.value}`,
     });
+    return;
+  }
+
+  //Check if the error is an instance of MulterError
+
+  if (error instanceof MulterError) {
+    if (error.code === "LIMIT_FILE_SIZE") {
+      const responseData = {
+        success: false,
+        message: "File Size exceed please upload media of size less than 2MB",
+      };
+      response.status(statusCode).json(responseData);
+    } else if (error.code === "LIMIT_FIELD_COUNT") {
+      const responseData = {
+        success: false,
+        message: "Only allowed to upload media upto 5 only not more",
+      };
+      response.status(statusCode).json(responseData);
+    }
     return;
   }
 

@@ -17,9 +17,15 @@ export interface IAuthUser {
 }
 
 export interface ILoginRequest {
-  email: string;
+  email_or_username: string;
   password: string;
-  accessToken?: boolean;
+}
+
+export interface ILoginResponseWithToken {
+  success: boolean;
+  message?: string;
+  user: User;
+  accessToken: string;
 }
 
 export interface ISignupRequest {
@@ -29,13 +35,6 @@ export interface ISignupRequest {
   username: string;
   password: string;
   confirmPassword: string;
-}
-
-export interface ILoginResponseWithToken {
-  success: boolean;
-  message?: string;
-  user: User;
-  accessToken: string;
 }
 
 export interface ISignupResponseWithToken {

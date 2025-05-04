@@ -1,9 +1,8 @@
 import bcrypt from "bcryptjs";
-import jwt, { JwtPayload } from "jsonwebtoken";
-import { Types } from "mongoose";
 import { config } from "../config/app.config";
 import { AppError } from "../middlewares/error.middleware";
 import User from "../models/user.model";
+import { generateTokens } from "../utils/token";
 /**
  * @class AuthService
  * @description Service class for handling authentication-related operations.
@@ -57,7 +56,7 @@ class AuthService {
     }
 
     //Generate access and refresh tokens for the new user
-    const { accessToken, refreshToken } = this.generateTokens(newUser._id);
+    const { accessToken, refreshToken } = generateTokens(newUser._id);
 
     //Remove the password field from the user object before sending the response
     //toObject() converts the Mongoose document to a plain JavaScript object
@@ -122,9 +121,11 @@ class AuthService {
    * @param password - User's password
    * @returns {Promise<object>} User object and token
    */
-  async loginUser(email: string, password: string) {
-    //Find user by email
-    const user = await User.findOne({ email }).select("+password");
+  async loginUser(email_or_username: string, password: string) {
+    //Find user by email or username
+    const user = await User.findOne({
+      $or: [{ email: email_or_username }, { username: email_or_username }],
+    }).select("+password");
 
     //check if user exists
     if (!user) {
@@ -140,56 +141,33 @@ class AuthService {
     }
 
     //Generate access and refresh tokens for the new user
-    const { accessToken, refreshToken } = this.generateTokens(user._id);
+    const { accessToken, refreshToken } = generateTokens(user._id);
 
     //Remove the password field from the user object before sending the response
     //toObject() converts the Mongoose document to a plain JavaScript object
-    const userResponse = user.toObject();
+    const {
+      _id,
+      firstName,
+      lastName,
+      username,
+      email,
+      profilePicture,
+      isVerified,
+    } = user.toObject();
 
     return {
-      user: { email: userResponse.email, username: userResponse.username },
+      user: {
+        _id,
+        firstName,
+        lastName,
+        username,
+        email,
+        profilePicture,
+        isVerified,
+      },
       accessToken,
       refreshToken,
     };
-  }
-
-  /**
-   * @param userId - User ID to generate tokens for
-   * @returns { accessToken: string, refreshToken: string } - Generated access and refresh tokens
-   * @description Generates access and refresh tokens for the user.
-   */
-  generateTokens(userId: string | Types.ObjectId): {
-    accessToken: string;
-    refreshToken: string;
-  } {
-    const accessToken = this.generateAccessToken(userId);
-    const refreshToken = this.generateRefreshToken(userId);
-
-    return { accessToken, refreshToken };
-  }
-
-  /**
-   * Generates a refresh token for the user.
-   * @param userId - User ID to generate refresh token for
-   * @returns {string} - Generated refresh token
-   */
-  generateRefreshToken(userId: string | Types.ObjectId): string {
-    const jwtSecret = config.jwt.secret;
-    const refreshTokenExpiry = Number(config.jwt.refreshTokenExpiry);
-
-    return jwt.sign({ userId }, jwtSecret, { expiresIn: refreshTokenExpiry });
-  }
-
-  /**
-   * Generate a access token for the user.
-   * @param userId - User ID to generate access token for
-   * @returns {string} - Generated access token
-   */
-  generateAccessToken(userId: string | Types.ObjectId): string {
-    const jwtSecret = config.jwt.secret;
-    const accessTokenExpiry = Number(config.jwt.accessTokenExpiry);
-
-    return jwt.sign({ userId }, jwtSecret, { expiresIn: accessTokenExpiry });
   }
 }
 export default new AuthService();

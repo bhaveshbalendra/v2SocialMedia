@@ -19,8 +19,8 @@ export function useSignup() {
           accessToken: result.data.accessToken,
         })
       );
-      toast.success(result.data.message || "Signup successful");
-      navigate("/dashboard"); // Adjust to your protected route
+      toast.success(result.data.message || "Login successful");
+      navigate("/"); // Adjust to your protected route
     }
     // Errors are handled globally by errorMiddleware
   };

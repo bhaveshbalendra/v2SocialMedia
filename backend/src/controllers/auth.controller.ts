@@ -4,7 +4,7 @@ import { config } from "../config/app.config";
 import authService from "../services/auth.service";
 
 /**
- *  @description Handles user signup by calling the authService to create a new user.
+ * @description Handles user signup by calling the authService to create a new user.
  * @param {Request} request - The request object containing user data.
  * @param {Response} response - The response object to send the result.
  * @returns {Promise<any>} - A promise that resolves to the response object.
@@ -39,10 +39,11 @@ const handleLoginUser = async (
   request: Request,
   response: Response
 ): Promise<any> => {
-  const { email, password } = request.body;
+  const { email_or_username, password } = request.body;
+
   //Authenticating user using authService
   const { user, accessToken, refreshToken } = await authService.loginUser(
-    email,
+    email_or_username,
     password
   );
 

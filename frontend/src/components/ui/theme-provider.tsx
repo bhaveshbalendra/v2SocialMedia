@@ -1,8 +1,8 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useAppSelector } from "@/hooks/useAppSelector";
+import { useEffect } from "react";
 
-export function ThemeProvider({ children, ...props }) {
-  const { theme } = useSelector((state) => state.ui);
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const { theme } = useAppSelector((state) => state.ui);
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -17,22 +17,28 @@ export function ThemeProvider({ children, ...props }) {
 
       root.classList.add(systemTheme);
       return;
+    } else {
+      root.classList.add(theme!);
     }
-
-    root.classList.add(theme);
   }, [theme]);
 
-  const value = {
-    theme,
-    setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme);
-      setTheme(theme);
-    },
-  };
+  // Listen for system theme changes
+  useEffect(() => {
+    if (theme !== "system") return;
 
-  return (
-    <ThemeProviderContext.Provider {...props} value={value}>
-      {children}
-    </ThemeProviderContext.Provider>
-  );
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+    const handleChange = () => {
+      const root = window.document.documentElement;
+      const systemTheme = mediaQuery.matches ? "dark" : "light";
+
+      root.classList.remove("light", "dark");
+      root.classList.add(systemTheme);
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, [theme]);
+
+  return <>{children}</>;
 }

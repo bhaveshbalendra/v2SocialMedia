@@ -28,3 +28,20 @@ export const userValidation = {
     }),
   }),
 };
+
+export const postValidator = {
+  create: Joi.object({
+    title: Joi.string().trim().max(40).required().messages({
+      "string.empty": "Title is required",
+      "string.max": "Title must be at most 40 characters",
+    }),
+    caption: Joi.string().trim().max(100).optional().messages({
+      "string.max": "Caption must be at most 100 characters",
+    }),
+    description: Joi.string().trim().max(500).optional().messages({
+      "string.max": "Description must be at most 500 characters",
+    }),
+    tags: Joi.array().items(Joi.string().trim().max(20)).max(10).optional(),
+    location: Joi.string().trim().optional(),
+  }),
+};

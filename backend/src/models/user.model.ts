@@ -3,6 +3,8 @@ import { Document, Model, Schema, model } from "mongoose";
 export interface IUser extends Document {
   _id: string;
   __v: number;
+  createdAt: Date;
+  updatedAt: Date;
   username: string;
   email: string;
   password: string;
@@ -39,8 +41,6 @@ export interface IUser extends Document {
   facebookId?: string;
   githubId?: string;
   twitterId?: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 const userSchema: Schema = new Schema<IUser>(

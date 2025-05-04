@@ -1,9 +1,12 @@
 import { Document, model, Model, Schema } from "mongoose";
 export interface ILike extends Document {
+  _id: string;
+  __v: number;
+  createdAt: Date;
+  updatedAt: Date;
   user: Schema.Types.ObjectId;
   post?: Schema.Types.ObjectId;
   comment?: Schema.Types.ObjectId;
-  createdAt: Date;
 }
 
 const likeSchema = new Schema<ILike>(
