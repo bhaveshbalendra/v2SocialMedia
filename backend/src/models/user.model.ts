@@ -108,6 +108,7 @@ const userSchema: Schema = new Schema<IUser>(
     bio: {
       type: String,
       maxlength: [150, "Bio must be at most 150 characters long"],
+      default: "",
     },
     profilePicture: {
       type: String,
@@ -115,6 +116,7 @@ const userSchema: Schema = new Schema<IUser>(
     },
     dateOfBirth: {
       type: Date,
+      default: null,
     },
     location: {
       type: {
@@ -124,23 +126,28 @@ const userSchema: Schema = new Schema<IUser>(
       },
       coordinates: {
         type: [Number],
-        index: "2dsphere", // Create a 2dsphere index for geospatial queries
+        index: "2dsphere",
+        default: [0, 0], // Not recommended unless you want every document at [0,0]
       },
       city: {
         type: String,
         trim: true,
+        default: "",
       },
       country: {
         type: String,
         trim: true,
+        default: "",
       },
       state: {
         type: String,
         trim: true,
+        default: "",
       },
       zip: {
         type: String,
         trim: true,
+        default: "",
       },
     },
     isVerified: {
@@ -180,27 +187,49 @@ const userSchema: Schema = new Schema<IUser>(
       type: Boolean,
       default: false,
     },
-    emailVerificationToken: String,
-    emailVerificationTokenExpires: Date,
-    mobileVerificationToken: String,
-    mobileVerificationTokenExpires: Date,
-    passwordResetToken: String,
-    passwordResetTokenExpires: Date,
+    emailVerificationToken: {
+      type: String,
+      default: null,
+    },
+    emailVerificationTokenExpires: {
+      type: Date,
+      default: null,
+    },
+    mobileVerificationToken: {
+      type: String,
+      default: null,
+    },
+    mobileVerificationTokenExpires: {
+      type: Date,
+      default: null,
+    },
+    passwordResetToken: {
+      type: String,
+      default: null,
+    },
+    passwordResetTokenExpires: {
+      type: Date,
+      default: null,
+    },
     googleId: {
       type: String,
       sparse: true,
+      default: null,
     },
     facebookId: {
       type: String,
       sparse: true,
+      default: null,
     },
     githubId: {
       type: String,
       sparse: true,
+      default: null,
     },
     twitterId: {
       type: String,
       sparse: true,
+      default: null,
     },
   },
   {

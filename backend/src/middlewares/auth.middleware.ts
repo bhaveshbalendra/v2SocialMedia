@@ -8,14 +8,32 @@ export const authenticate = asyncHandler(
   async (request: Request, response: Response, next: NextFunction) => {
     // Get the token from the Authorization header
 
-    const token = extractTokenFromHeader(request.headers.authorization);
+    const accessToken = extractTokenFromHeader(request.headers.authorization);
 
-    if (!token) {
+    const refreshToken = request.cookies.refreshToken;
+
+    if (!refreshToken) {
+      throw AppError.authError("Invalid user");
+    }
+
+    const { payload: decodedRefreshToken, expired: expiredRefreshToken } =
+      verifyToken(refreshToken || "");
+
+    if (expiredRefreshToken) {
+      throw AppError.authError("Session expired or Invalid");
+    }
+
+    console.log(decodedRefreshToken);
+    const refreshUser = await User.findById(decodedRefreshToken?.userId).select(
+      "-password"
+    );
+
+    if (!accessToken) {
       throw AppError.authError("Invalid User");
     }
 
     //Pass token and check if expired
-    const { payload: decode, expired } = verifyToken(token || "");
+    const { payload: decode, expired } = verifyToken(accessToken || "");
 
     //Check if expired throw error
     if (expired) {
