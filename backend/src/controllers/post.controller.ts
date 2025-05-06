@@ -29,3 +29,23 @@ export const handleCreatePost = asyncHandler(
  * @description Get post for user which are not login and show post which are public
  * @return {Promise<>}
  */
+
+export const handleGetPostForNotLoginUser = asyncHandler(
+  async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<any> => {}
+);
+
+/**
+ * @description Get post for login user which they follow and public post also
+ */
+
+export const handleGetPostForLoginUser = asyncHandler(
+  async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<any> => {}
+);

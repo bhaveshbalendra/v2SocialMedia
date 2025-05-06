@@ -1,5 +1,9 @@
 import express, { RequestHandler } from "express";
-import { handleCreatePost } from "../controllers/post.controller";
+import {
+  handleCreatePost,
+  handleGetPostForLoginUser,
+  handleGetPostForNotLoginUser,
+} from "../controllers/post.controller";
 import { authenticate } from "../middlewares/auth.middleware";
 import { uploadMultiple } from "../middlewares/upload.middleware";
 import { validateRequest } from "../middlewares/validator.middleware";
@@ -14,5 +18,11 @@ router.post(
   validateRequest(postValidator.create),
   handleCreatePost as RequestHandler
 );
+
+// router.get("/public", handleGetPostForNotLoginUser);
+
+// router.get("/feed", authenticate, handleGetPostForLoginUser);
+
+// router.delete("/");
 
 export default router;

@@ -10,6 +10,10 @@ export interface IUser extends Document {
   password: string;
   firstName: string;
   lastName: string;
+  followers: Schema.Types.ObjectId[];
+  following: Schema.Types.ObjectId[];
+  bookmarks: Schema.Types.ObjectId[];
+  posts: Schema.Types.ObjectId[];
   mobileNumber?: string;
   bio?: string;
   profilePicture?: string;
@@ -83,6 +87,10 @@ const userSchema: Schema = new Schema<IUser>(
       required: [true, "Last name is required"],
       trim: true,
     },
+    followers: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    following: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    posts: [{ types: Schema.Types.ObjectId, ref: "Post" }],
+    bookmarks: [{ types: Schema.Types.ObjectId, ref: "Post" }],
     mobileNumber: {
       type: String,
       index: {
@@ -105,6 +113,7 @@ const userSchema: Schema = new Schema<IUser>(
         message: (props) => `${props.value} is not a valid mobile number!`, // Custom error message
       },
     },
+
     bio: {
       type: String,
       maxlength: [150, "Bio must be at most 150 characters long"],

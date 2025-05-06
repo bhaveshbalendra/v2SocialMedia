@@ -1,7 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import User from "../models/user.model";
-import { extractTokenFromHeader, verifyToken } from "../utils/token";
+import {
+  extractTokenFromHeader,
+  generateAccessToken,
+  verifyToken,
+} from "../utils/token";
 import { AppError } from "./error.middleware";
 
 export const authenticate = asyncHandler(
@@ -13,7 +17,7 @@ export const authenticate = asyncHandler(
     const refreshToken = request.cookies.refreshToken;
 
     if (!refreshToken) {
-      throw AppError.authError("Invalid user");
+      throw AppError.authError("Please Login");
     }
 
     const { payload: decodedRefreshToken, expired: expiredRefreshToken } =
@@ -23,13 +27,17 @@ export const authenticate = asyncHandler(
       throw AppError.authError("Session expired or Invalid");
     }
 
-    console.log(decodedRefreshToken);
-    const refreshUser = await User.findById(decodedRefreshToken?.userId).select(
+    const user = await User.findById(decodedRefreshToken?.userId).select(
       "-password"
     );
 
-    if (!accessToken) {
+    //throw error if user is not present on database
+    if (!user) {
       throw AppError.authError("Invalid User");
+    }
+
+    if (!accessToken) {
+      throw AppError.authError("Please Login");
     }
 
     //Pass token and check if expired
@@ -37,15 +45,8 @@ export const authenticate = asyncHandler(
 
     //Check if expired throw error
     if (expired) {
-      throw AppError.authError("Session expired or Invalid");
-    }
-
-    //find the user in token
-    const user = await User.findById(decode?.userId).select("-password");
-
-    //throw error if user is not present on database
-    if (!user) {
-      throw AppError.authError("Invalid User");
+      const newAccessToken = generateAccessToken(user?._id);
+      response.setHeader("Authorization", `Bearer ${newAccessToken}`);
     }
 
     //check if user is blocked or deleted
