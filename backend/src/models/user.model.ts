@@ -89,8 +89,8 @@ const userSchema: Schema = new Schema<IUser>(
     },
     followers: [{ type: Schema.Types.ObjectId, ref: "User" }],
     following: [{ type: Schema.Types.ObjectId, ref: "User" }],
-    posts: [{ types: Schema.Types.ObjectId, ref: "Post" }],
-    bookmarks: [{ types: Schema.Types.ObjectId, ref: "Post" }],
+    posts: [{ type: Schema.Types.ObjectId, ref: "Post" }],
+    bookmarks: [{ type: Schema.Types.ObjectId, ref: "Post" }],
     mobileNumber: {
       type: String,
       index: {
