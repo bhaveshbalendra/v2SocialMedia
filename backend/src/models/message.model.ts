@@ -1,12 +1,22 @@
-import mongoose from "mongoose";
+import { Document, Model, model, Schema } from "mongoose";
 
-const messageSchema = new mongoose.Schema({
+//Interface for Message model
+interface IMessage extends Document {
+  senderId: Schema.Types.ObjectId;
+  receiverId: Schema.Types.ObjectId;
+  message: string;
+}
+
+/**
+ * @description Schema for message for comments
+ */
+const messageSchema: Schema<IMessage> = new Schema<IMessage>({
   senderId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: "User",
   },
   receiverId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: "User",
   },
   message: {
@@ -15,4 +25,8 @@ const messageSchema = new mongoose.Schema({
   },
 });
 
-export const Message = mongoose.model("Message", messageSchema);
+//exporting the Message model
+export const Message: Model<IMessage> = model<IMessage>(
+  "Message",
+  messageSchema
+);

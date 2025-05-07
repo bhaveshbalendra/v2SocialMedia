@@ -1,17 +1,31 @@
-import mongoose from "mongoose";
+import { Document, Model, model, Schema } from "mongoose";
 
-const conversationSchema = new mongoose.Schema({
+//interface for conversation
+interface IConversation extends Document {
+  participants: Schema.Types.ObjectId[];
+  messages: Schema.Types.ObjectId[];
+}
+
+/**
+ * @description message schema
+ */
+const conversationSchema: Schema<IConversation> = new Schema<IConversation>({
   participants: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "User",
     },
   ],
   messages: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Message",
     },
   ],
 });
-export const Conversation = mongoose.model("Conversation", conversationSchema);
+
+//exporting conversation
+export const Conversation: Model<IConversation> = model<IConversation>(
+  "Conversation",
+  conversationSchema
+);

@@ -1,5 +1,6 @@
 import { Document, Model, Schema, model } from "mongoose";
 
+//Interface for User
 export interface IUser extends Document {
   _id: string;
   __v: number;
@@ -47,7 +48,10 @@ export interface IUser extends Document {
   twitterId?: string;
 }
 
-const userSchema: Schema = new Schema<IUser>(
+/**
+ * @description schema for user
+ */
+const userSchema: Schema<IUser> = new Schema<IUser>(
   {
     username: {
       type: String,
@@ -246,5 +250,6 @@ const userSchema: Schema = new Schema<IUser>(
   }
 );
 
+//exporting user model
 const User: Model<IUser> = model<IUser>("User", userSchema);
 export default User;

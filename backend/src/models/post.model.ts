@@ -1,5 +1,6 @@
 import { Document, Model, model, Schema } from "mongoose";
 
+//interface of post which are created by user
 export interface IPost extends Document {
   _id: string;
   __v: number;
@@ -26,6 +27,9 @@ export interface IPost extends Document {
   isReported: boolean;
 }
 
+/**
+ * @description post schema which are created by user
+ */
 const postSchema: Schema = new Schema<IPost>(
   {
     title: {
@@ -113,5 +117,6 @@ const postSchema: Schema = new Schema<IPost>(
   { timestamps: true }
 );
 
+//exporting post model
 const Post: Model<IPost> = model<IPost>("Post", postSchema);
 export default Post;

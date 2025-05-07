@@ -1,4 +1,6 @@
 import { Document, Model, Schema, model } from "mongoose";
+
+//interface for comment
 export interface IComment extends Document {
   _id: string;
   __v: number;
@@ -11,7 +13,10 @@ export interface IComment extends Document {
   parentComment?: Schema.Types.ObjectId;
 }
 
-const commentSchema = new Schema<IComment>(
+/**
+ * @description comment schema
+ */
+const commentSchema: Schema<IComment> = new Schema<IComment>(
   {
     user: {
       type: Schema.Types.ObjectId,
@@ -46,5 +51,6 @@ const commentSchema = new Schema<IComment>(
   }
 );
 
+//model for comment
 const Comment: Model<IComment> = model<IComment>("Comment", commentSchema);
 export default Comment;
