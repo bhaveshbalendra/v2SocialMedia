@@ -30,7 +30,26 @@ export const handleCreatePost = asyncHandler(
  * @return {Promise<>}
  */
 
-export const handleGetPostForNotLoginUser = asyncHandler(
+export const handleGetPostsForNotLoginUser = asyncHandler(
+  async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<any> => {
+    const posts = await postService.getAllPostsNotLoginUser();
+
+    response
+      .status(200)
+      .json({ success: true, message: "Post are Fetched", posts });
+    return;
+  }
+);
+
+/**
+ * @description Get post for login user which they follow and public post also
+ */
+
+export const handleGetPostForLoginUser = asyncHandler(
   async (
     request: Request,
     response: Response,
@@ -39,10 +58,9 @@ export const handleGetPostForNotLoginUser = asyncHandler(
 );
 
 /**
- * @description Get post for login user which they follow and public post also
+ * @description Delete post by id
  */
-
-export const handleGetPostForLoginUser = asyncHandler(
+export const handleDeletePost = asyncHandler(
   async (
     request: Request,
     response: Response,

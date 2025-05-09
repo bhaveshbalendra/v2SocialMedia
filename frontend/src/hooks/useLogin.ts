@@ -1,5 +1,5 @@
-import { useLoginMutation } from "@/store/apis/auth.Api";
-import { setCredentials } from "@/store/slices/auth.Slice";
+import { useLoginMutation } from "@/store/apis/authApi";
+import { setCredentials } from "@/store/slices/authSlice";
 import { ILoginRequest } from "@/types/auth.types";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";

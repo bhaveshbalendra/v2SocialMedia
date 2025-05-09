@@ -2,7 +2,7 @@ import express, { RequestHandler, Router } from "express";
 import {
   handleCreatePost,
   handleGetPostForLoginUser,
-  handleGetPostForNotLoginUser,
+  handleGetPostsForNotLoginUser,
 } from "../controllers/post.controller";
 import { authenticate } from "../middlewares/auth.middleware";
 import { uploadMultiple } from "../middlewares/upload.middleware";
@@ -38,7 +38,7 @@ router.post(
  * @desc    Get public posts for users not logged in
  * @access  Public
  */
-// router.get("/public", handleGetPostForNotLoginUser);
+router.get("/public", handleGetPostsForNotLoginUser);
 
 /**
  * @route   GET /feed

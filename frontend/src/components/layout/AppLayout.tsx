@@ -1,13 +1,16 @@
 import { Outlet } from "react-router";
+import LeftSidebar from "./LeftSidebar";
 
 const AppLayout = () => {
   return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden bg-background text-foreground antialiased">
-      <div className="flex flex-col flex-1 overflow-hidden">
-        <main className="flex-1 overflow-auto">
-          <Outlet />
-        </main>
-      </div>
+    <div className="container mx-auto flex flex-col lg:flex-row lg:justify-between h-dvh ">
+      <section className="lg:hidden ">top nav</section>
+      <LeftSidebar />
+      <main className="">
+        <Outlet />
+      </main>
+      <section className="lg:hidden ">bottom nav</section>
+      <section className="lg:block hidden">right sidebar</section>
     </div>
   );
 };

@@ -26,17 +26,17 @@ const AppRouter = () => {
           <Route path="profile/:username" element={<ProfilePage />} />
           <Route path="settings/:username" element={<SettingPage />} />
         </Route>
-
-        {/* Public auth routes */}
-        <Route path="login" element={<LoginPage />} />
-        <Route path="signup" element={<SignupPage />} />
-        <Route path="forgot-password" element={<h1>ForgotPasswordPage</h1>} />
-        <Route
-          path="reset-password/:token"
-          element={<h1>ResetPasswordPage</h1>}
-        />
-        <Route path="verify-otp" element={<h1>OTPVerificationPage</h1>} />
       </Route>
+
+      {/* Public auth routes */}
+      <Route path="login" element={<LoginPage />} />
+      <Route path="signup" element={<SignupPage />} />
+      <Route path="forgot-password" element={<h1>ForgotPasswordPage</h1>} />
+      <Route
+        path="reset-password/:token"
+        element={<h1>ResetPasswordPage</h1>}
+      />
+      <Route path="verify-otp" element={<h1>OTPVerificationPage</h1>} />
 
       {/* Not Found Page */}
       <Route path="*" element={<NotFoundPage />} />

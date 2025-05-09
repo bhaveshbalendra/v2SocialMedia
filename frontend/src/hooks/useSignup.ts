@@ -1,5 +1,5 @@
-import { useSignupMutation } from "@/store/apis/auth.Api";
-import { setCredentials } from "@/store/slices/auth.Slice";
+import { useSignupMutation } from "@/store/apis/authApi";
+import { setCredentials } from "@/store/slices/authSlice";
 import { ISignupRequest } from "@/types/auth.types";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -19,6 +19,8 @@ export function useSignup() {
           accessToken: result.data.accessToken,
         })
       );
+      console.log(result);
+
       toast.success(result.data.message || "Login successful");
       navigate("/"); // Adjust to your protected route
     }

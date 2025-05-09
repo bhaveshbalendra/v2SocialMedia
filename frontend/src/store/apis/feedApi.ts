@@ -14,7 +14,7 @@ export const feedApi = createApi({
   }),
   endpoints: (builder) => ({
     getPublicFeed: builder.query({
-      query: () => "/media/public",
+      query: () => "/post/public",
     }),
     getAuthenticatedFeed: builder.query({
       query: () => "/media/feed",

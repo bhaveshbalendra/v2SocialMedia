@@ -1,6 +1,12 @@
 import { Document, Model, model, Schema } from "mongoose";
 
-//interface of post which are created by user
+// Enum for better type safety (optional but recommended)
+export enum PostVisibility {
+  Public = "public",
+  Private = "private",
+}
+
+// Interface for TypeScript type checking
 export interface IPost extends Document {
   _id: string;
   __v: number;
@@ -13,11 +19,12 @@ export interface IPost extends Document {
     publicId: string;
   }[];
   author: Schema.Types.ObjectId;
-  likesCount: number;
+  likes: Schema.Types.ObjectId[];
+  comments: Schema.Types.ObjectId[];
   location?: string;
   tags?: string[];
   title: string;
-  visibility: string;
+  visibility: PostVisibility;
   description: string;
   commentsCount: number;
   sharesCount: number;
@@ -28,14 +35,14 @@ export interface IPost extends Document {
 }
 
 /**
- * @description post schema which are created by user
+ * @description Post schema with validation and best practices
  */
-const postSchema: Schema = new Schema<IPost>(
+const postSchema: Schema<IPost> = new Schema<IPost>(
   {
     title: {
       type: String,
       trim: true,
-      maxLength: [40, "Caption must be at most 50 characters long"],
+      maxLength: [40, "Title must be at most 40 characters long"],
     },
     caption: {
       type: String,
@@ -47,48 +54,55 @@ const postSchema: Schema = new Schema<IPost>(
       trim: true,
       maxlength: [500, "Description must be at most 500 characters long"],
     },
-    tags: [
-      {
-        type: String,
-        trim: true,
-      },
-    ],
-    media: [
-      {
-        url: {
-          type: String,
-          required: [true, "Media URL is required"],
+    tags: {
+      type: [String],
+      trim: true,
+      default: [],
+    },
+    media: {
+      type: [
+        {
+          url: {
+            type: String,
+            required: [true, "Media URL is required"],
+          },
+          type: {
+            type: String,
+            enum: ["image", "video"],
+            required: [true, "Media type is required"],
+          },
+          publicId: {
+            type: String,
+            required: [true, "Public ID is required"],
+          },
         },
-        type: {
-          type: String,
-          enum: ["image", "video"],
-          required: [true, "Media type is required"],
-        },
-        publicId: {
-          type: String,
-          required: [true, "Public ID is required"],
-        },
-      },
-    ],
+      ],
+      default: [],
+    },
     visibility: {
       type: String,
-      enum: ["public", "private"],
-      default: "public",
+      enum: Object.values(PostVisibility),
+      default: PostVisibility.Public,
     },
     author: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: [true, "User ID is required"],
     },
-    likesCount: {
-      type: Number,
-      default: 0,
+    likes: {
+      type: [Schema.Types.ObjectId],
+      ref: "User",
+      default: [],
+    },
+    comments: {
+      type: [Schema.Types.ObjectId],
+      ref: "Comment",
+      default: [],
     },
     location: {
       type: String,
       trim: true,
     },
-
     commentsCount: {
       type: Number,
       default: 0,
@@ -114,9 +128,17 @@ const postSchema: Schema = new Schema<IPost>(
       default: false,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
 );
 
-//exporting post model
+// Indexes for better query performance
+postSchema.index({ author: 1, createdAt: -1 }); // For user's posts feed
+postSchema.index({ visibility: 1, isArchived: 1, isDeleted: 1 }); // For public post queries
+
+// Export model
 const Post: Model<IPost> = model<IPost>("Post", postSchema);
 export default Post;

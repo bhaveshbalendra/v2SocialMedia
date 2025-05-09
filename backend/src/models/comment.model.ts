@@ -9,6 +9,7 @@ export interface IComment extends Document {
   user: Schema.Types.ObjectId;
   post: Schema.Types.ObjectId;
   content: string;
+  likes: Schema.Types.ObjectId[];
   likesCount: number;
   parentComment?: Schema.Types.ObjectId;
 }
@@ -34,6 +35,7 @@ const commentSchema: Schema<IComment> = new Schema<IComment>(
       trim: true,
       maxlength: [1000, "Comment cannot exceed 1000 characters"],
     },
+    likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
     likesCount: {
       type: Number,
       default: 0,
@@ -52,5 +54,5 @@ const commentSchema: Schema<IComment> = new Schema<IComment>(
 );
 
 //model for comment
-const Comment: Model<IComment> = model<IComment>("Comment", commentSchema);
+const Comment: Model<IComment> = model<IComment>("comment", commentSchema);
 export default Comment;

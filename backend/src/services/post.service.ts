@@ -2,7 +2,9 @@ import { Request } from "express";
 import sharp from "sharp";
 import cloudinary from "../config/cloudinary.config";
 import { AppError } from "../middlewares/error.middleware";
+import Comment from "../models/comment.model";
 import Post from "../models/post.model";
+import User from "../models/user.model";
 import getDataUri from "../utils/datauri";
 
 class PostService {
@@ -95,11 +97,36 @@ class PostService {
       location,
     });
 
+    // FIX: use _id instead of id for MongoDB documents
+    await User.findByIdAndUpdate(
+      userId,
+      { $push: { posts: post._id } },
+      { new: true }
+    );
+
     return post;
   }
 
-  async getAllPostNotLoginUser() {
-    const posts = await Post.find();
+  async getAllPostsNotLoginUser() {
+    const posts = await Post.find({
+      visibility: "public",
+      isArchived: false,
+      isDeleted: false,
+    })
+      .select("-updatedAt -__v")
+      .sort({ createdAt: -1 }) // FIX: use createdAt, not created
+      .populate({
+        path: "author",
+        select: "username profilePicture",
+      });
+    // .populate({
+    //   path: "comments",
+    //   options: {
+    //     sort: { createdAt: -1 },
+    //   },
+    //   populate: { path: "author", select: "username profilePicture" },
+    // });
+    return posts;
   }
 }
 
