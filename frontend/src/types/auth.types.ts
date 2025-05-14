@@ -8,9 +8,16 @@ export interface User {
   isVerified: boolean;
 }
 
+export interface IAuthUserRouteResponse {
+  user: User;
+  success: boolean;
+  message: string;
+  accessToken?: string | null;
+}
+
 export interface IAuthUser {
   user: User | null;
-  token: string | null;
+  accessToken: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;

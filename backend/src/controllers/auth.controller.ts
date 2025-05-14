@@ -22,7 +22,7 @@ const handleSignupUser = asyncHandler(
     response.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: config.node_env === "production",
-      maxAge: Number(config.jwt.refreshTokenExpiry),
+      maxAge: Number(config.jwt.refreshTokenExpiry) * 1000, //in milliseconds
     });
     response.status(201).json({
       success: true,
@@ -35,31 +35,53 @@ const handleSignupUser = asyncHandler(
   }
 );
 
-const handleLoginUser = async (
-  request: Request,
-  response: Response
-): Promise<any> => {
-  const { email_or_username, password } = request.body;
+const handleLoginUser = asyncHandler(
+  async (request: Request, response: Response): Promise<any> => {
+    const { email_or_username, password } = request.body;
 
-  //Authenticating user using authService
-  const { user, accessToken, refreshToken } = await authService.loginUser(
-    email_or_username,
-    password
-  );
+    //Authenticating user using authService
+    const { user, accessToken, refreshToken } = await authService.loginUser(
+      email_or_username,
+      password
+    );
 
-  //Set the refresh token in the cookie
-  response.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: config.node_env === "production",
-    maxAge: Number(config.jwt.refreshTokenExpiry),
-  });
+    //Set the refresh token in the cookie
+    response.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: config.node_env === "production",
+      maxAge: Number(config.jwt.refreshTokenExpiry),
+    });
 
-  response.status(200).json({
-    success: true,
-    message: "User logged in successfully",
-    user,
-    accessToken,
-  });
-};
+    response.status(200).json({
+      success: true,
+      message: "User logged in successfully",
+      user,
+      accessToken,
+    });
+  }
+);
 
-export { handleLoginUser, handleSignupUser };
+const handleAuthUserRoutes = asyncHandler(
+  async (request: Request, response: Response): Promise<any> => {
+    const user = request.user;
+    const accessToken = request.accessToken;
+
+    response.status(200).json({
+      message: "Authenticate user",
+      success: true,
+      user: {
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        username: user.username,
+        email: user.email,
+        profilePicture: user.profilePicture,
+        isVerified: user.isVerified,
+      },
+      accessToken,
+    });
+    return;
+  }
+);
+
+export { handleAuthUserRoutes, handleLoginUser, handleSignupUser };

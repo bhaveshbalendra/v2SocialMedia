@@ -59,7 +59,9 @@ export const authenticate = asyncHandler(
     //Check if expired throw error
     if (expiredAccessToken) {
       const newAccessToken = generateAccessToken(user?._id);
-      response.setHeader("Authorization", `Bearer ${newAccessToken}`);
+      request.accessToken = newAccessToken;
+    } else {
+      request.accessToken = accessToken;
     }
 
     //check if user is blocked or deleted

@@ -7,9 +7,11 @@
 
 import { RequestHandler, Router } from "express";
 import {
+  handleAuthUserRoutes,
   handleLoginUser,
   handleSignupUser,
 } from "../controllers/auth.controller";
+import { authenticate } from "../middlewares/auth.middleware";
 import { validateRequest } from "../middlewares/validator.middleware";
 import { userValidation } from "../utils/validators";
 
@@ -39,5 +41,7 @@ router.post(
  *   - handleLoginUser: Handles user login logic
  */
 router.post("/login", handleLoginUser as RequestHandler);
+
+router.get("/me", authenticate, handleAuthUserRoutes);
 
 export default router;

@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
+// import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useSignup } from "@/hooks/useSignup";
@@ -37,6 +37,7 @@ const SignupPage = () => {
   const {
     register,
     handleSubmit,
+    // control,
     formState: { errors },
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
@@ -136,15 +137,31 @@ const SignupPage = () => {
                     </span>
                   )}
                 </div>
-                <div className="flex items-center gap-2">
-                  <Checkbox id="terms" className="h-3 w-3" />
-                  <Label htmlFor="terms">
-                    I agree to the
+                {/* <div className="flex items-center gap-2">
+                  <Controller
+                    name="terms"
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        id="terms"
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        className="h-3 w-3"
+                      />
+                    )}
+                  />
+                  <Label htmlFor="terms" className="ml-2">
+                    I agree to the{" "}
                     <Link to="/terms" className="text-blue-500 underline">
                       terms and conditions
                     </Link>
                   </Label>
-                </div>
+                </div> */}
+                {/* {errors.terms && (
+                  <span className="text-red-500 text-sm">
+                    {errors.terms.message as string}
+                  </span>
+                )} */}
                 <div className="flex flex-col gap-2">
                   <Button type="submit" disabled={isLoading}>
                     {isLoading ? (
@@ -153,15 +170,24 @@ const SignupPage = () => {
                       "Signup"
                     )}
                   </Button>
-                  <Button type="button" disabled={isLoading}>
-                    <FaGoogle /> Continue with Google
+                  <Button type="button" disabled={isLoading} variant="outline">
+                    <FaGoogle className="mr-2" /> Continue with Google
                   </Button>
-                  <Button type="button" disabled={isLoading}>
-                    <FaXTwitter /> Continue with X
+                  <Button type="button" disabled={isLoading} variant="outline">
+                    <FaXTwitter className="mr-2" /> Continue with X
                   </Button>
                 </div>
               </div>
             </form>
+            <div className="mt-4 text-center text-sm">
+              Already have an account?{" "}
+              <Link
+                to="/login"
+                className="font-semibold text-primary hover:underline"
+              >
+                Login
+              </Link>
+            </div>
           </CardContent>
         </Card>
       </div>

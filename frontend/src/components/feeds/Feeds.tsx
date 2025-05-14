@@ -16,7 +16,7 @@ interface FeedsProps {
   isLoading?: boolean;
 }
 
-const Feeds: React.FC<FeedsProps> = ({ posts, isLoading }) => {
+const Feeds = ({ posts, isLoading }: FeedsProps) => {
   if (isLoading) {
     return <div className="text-center text-gray-500 py-10">Loading...</div>;
   }

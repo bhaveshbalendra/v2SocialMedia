@@ -33,6 +33,7 @@ async function startServer() {
         allowedHeaders: ["Content-Type", "Authorization"],
         credentials: true,
         maxAge: 86400, // 24 hours
+        exposedHeaders: ["Authorization"],
       })
     );
 

@@ -3,8 +3,8 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: IAuthUser = {
   user: null,
-  token: localStorage.getItem("token"),
-  isAuthenticated: false,
+  accessToken: localStorage.getItem("accessToken"),
+  isAuthenticated: Boolean(localStorage.getItem("accessToken")),
   isLoading: false,
   error: null,
 };
@@ -19,21 +19,29 @@ const authSlice = createSlice({
     ) => {
       const { user, accessToken } = action.payload;
       state.user = user;
-      state.token = accessToken;
+      state.accessToken = accessToken;
       state.isAuthenticated = true;
-      localStorage.setItem("token", accessToken);
+      state.error = null;
+      localStorage.setItem("accessToken", accessToken);
     },
     setAuthLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
     setAuthError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
+      if (action.payload) {
+        state.isAuthenticated = false;
+        state.user = null;
+        state.accessToken = null;
+        localStorage.removeItem("accessToken");
+      }
     },
     logout: (state) => {
       state.user = null;
-      state.token = null;
+      state.accessToken = null;
       state.isAuthenticated = false;
-      localStorage.removeItem("token");
+      state.error = null;
+      localStorage.removeItem("accessToken");
     },
   },
 });

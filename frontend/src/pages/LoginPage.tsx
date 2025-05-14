@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import { FaGoogle } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { ImSpinner2 } from "react-icons/im";
+import { Link } from "react-router";
 import { z } from "zod";
 
 const credentials = {
@@ -56,11 +57,11 @@ const LoginPage = () => {
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="flex flex-col gap-4">
                 <div className="flex flex-col items-start gap-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email_or_username">Email</Label>
                   <Input
                     id="email_or_username"
                     placeholder="Enter your email or username"
-                    type="email_or_username"
+                    type="text"
                     {...register("email_or_username")}
                     required
                   />
@@ -95,15 +96,24 @@ const LoginPage = () => {
                       "Login"
                     )}
                   </Button>
-                  <Button type="button" disabled={isLoading}>
-                    <FaGoogle /> Login with Google
+                  <Button type="button" disabled={isLoading} variant="outline">
+                    <FaGoogle className="mr-2" /> Login with Google
                   </Button>
-                  <Button type="button" disabled={isLoading}>
-                    <FaXTwitter /> Login with X
+                  <Button type="button" disabled={isLoading} variant="outline">
+                    <FaXTwitter className="mr-2" /> Login with X
                   </Button>
                 </div>
               </div>
             </form>
+            <div className="mt-4 text-center text-sm">
+              Don&apos;t have an account?{" "}
+              <Link
+                to="/signup"
+                className="font-semibold text-primary hover:underline"
+              >
+                Sign up
+              </Link>
+            </div>
           </CardContent>
         </Card>
       </div>

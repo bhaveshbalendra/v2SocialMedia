@@ -40,3 +40,9 @@ export interface Author {
   username: string;
   profilePicture: string;
 }
+
+export interface FeedResponse {
+  success: boolean;
+  message: string;
+  posts: Post[];
+}
