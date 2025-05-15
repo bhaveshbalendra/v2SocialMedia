@@ -8,15 +8,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAppSelector } from "@/hooks/useAppSelector";
+import { useLogout } from "@/hooks/useLogout";
 import { useCallback } from "react";
 import { AiFillMessage } from "react-icons/ai";
 import { CgProfile } from "react-icons/cg";
 import { FaSearch } from "react-icons/fa";
 import { FaChevronDown } from "react-icons/fa6";
+import { ImSpinner2 } from "react-icons/im";
 import { IoNotifications } from "react-icons/io5";
 import { TiHome } from "react-icons/ti";
 import { Link, useLocation, useNavigate } from "react-router";
-import CreatePostModal from "../common/CreatPost";
+import CreatePostModal from "../common/CreatePost";
 import { Button } from "../ui/button";
 
 const navItems = [
@@ -35,6 +37,7 @@ const LeftSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.user);
+  const { handleLogout, isLoading: isLoadingLogout } = useLogout();
 
   const firstName = user?.firstName || "User";
   const profilePicture = user?.profilePicture;
@@ -115,13 +118,8 @@ const LeftSidebar = () => {
                 <Link to={_id ? `/settings/${_id}` : "#"}>Settings</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => {
-                  // Insert your logout logic here
-                  alert("Logged out");
-                }}
-              >
-                Logout
+              <DropdownMenuItem onClick={() => handleLogout()}>
+                {isLoadingLogout ? <ImSpinner2 /> : "Logout"}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

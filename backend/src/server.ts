@@ -10,6 +10,7 @@ import { initializeSocketServer } from "./utils/socket";
 import { handleError } from "./middlewares/error.middleware";
 import authRouter from "./routes/auth.route";
 import postRouter from "./routes/post.route";
+import { createRateLimiter } from "./utils/rateLimiter";
 
 async function startServer() {
   try {
@@ -21,6 +22,9 @@ async function startServer() {
     app.use(bodyParser.json());
     app.use(express.urlencoded({ extended: true }));
     app.use(cookieParser());
+
+    // Global Rate Limiter (e.g., 100 requests per minute per IP)
+    // app.use(createRateLimiter({ windowMs: 60 * 1000, max: 100 }));
 
     // Enable CORS with appropriate configuration
     app.use(

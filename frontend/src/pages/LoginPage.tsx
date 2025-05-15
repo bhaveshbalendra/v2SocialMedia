@@ -9,8 +9,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLogin } from "@/hooks/useLogin";
+import { auth, provider } from "@/utils/firebase_googleLogin";
 import { loginSchema } from "@/validations/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { signInWithPopup } from "firebase/auth";
 import { useForm } from "react-hook-form";
 import { FaGoogle } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
@@ -36,6 +38,15 @@ const LoginPage = () => {
     resolver: zodResolver(loginSchema),
     defaultValues: credentials,
   });
+
+  const handleGoogleLogin = async () => {
+    try {
+      const response = await signInWithPopup(auth, provider);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const onSubmit = async (data: LoginFormData) => {
     await handleLogin(data);
@@ -63,6 +74,7 @@ const LoginPage = () => {
                     placeholder="Enter your email or username"
                     type="text"
                     {...register("email_or_username")}
+                    autoComplete="current-password"
                     required
                   />
                   {errors.email_or_username && (
@@ -78,6 +90,7 @@ const LoginPage = () => {
                     id="password"
                     {...register("password")}
                     type="password"
+                    autoComplete="current-password"
                     required
                     placeholder="Enter your password"
                   />
@@ -96,7 +109,12 @@ const LoginPage = () => {
                       "Login"
                     )}
                   </Button>
-                  <Button type="button" disabled={isLoading} variant="outline">
+                  <Button
+                    onClick={handleGoogleLogin}
+                    type="button"
+                    disabled={isLoading}
+                    variant="outline"
+                  >
                     <FaGoogle className="mr-2" /> Login with Google
                   </Button>
                   <Button type="button" disabled={isLoading} variant="outline">

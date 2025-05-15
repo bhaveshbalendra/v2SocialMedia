@@ -3,6 +3,7 @@ import {
   IAuthUserRouteResponse,
   ILoginRequest,
   ILoginResponseWithToken,
+  ILogoutResponse,
   ISignupRequest,
   ISignupResponseWithToken,
 } from "@/types/auth.types";
@@ -11,7 +12,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: apiUrl,
+    baseUrl: `${apiUrl}/auth`,
     credentials: "include",
     prepareHeaders: (headers) => {
       const token = localStorage.getItem("accessToken");
@@ -25,7 +26,7 @@ export const authApi = createApi({
   endpoints: (builder) => ({
     login: builder.mutation<ILoginResponseWithToken, ILoginRequest>({
       query: (credentials) => ({
-        url: "/auth/login",
+        url: "/login",
         method: "POST",
         body: credentials,
       }),
@@ -39,7 +40,7 @@ export const authApi = createApi({
     }),
     signup: builder.mutation<ISignupResponseWithToken, ISignupRequest>({
       query: (credentials) => ({
-        url: "/auth/signup",
+        url: "/signup",
         method: "POST",
         body: credentials,
       }),
@@ -51,9 +52,15 @@ export const authApi = createApi({
         return response;
       },
     }),
+    logout: builder.mutation<ILogoutResponse, void>({
+      query: () => ({
+        url: "/logout",
+        method: "POST",
+      }),
+    }),
     authUserRoute: builder.query<IAuthUserRouteResponse, void>({
       query: () => ({
-        url: "/auth/me",
+        url: "/me",
         method: "GET",
       }),
       providesTags: ["Auth"],
@@ -67,5 +74,9 @@ export const authApi = createApi({
   }),
 });
 
-export const { useLoginMutation, useSignupMutation, useAuthUserRouteQuery } =
-  authApi;
+export const {
+  useLoginMutation,
+  useSignupMutation,
+  useAuthUserRouteQuery,
+  useLogoutMutation,
+} = authApi;

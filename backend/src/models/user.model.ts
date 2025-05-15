@@ -43,8 +43,8 @@ export interface IUser extends Document {
   passwordResetToken?: string;
   passwordResetTokenExpires?: Date;
   googleId?: string;
-  facebookId?: string;
-  githubId?: string;
+  // facebookId?: string;
+  // githubId?: string;
   twitterId?: string;
 }
 
@@ -75,7 +75,6 @@ const userSchema: Schema<IUser> = new Schema<IUser>(
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
       trim: true,
       select: false, // Do not return password in queries
     },
@@ -227,16 +226,16 @@ const userSchema: Schema<IUser> = new Schema<IUser>(
       sparse: true,
       default: null,
     },
-    facebookId: {
-      type: String,
-      sparse: true,
-      default: null,
-    },
-    githubId: {
-      type: String,
-      sparse: true,
-      default: null,
-    },
+    // facebookId: {
+    //   type: String,
+    //   sparse: true,
+    //   default: null,
+    // },
+    // githubId: {
+    //   type: String,
+    //   sparse: true,
+    //   default: null,
+    // },
     twitterId: {
       type: String,
       sparse: true,

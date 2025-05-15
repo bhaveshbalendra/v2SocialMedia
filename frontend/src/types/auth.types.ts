@@ -50,3 +50,8 @@ export interface ISignupResponseWithToken {
   user: User;
   accessToken: string;
 }
+
+export interface ILogoutResponse {
+  success: boolean;
+  message?: string;
+}

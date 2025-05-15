@@ -50,7 +50,7 @@ export class AppError extends Error {
 
   /**
    * Creating a not found error instance
-   * @param {string} message - Error message
+   * @param {string} entity - The name of the entity that was not found
    * @returns {AppError} - Instance of AppError with not found error
    */
   static notFoundError(entity = "Resource"): AppError {
@@ -58,18 +58,18 @@ export class AppError extends Error {
   }
 
   /**
-   * Creating 400 Invalid data or empty
-   *
+   * Creating 400 Invalid data or empty error instance
+   * @returns {AppError}
    */
   static emptyOrInvalidData(): AppError {
     return new AppError("Data Invalid or Empty", 400);
   }
 
   /**
-   *Invalid credentials error instance
-   * @param {string} message - Error message
+   * Invalid credentials error instance
+   * @returns {AppError}
    */
-  static invalidCredentialsError() {
+  static invalidCredentialsError(): AppError {
     return new AppError("Invalid credentials", 401);
   }
 
@@ -81,20 +81,29 @@ export class AppError extends Error {
   static conflictError(message: string): AppError {
     return new AppError(message, 409);
   }
+
+  /**
+   * rate limit error
+   *@param message Error message
+   *@returns AppError instance with error code
+   */
+  static tooManyRequestsError(message: string): AppError {
+    return new AppError(message, 429);
+  }
 }
 
 /**
- *
+ * Express error-handling middleware.
+ * Handles different error types and sends appropriate responses to the client.
+ * It captures the error, logs it in development mode, and sends a JSON response.
  * @param error Error object
  * @param request Express request object
  * @param response Express response object
  * @param next Express next function
- * @description Middleware to handle errors in the application.
- * It captures the error, logs it in development mode, and sends a JSON response to the client.
  * @returns {void}
  */
 export const handleError = (
-  error: AppError,
+  error: any, // Accept any error object for broad compatibility
   request: Request,
   response: Response,
   next: NextFunction
@@ -104,13 +113,14 @@ export const handleError = (
   const statusCode = error.statusCode || 500;
   const message = error.message || "Internal Server Error";
 
-  //initialize node_env from config or set to default value
+  // Initialize node_env from config or set to default value
   const node_env = config.node_env || "development";
 
-  // Log the error in development mode
+  // Log the error in development mode for debugging
   if (node_env === "development") {
     console.error("Error:", error);
   }
+
   // Handle Mongoose validation errors
   if (error.name === "ValidationError") {
     const validationErrors: Record<string, string> = {};
@@ -156,7 +166,7 @@ export const handleError = (
   //   _message: 'User validation failed'
   // }
 
-  // Handle MongoDB duplicate key errors
+  // Handle MongoDB duplicate key errors (e.g., unique index violation)
   if (Number(error.code) === 11000) {
     const field = Object.keys(error.keyValue || {})[0];
     response.status(409).json({
@@ -177,47 +187,54 @@ export const handleError = (
     return;
   }
 
-  //Check if the error is an instance of MulterError
-
+  // Check if the error is an instance of MulterError (file upload errors)
   if (error instanceof MulterError) {
     if (error.code === "LIMIT_FILE_SIZE") {
-      const responseData = {
+      // Use 413 Payload Too Large for file size errors
+      response.status(413).json({
         success: false,
         message: "File Size exceed please upload media of size less than 2MB",
-      };
-      response.status(statusCode).json(responseData);
+      });
     } else if (error.code === "LIMIT_FIELD_COUNT") {
-      const responseData = {
+      response.status(400).json({
         success: false,
-        message: "Only allowed to upload media upto 5 only not more",
-      };
-      response.status(statusCode).json(responseData);
+        message: "Only allowed to upload media up to 5 files only.",
+      });
+    } else {
+      response.status(400).json({
+        success: false,
+        message: error.message,
+      });
     }
     return;
   }
 
-  // Check if the error is an instance of AppError
+  // Check if the error is an instance of AppError (custom application errors)
   if (error instanceof AppError) {
     const responseData: any = {
       success: false,
       message: message,
     };
 
-    //Include additional validation errors if present
+    // Include additional validation errors if present
     if (error.errors) {
       responseData.errors = error.errors;
     }
 
-    //Response with the error details
+    // Respond with the error details
     response.status(statusCode).json(responseData);
 
-    //Return to prevent further processing
+    // Return to prevent further processing
     return;
   }
+
   // For programming or unknown errors, don't leak details in production
   response.status(statusCode).json({
     success: false,
     message: node_env === "development" ? message : "Something went wrong",
+    ...(node_env === "development" && error.stack
+      ? { stack: error.stack }
+      : {}),
   });
 
   // Return to prevent further processing

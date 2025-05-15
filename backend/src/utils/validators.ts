@@ -39,6 +39,26 @@ export const userValidation = {
       "any.required": "Last name is required",
     }),
   }),
+
+  login: Joi.object({
+    email_or_username: Joi.string().trim().required().messages({
+      "string.empty": "Email or Username is required",
+      "any.required": "Email or Username is required",
+    }),
+    password: Joi.string()
+      .trim()
+      .min(8)
+      .max(20)
+      .pattern(/^\S*$/) // No Whitespace allowed
+      .required()
+      .messages({
+        "string.empty": "Password is required",
+        "string.min": "Password must be at least 8 characters long",
+        "string.max": "Password must be at most 20 characters long",
+        "any.required": "Password is required",
+        "string.pattern.base": "Password must not contain spaces",
+      }),
+  }),
 };
 
 export const postValidator = {

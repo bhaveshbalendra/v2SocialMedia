@@ -12,18 +12,21 @@ import authService from "../services/auth.service";
  */
 const handleSignupUser = asyncHandler(
   async (request: Request, response: Response): Promise<any> => {
-    //Authenticate the user using the authService
+    // Call the signupUser method from authService with data from the request body
     const {
-      userResponse: user,
-      accessToken,
-      refreshToken,
+      userResponse: user, // The created user object (renamed for clarity)
+      accessToken, // JWT access token for authentication
+      refreshToken, // JWT refresh token for session management
     } = await authService.signupUser(request.body);
 
+    // Store the refresh token in an HTTP-only cookie for security
     response.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: config.node_env === "production",
-      maxAge: Number(config.jwt.refreshTokenExpiry) * 1000, //in milliseconds
+      httpOnly: true, // Prevents JavaScript access to the cookie (mitigates XSS)
+      secure: config.node_env === "production", // Only send cookie over HTTPS in production
+      maxAge: Number(config.jwt.refreshTokenExpiry) * 1000, // Set cookie expiry (milliseconds)
     });
+
+    // Send back a successful response with user data and tokens
     response.status(201).json({
       success: true,
       message: "User registered successfully",
@@ -35,23 +38,32 @@ const handleSignupUser = asyncHandler(
   }
 );
 
+/**
+ * @description Handles user login by authenticating credentials and issuing tokens.
+ * @param {Request} request - The request object containing login credentials.
+ * @param {Response} response - The response object to send the result.
+ * @returns {Promise<any>} - A promise that resolves to the response object.
+ * @throws {AppError} - Throws an app error if login fails.
+ */
 const handleLoginUser = asyncHandler(
   async (request: Request, response: Response): Promise<any> => {
+    // Extract credentials from request body
     const { email_or_username, password } = request.body;
 
-    //Authenticating user using authService
+    // Authenticate user using authService and get tokens
     const { user, accessToken, refreshToken } = await authService.loginUser(
       email_or_username,
       password
     );
 
-    //Set the refresh token in the cookie
+    // Store the refresh token in an HTTP-only cookie
     response.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: config.node_env === "production",
-      maxAge: Number(config.jwt.refreshTokenExpiry),
+      maxAge: Number(config.jwt.refreshTokenExpiry), // Note: should be *1000 for ms if config is in seconds
     });
 
+    // Respond with user info and access token
     response.status(200).json({
       success: true,
       message: "User logged in successfully",
@@ -61,11 +73,19 @@ const handleLoginUser = asyncHandler(
   }
 );
 
+/**
+ * @description Returns the authenticated user's information.
+ * @param {Request} request - The request object with user info (populated by middleware).
+ * @param {Response} response - The response object to send the result.
+ * @returns {Promise<any>} - A promise that resolves to the response object.
+ */
 const handleAuthUserRoutes = asyncHandler(
   async (request: Request, response: Response): Promise<any> => {
+    // Retrieve user and accessToken from request (assumed to be set by authentication middleware)
     const user = request.user;
     const accessToken = request.accessToken;
 
+    // Respond with user details and access token
     response.status(200).json({
       message: "Authenticate user",
       success: true,
@@ -84,4 +104,28 @@ const handleAuthUserRoutes = asyncHandler(
   }
 );
 
-export { handleAuthUserRoutes, handleLoginUser, handleSignupUser };
+/**
+ * @description Handles user logout by clearing the refresh token.
+ * @param {Request} request - The request object.
+ * @param {Response} response - The response object to send the result.
+ * @returns {Promise<any>} - A promise that resolves to the response object.
+ */
+const handleLogout = asyncHandler(
+  async (request: Request, response: Response): Promise<any> => {
+    // Call the logout method in authService to clear the refresh token cookie
+    await authService.logout(response);
+    // Respond with a success message
+    response.status(200).json({
+      message: "User Logout successfully",
+      success: true,
+    });
+  }
+);
+
+// Export the handlers for use in route definitions
+export {
+  handleAuthUserRoutes,
+  handleLoginUser,
+  handleLogout,
+  handleSignupUser,
+};

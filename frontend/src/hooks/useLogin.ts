@@ -12,7 +12,6 @@ export function useLogin() {
 
   const handleLogin = async (credentials: ILoginRequest) => {
     const result = await login(credentials);
-    console.log(result);
     if (result?.data?.success) {
       dispatch(
         setCredentials({
