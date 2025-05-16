@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useGoogleLoginSignup } from "@/hooks/useGoogleLoginSignup";
 import { useLogin } from "@/hooks/useLogin";
 import { auth, provider } from "@/utils/firebase_googleLogin";
 import { loginSchema } from "@/validations/validators";
@@ -29,6 +30,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 const LoginPage = () => {
   const { handleLogin, isLoading } = useLogin();
+  const { handleGoogleAuth } = useGoogleLoginSignup();
 
   const {
     register,
@@ -41,8 +43,20 @@ const LoginPage = () => {
 
   const handleGoogleLogin = async () => {
     try {
-      const response = await signInWithPopup(auth, provider);
-      console.log(response);
+      const { user } = await signInWithPopup(auth, provider);
+      const nameParts = user.displayName
+        ? user.displayName.split(" ")
+        : ["", ""];
+      const firstName = nameParts[0] || "";
+      const lastName = nameParts.slice(1).join(" ") || ""; // Handles middle names
+      const email = user.email!;
+
+      await handleGoogleAuth({
+        uid: user.uid, // Firebase UID
+        firstName,
+        lastName,
+        email,
+      });
     } catch (error) {
       console.log(error);
     }

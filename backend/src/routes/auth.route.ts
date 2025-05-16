@@ -8,6 +8,7 @@
 import { RequestHandler, Router } from "express";
 import {
   handleAuthUserRoutes,
+  handleGoogleLogin,
   handleLoginUser,
   handleLogout,
   handleSignupUser,
@@ -80,6 +81,6 @@ router.post("/logout", authenticate, handleLogout as RequestHandler);
 /**
  *
  */
-router.post("");
+router.post("/google", handleGoogleLogin);
 
 export default router;

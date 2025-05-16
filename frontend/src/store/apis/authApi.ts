@@ -1,6 +1,8 @@
 import { apiUrl } from "@/config/configs";
 import {
   IAuthUserRouteResponse,
+  IGoogleAuthRequest,
+  IGoogleAuthResponseWithToken,
   ILoginRequest,
   ILoginResponseWithToken,
   ILogoutResponse,
@@ -52,6 +54,13 @@ export const authApi = createApi({
         return response;
       },
     }),
+    google: builder.mutation<IGoogleAuthResponseWithToken, IGoogleAuthRequest>({
+      query: (credentials) => ({
+        url: "/google",
+        method: "POST",
+        body: credentials,
+      }),
+    }),
     logout: builder.mutation<ILogoutResponse, void>({
       query: () => ({
         url: "/logout",
@@ -79,4 +88,5 @@ export const {
   useSignupMutation,
   useAuthUserRouteQuery,
   useLogoutMutation,
+  useGoogleMutation,
 } = authApi;

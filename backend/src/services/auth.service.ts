@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker";
 import bcrypt from "bcryptjs";
 import { Response } from "express";
 import { config } from "../config/app.config";
@@ -191,6 +192,77 @@ class AuthService {
         username,
         email,
         profilePicture: profilePicture || "",
+        isVerified,
+      },
+      accessToken,
+      refreshToken,
+    };
+  }
+
+  /**
+   * Handles Google login or registration.
+   * @param {Object} userData - User data from Google.
+   * @param {string} userData.email
+   * @param {string} userData.firstName
+   * @param {string} userData.lastName
+   * @param {string} userData.uid - Google UID
+   */
+  async google(userData: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    uid: string;
+  }) {
+    // 1. Check if a user with the same email already exists
+    let user = await User.findOne({ email: userData.email });
+
+    // 2. If user does not exist, create a new user
+    if (!user) {
+      // Generate a unique username
+      let username;
+      let usernameExists;
+      do {
+        username = faker.internet.userName({
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+        });
+        usernameExists = await User.findOne({ username });
+      } while (usernameExists);
+
+      // Create new user
+      user = await User.create({
+        ...userData,
+        username,
+        googleId: userData.uid,
+      });
+
+      if (!user) {
+        throw AppError.conflictError("Failed to create user");
+      }
+    }
+
+    // 3. Generate JWT access and refresh tokens
+    const { accessToken, refreshToken } = generateTokens(user._id);
+
+    // 4. Prepare user response (excluding sensitive fields)
+    const {
+      _id,
+      username,
+      profilePicture,
+      isVerified,
+      firstName,
+      lastName,
+      email,
+    } = user.toObject();
+
+    return {
+      user: {
+        _id,
+        firstName,
+        lastName,
+        username,
+        email,
+        profilePicture,
         isVerified,
       },
       accessToken,

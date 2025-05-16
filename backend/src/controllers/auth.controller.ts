@@ -119,6 +119,35 @@ const handleLogout = asyncHandler(
       message: "User Logout successfully",
       success: true,
     });
+    return;
+  }
+);
+
+const handleGoogleLogin = asyncHandler(
+  async (request: Request, response: Response): Promise<any> => {
+    const { firstName, lastName, uid, email } = request.body;
+    const { user, accessToken, refreshToken } = await authService.google({
+      firstName,
+      lastName,
+      uid,
+      email,
+    });
+
+    // Store the refresh token in an HTTP-only cookie
+    response.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: config.node_env === "production",
+      maxAge: Number(config.jwt.refreshTokenExpiry), // Note: should be *1000 for ms if config is in seconds
+    });
+
+    // Respond with user info and access token
+    response.status(200).json({
+      success: true,
+      message: "User Google logged in successfully",
+      user,
+      accessToken,
+    });
+    return;
   }
 );
 
@@ -128,4 +157,5 @@ export {
   handleLoginUser,
   handleLogout,
   handleSignupUser,
+  handleGoogleLogin,
 };

@@ -35,6 +35,20 @@ export interface ILoginResponseWithToken {
   accessToken: string;
 }
 
+export interface IGoogleAuthResponseWithToken {
+  success: boolean;
+  message?: string;
+  user: User;
+  accessToken: string;
+}
+
+export interface IGoogleAuthRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  uid: string;
+}
+
 export interface ISignupRequest {
   firstName: string;
   lastName: string;
