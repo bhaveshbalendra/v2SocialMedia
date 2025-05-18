@@ -150,4 +150,4 @@ router.post("/google", handleGoogleLogin);
 //   changePassword
 // );
 
-// export default router;
+export default router;
