@@ -48,10 +48,41 @@ router.get("/public", handleGetPostsForNotLoginUser);
 
 // router.get("/feed", authenticate, handleGetPostForLoginUser);
 
-/**
- * @route   DELETE /
- * @desc    (Route not implemented) Delete a post
- */
-// router.delete("/");
+// /**
+//  * @route   DELETE /
+//  * @desc    (Route not implemented) Delete a post
+//  */
+// router.delete("/:postId/delete");
+
+// /**
+//  * @route POST /api/v2/post/:postId/likes
+//  */
+
+// router.post("/:postId/likes");
+
+// /**
+//  * @route POST /api/v2/post/:postId/likes
+//  */
+// router.delete("/:postId/likes");
+
+// /**
+//  * @route POST /api/v2/post/:postId/comment
+//  */
+// router.post("/:postId/comment");
+
+// /**
+//  * @route POST /api/v2/post/:postId/comment/all
+//  */
+// router.post("/:postId/comment/all");
+
+// /**
+//  * @route POST /api/v2/post/:postId/bookmark
+//  */
+// router.post("/:postId/bookmark");
+
+// /**
+//  * @route Delete /api/v2/post/:postId/bookmark
+//  */
+// router.delete("/:postId/bookmark");
 
 export default router;

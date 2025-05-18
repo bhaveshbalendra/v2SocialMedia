@@ -128,6 +128,28 @@ class PostService {
     // });
     return posts;
   }
+
+  async like({ likedUserId, postId }) {
+    const userWhoLike = await User.findById(likedUserId);
+
+    if (!userWhoLike) {
+      throw AppError.notFoundError("User");
+    }
+
+    const likedPost = await Post.findById(postId);
+
+    if (!likedPost) {
+      throw AppError.notFoundError("Post");
+    }
+
+    await likedPost.updateOne({
+      $addToSet: {
+        likes: userWhoLike,
+      },
+    });
+
+    await likedPost.save();
+  }
 }
 
 export default new PostService();

@@ -1,12 +1,14 @@
-import { useFeed } from "@/hooks/useFeed";
+import { usePost } from "@/hooks/usePost";
 
 import Feeds from "../feeds/Feeds";
+import Stories from "../stories/Stories";
 const ContentSection = () => {
-  const { posts, feedLoading } = useFeed();
+  const { posts, feedLoading } = usePost();
 
   return (
     <div>
-      <h1>ContentSection</h1>
+      <Stories />
+
       <Feeds posts={posts} isLoading={feedLoading} />
     </div>
   );

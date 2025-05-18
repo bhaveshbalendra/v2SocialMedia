@@ -46,3 +46,16 @@ export interface FeedResponse {
   message: string;
   posts: Post[];
 }
+
+export interface ICreatePostRequest {
+  title: string;
+  caption: string;
+  description: string;
+  tags: string[];
+  file: File;
+}
+
+export interface ICreatePostResponse {
+  success: boolean;
+  message: string;
+}

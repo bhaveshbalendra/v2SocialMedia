@@ -32,7 +32,7 @@ export const authApi = createApi({
         method: "POST",
         body: credentials,
       }),
-      // invalidatesTags: ["Auth"],
+      invalidatesTags: ["Auth"],
       transformResponse: (response: ILoginResponseWithToken) => {
         if (response.accessToken) {
           localStorage.setItem("accessToken", response.accessToken);

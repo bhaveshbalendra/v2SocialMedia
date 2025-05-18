@@ -16,9 +16,10 @@ import { FaSearch } from "react-icons/fa";
 import { FaChevronDown } from "react-icons/fa6";
 import { ImSpinner2 } from "react-icons/im";
 import { IoNotifications } from "react-icons/io5";
+import { MdDarkMode } from "react-icons/md";
 import { TiHome } from "react-icons/ti";
 import { Link, useLocation, useNavigate } from "react-router";
-import CreatePostModal from "../common/CreatePost";
+import CreatePostModal from "../common/CreatePost1";
 import { Button } from "../ui/button";
 
 const navItems = [
@@ -85,7 +86,11 @@ const LeftSidebar = () => {
         </nav>
       </div>
       {/* Profile row and dropdown */}
-      <div className="relative px-3 py-2">
+      <div className="relative px-3 flex flex-col gap-2 py-2">
+        <Button>
+          DarkMode
+          <MdDarkMode />
+        </Button>
         {user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

@@ -1,4 +1,4 @@
-import { useFeed } from "@/hooks/useFeed";
+import { useFeed } from "@/hooks/usePost";
 import { Loader2 } from "lucide-react";
 // import { useEffect, useState } from "react";
 

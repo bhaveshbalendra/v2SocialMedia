@@ -83,4 +83,71 @@ router.post("/logout", authenticate, handleLogout as RequestHandler);
  */
 router.post("/google", handleGoogleLogin);
 
-export default router;
+/**
+ * @route   POST /api/v2/auth/send-otp
+ * @desc    Send OTP to mobile number
+ * @access  Public
+ */
+// router.post(
+//   "/send-otp",
+//   authRateLimiter,
+//   validateRequest(userValidation.mobileNumber),
+//   sendOTP
+// );
+
+/**
+ * @route   POST /api/v2/auth/verify-otp
+ * @desc    Verify OTP
+ * @access  Public
+ */
+// router.post(
+//   "/verify-otp",
+//   authRateLimiter,
+//   validateRequest(userValidation.verifyOTP),
+//   verifyOTP
+// );
+
+/**
+ * @route   GET /api/v2/auth/verify-email/:token
+ * @desc    Verify email
+ * @access  Public
+ */
+// router.get("/verify-email/:token", verifyEmail);
+
+/**
+ * @route   POST /api/v2/auth/forgot-password
+ * @desc    Request password reset
+ * @access  Public
+ */
+// router.post(
+//   "/forgot-password",
+//   authRateLimiter,
+//   validateRequest(userValidation.email),
+//   forgotPassword
+// );
+
+/**
+ * @route   POST /api/v2/auth/reset-password/:token
+ * @desc    Reset password
+ * @access  Public
+ */
+// router.post(
+//   "/reset-password/:token",
+//   authRateLimiter,
+//   validateRequest(userValidation.resetPassword),
+//   resetPassword
+// );
+
+/**
+ * @route   PUT /api/v2/auth/change-password
+ * @desc    Change user password
+ * @access  Private
+ */
+// router.put(
+//   "/change-password",
+//   authenticate,
+//   validateRequest(userValidation.updatePassword),
+//   changePassword
+// );
+
+// export default router;

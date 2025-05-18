@@ -18,7 +18,7 @@ import { AppError } from "./error.middleware";
 export const authenticate = asyncHandler(
   async (request: Request, response: Response, next: NextFunction) => {
     //Get the token from the cookie
-    const refreshToken = request.cookies.refreshToken;
+    const refreshToken = request.cookies.refreshToken || "";
 
     // Get the token from the Authorization header
     const accessToken = extractTokenFromHeader(request.headers.authorization);

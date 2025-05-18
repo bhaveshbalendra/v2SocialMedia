@@ -27,3 +27,27 @@ export const loginSchema = z.object({
   email_or_username: z.string(),
   password: z.string().min(8, "Password is required"),
 });
+
+export const createPostSchema = z.object({
+  title: z.string().min(1).max(40),
+  caption: z.string().max(100).optional(),
+  description: z.string().max(500).optional(),
+  tags: z
+    .string()
+    .optional()
+    .transform((val) =>
+      val
+        ? val
+            .split(/[#,\s]+/)
+            .map((tag) => tag.trim())
+            .filter(Boolean)
+        : []
+    ),
+  media: z
+    .any()
+    .refine((file) => !file || file instanceof File, {
+      message: "Must be a file",
+    })
+    .optional(),
+});
+export type CreatePostSchema = z.infer<typeof createPostSchema>;

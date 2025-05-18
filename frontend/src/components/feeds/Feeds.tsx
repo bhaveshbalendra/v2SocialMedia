@@ -6,7 +6,7 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { Post } from "@/types/feed.types";
+import { Post } from "@/types/post.types";
 import { FaRegComment, FaRegHeart, FaShare } from "react-icons/fa";
 import { IoMdEye } from "react-icons/io";
 import { MdOutlineBookmarkBorder } from "react-icons/md";

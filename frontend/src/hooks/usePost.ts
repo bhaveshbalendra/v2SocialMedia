@@ -1,17 +1,21 @@
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import {
+  useCreatePostMutation,
   useGetAuthenticatedFeedQuery,
   useGetPublicFeedQuery,
-} from "@/store/apis/feedApi";
-import { setLoading, setPosts } from "@/store/slices/feedSlice";
+} from "@/store/apis/postApi";
+import { setLoading, setPosts } from "@/store/slices/postSlice";
+
 import { useEffect } from "react";
 
-export const useFeed = (page: number = 1, limit: number = 10) => {
+export const usePost = (page: number = 1, limit: number = 10) => {
   const dispatch = useAppDispatch();
+  const [createPost, { isLoading: isLoadingCreatePost }] =
+    useCreatePostMutation();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const { posts, isLoading: feedLoading } = useAppSelector(
-    (state) => state.feed
+    (state) => state.post
   );
 
   // Use the appropriate query based on authentication status
@@ -26,6 +30,13 @@ export const useFeed = (page: number = 1, limit: number = 10) => {
     isLoading: authLoading,
     error: authError,
   } = useGetAuthenticatedFeedQuery({ page, limit }, { skip: !isAuthenticated });
+
+  const handleCreatePost = async (credentials: FormData) => {
+    const response = await createPost(credentials);
+    console.log(response);
+    // Optionally, refetch posts or handle UI updates here
+    return response;
+  };
 
   // Determine which data to use based on authentication
   const data = isAuthenticated ? authData : publicData;
@@ -47,6 +58,8 @@ export const useFeed = (page: number = 1, limit: number = 10) => {
     posts,
     feedLoading,
     error,
+    handleCreatePost,
+    isLoadingCreatePost,
   };
 };
 

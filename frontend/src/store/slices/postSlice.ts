@@ -1,4 +1,4 @@
-import { Post } from "@/types/feed.types";
+import { Post } from "@/types/post.types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 // export interface Post {
@@ -32,8 +32,8 @@ const initialState: FeedState = {
   page: 1,
 };
 
-const feedSlice = createSlice({
-  name: "feed",
+const postSlice = createSlice({
+  name: "post",
   initialState,
   reducers: {
     setPosts: (state, action: PayloadAction<Post[]>) => {
@@ -69,6 +69,6 @@ export const {
   setError,
   setHasMore,
   resetFeed,
-} = feedSlice.actions;
+} = postSlice.actions;
 
-export const feedReducer = feedSlice.reducer;
+export const postReducer = postSlice.reducer;
