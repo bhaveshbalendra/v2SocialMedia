@@ -15,15 +15,15 @@ import { usePost } from "@/hooks/usePost";
 import React, { useRef, useState } from "react";
 import { FaSquarePlus } from "react-icons/fa6";
 
-import { zfd } from "zod-form-data";
+// import { zfd } from "zod-form-data";
 
-const schema = zfd.formData({
-  title: zfd.text(),
-  caption: zfd.text(),
-  description: zfd.text(),
-  tags: zfd.repeatable(), // Handles multiple tags as an array
-  media: zfd.file(), // For file uploads
-});
+// const schema = zfd.formData({
+//   title: zfd.text(),
+//   caption: zfd.text(),
+//   description: zfd.text(),
+//   tags: zfd.repeatable(), // Handles multiple tags as an array
+//   media: zfd.file(), // For file uploads
+// });
 
 const CreatePostModal = () => {
   const [title, setTitle] = useState("");
