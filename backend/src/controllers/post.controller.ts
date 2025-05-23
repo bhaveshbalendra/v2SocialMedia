@@ -68,19 +68,19 @@ const handleDeletePost = asyncHandler(
   ): Promise<any> => {}
 );
 
-const handleLikePost = asyncHandler(
-  async (request: Request, response: Response): Promise<any> => {
-    const { postId } = request.params;
+// const handleLikePost = asyncHandler(
+//   async (request: Request, response: Response): Promise<any> => {
+//     const { postId } = request.params;
 
-    const { _id: likedUserId } = request.user;
+//     const { _id: likedUserId } = request.user;
 
-    await postService.like({ likedUserId, postId });
+//     await postService.like({ likedUserId, postId });
 
-    response.status(200).json({ success: true, message: "Post Liked", posts });
+//     response.status(200).json({ success: true, message: "Post Liked", posts });
 
-    return;
-  }
-);
+//     return;
+//   }
+// );
 
 const handleUnLikePost = asyncHandler(
   async (request: Request, response: Response): Promise<any> => {}
@@ -91,6 +91,6 @@ export {
   handleDeletePost,
   handleGetPostForLoginUser,
   handleGetPostsForNotLoginUser,
-  handleLikePost,
+  // handleLikePost,
   handleUnLikePost,
 };
