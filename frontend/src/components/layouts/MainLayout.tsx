@@ -1,3 +1,4 @@
+import { useSocketConnect } from "@/hooks/useSocketConnect";
 import { useSyncAuthCredentials } from "@/hooks/useSyncAuthCredentials";
 import { useAuthUserRouteQuery } from "@/store/apis/authApi";
 import { Outlet } from "react-router";
@@ -8,7 +9,9 @@ import RightSidebar from "./RightSidebar";
 
 const MainLayout = () => {
   const { data } = useAuthUserRouteQuery();
+
   useSyncAuthCredentials(data);
+  useSocketConnect();
   return (
     <div className="container mx-auto flex h-dvh flex-col lg:flex-row lg:justify-between">
       {/* <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background lg:hidden">

@@ -12,12 +12,13 @@ import authService from "../services/auth.service";
  */
 const handleSignupUser = asyncHandler(
   async (request: Request, response: Response): Promise<any> => {
+    const userData: ISignupParameter = request.body;
     // Call the signupUser method from authService with data from the request body
     const {
-      userResponse: user, // The created user object (renamed for clarity)
+      user: user, // The created user object (renamed for clarity)
       accessToken, // JWT access token for authentication
       refreshToken, // JWT refresh token for session management
-    } = await authService.signupUser(request.body);
+    } = await authService.signupUser(userData);
 
     // Store the refresh token in an HTTP-only cookie for security
     response.cookie("refreshToken", refreshToken, {
@@ -51,10 +52,10 @@ const handleLoginUser = asyncHandler(
     const { email_or_username, password } = request.body;
 
     // Authenticate user using authService and get tokens
-    const { user, accessToken, refreshToken } = await authService.loginUser(
+    const { user, accessToken, refreshToken } = await authService.loginUser({
       email_or_username,
-      password
-    );
+      password,
+    });
 
     // Store the refresh token in an HTTP-only cookie
     response.cookie("refreshToken", refreshToken, {
@@ -154,8 +155,8 @@ const handleGoogleLogin = asyncHandler(
 // Export the handlers for use in route definitions
 export {
   handleAuthUserRoutes,
+  handleGoogleLogin,
   handleLoginUser,
   handleLogout,
   handleSignupUser,
-  handleGoogleLogin,
 };

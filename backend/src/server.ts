@@ -56,7 +56,7 @@ async function startServer() {
     const httpServer = http.createServer(app);
 
     // Initialize Socket.IO with authentication
-    const io = initializeSocketServer(httpServer);
+    initializeSocketServer(httpServer);
 
     httpServer.listen(PORT, () => {
       console.log(`Server is running on http://localhost:${PORT}`);

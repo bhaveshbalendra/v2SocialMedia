@@ -1,6 +1,7 @@
 import ContentSection from "@/components/contents/ContentSection";
 import AuthLayout from "@/components/layouts/AuthLayout";
 import MainLayout from "@/components/layouts/MainLayout";
+import ChatPage from "@/pages/ChatPage";
 import EditProfilePage from "@/pages/EditProfilePage";
 import LoginPage from "@/pages/LoginPage";
 import NotFoundPage from "@/pages/NotFoundPage";
@@ -24,6 +25,7 @@ const AppRoutes = () => {
       <Route element={<AuthLayout />}>
         <Route path={PATH.LOGIN} element={<LoginPage />} />
         <Route path={PATH.SIGNUP} element={<SignupPage />} />
+
         <Route
           path={PATH.FORGET_PASSWORD}
           element={<h1>ForgotPasswordPage</h1>}
@@ -31,7 +33,7 @@ const AppRoutes = () => {
         {/* <Route
           path="reset-password/:token"
           element={<h1>ResetPasswordPage</h1>}
-        /> */}
+          /> */}
         {/* <Route path="verify-otp" element={<h1>OTPVerificationPage</h1>} /> */}
       </Route>
 
@@ -39,6 +41,7 @@ const AppRoutes = () => {
       <Route element={<ProtectedRoute />}>
         <Route element={<MainLayout />}>
           <Route path={PATH.PROFILE} element={<ProfilePage />} />
+          <Route path={PATH.MESSAGES} element={<ChatPage />} />
           <Route path={PATH.EDIT_PROFILE} element={<EditProfilePage />} />
           <Route path={PATH.SETTINGS} element={<SettingPage />} />
         </Route>

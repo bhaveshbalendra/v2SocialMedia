@@ -11,4 +11,8 @@ const firebaseCreds = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-export { apiUrl, firebaseCreds, isBeta, version };
+const socketCreds = {
+  backendUrl: import.meta.env.VITE_SOCKETIO_BACKEND_URL,
+};
+
+export { apiUrl, firebaseCreds, isBeta, socketCreds, version };

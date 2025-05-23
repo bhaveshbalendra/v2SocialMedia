@@ -1,18 +1,5 @@
-import { Document, Model, Schema, model } from "mongoose";
-
-//interface for comment
-export interface IComment extends Document {
-  _id: string;
-  __v: number;
-  createdAt: Date;
-  updatedAt: Date;
-  user: Schema.Types.ObjectId;
-  post: Schema.Types.ObjectId;
-  content: string;
-  likes: Schema.Types.ObjectId[];
-  likesCount: number;
-  parentComment?: Schema.Types.ObjectId;
-}
+import { Model, model, Schema } from "mongoose";
+import { IComment } from "../types/schema.types";
 
 /**
  * @description comment schema

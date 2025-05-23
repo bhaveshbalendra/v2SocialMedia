@@ -1,11 +1,5 @@
-import { Document, Model, model, Schema } from "mongoose";
-
-//Interface for Message model
-interface IMessage extends Document {
-  senderId: Schema.Types.ObjectId;
-  receiverId: Schema.Types.ObjectId;
-  message: string;
-}
+import { Model, model, Schema } from "mongoose";
+import { IMessage } from "../types/schema.types";
 
 /**
  * @description Schema for message for comments

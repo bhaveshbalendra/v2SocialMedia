@@ -1,38 +1,5 @@
-import { Document, Model, model, Schema } from "mongoose";
-
-// Enum for better type safety (optional but recommended)
-export enum PostVisibility {
-  Public = "public",
-  Private = "private",
-}
-
-// Interface for TypeScript type checking
-export interface IPost extends Document {
-  _id: string;
-  __v: number;
-  createdAt: Date;
-  updatedAt: Date;
-  caption?: string;
-  media: {
-    url: string;
-    type: "image" | "video";
-    publicId: string;
-  }[];
-  author: Schema.Types.ObjectId;
-  likes: Schema.Types.ObjectId[];
-  comments: Schema.Types.ObjectId[];
-  location?: string;
-  tags?: string[];
-  title: string;
-  visibility: PostVisibility;
-  description: string;
-  commentsCount: number;
-  sharesCount: number;
-  bookmarksCount: number;
-  isArchived: boolean;
-  isDeleted: boolean;
-  isReported: boolean;
-}
+import { Model, model, Schema } from "mongoose";
+import { IPost, PostVisibility } from "../types/schema.types";
 
 /**
  * @description Post schema with validation and best practices
@@ -54,11 +21,13 @@ const postSchema: Schema<IPost> = new Schema<IPost>(
       trim: true,
       maxlength: [500, "Description must be at most 500 characters long"],
     },
-    tags: {
-      type: [String],
-      trim: true,
-      default: [],
-    },
+    tags: [
+      {
+        type: String,
+        trim: true,
+        default: [],
+      },
+    ],
     media: {
       type: [
         {
@@ -89,16 +58,20 @@ const postSchema: Schema<IPost> = new Schema<IPost>(
       ref: "User",
       required: [true, "User ID is required"],
     },
-    likes: {
-      type: [Schema.Types.ObjectId],
-      ref: "User",
-      default: [],
-    },
-    comments: {
-      type: [Schema.Types.ObjectId],
-      ref: "Comment",
-      default: [],
-    },
+    likes: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+        default: [],
+      },
+    ],
+    comments: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Comment",
+        default: [],
+      },
+    ],
     location: {
       type: String,
       trim: true,

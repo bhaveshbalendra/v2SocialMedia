@@ -17,25 +17,7 @@ class AuthService {
    * @returns { userResponse: User, accessToken, refreshToken } - Created user object (without password) and tokens.
    * @throws {AppError} - Throws an error if user already exists or creation fails.
    */
-  async signupUser(userData: {
-    username: string;
-    email: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-  }): Promise<{
-    userResponse: {
-      _id: string;
-      firstName: string;
-      lastName: string;
-      username: string;
-      email: string;
-      profilePicture: string | undefined;
-      isVerified: boolean;
-    };
-    accessToken: string;
-    refreshToken: string;
-  }> {
+  async signupUser(userData: ISignupParameter): Promise<ISignupReturn> {
     // Check if a user with the same email or username already exists in the database.
     const existingUser = await User.findOne({
       $or: [{ email: userData.email }, { username: userData.username }],
@@ -85,7 +67,7 @@ class AuthService {
 
     // Return the user data (without password) and the generated tokens.
     return {
-      userResponse: {
+      user: {
         _id,
         firstName,
         lastName,
@@ -134,22 +116,10 @@ class AuthService {
    * @returns {Promise<object>} - User object (without password) and tokens.
    * @throws {AppError} - Throws an error if user is not found or credentials are invalid.
    */
-  async loginUser(
-    email_or_username: string,
-    password: string
-  ): Promise<{
-    user: {
-      _id: string;
-      firstName: string;
-      lastName: string;
-      username: string;
-      email: string;
-      profilePicture: string;
-      isVerified: boolean;
-    };
-    accessToken: string;
-    refreshToken: string;
-  }> {
+  async loginUser({
+    email_or_username,
+    password,
+  }: ILoginParameter): Promise<ILoginReturn> {
     // Find the user by email or username, including the password field for verification.
     const user = await User.findOne({
       $or: [{ email: email_or_username }, { username: email_or_username }],
@@ -207,12 +177,7 @@ class AuthService {
    * @param {string} userData.lastName
    * @param {string} userData.uid - Google UID
    */
-  async google(userData: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    uid: string;
-  }) {
+  async google(userData: IGoogleParameter) {
     // 1. Check if a user with the same email already exists
     let user = await User.findOne({ email: userData.email });
 

@@ -3,17 +3,10 @@
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router";
 import { Toaster } from "sonner";
-import { ThemeProvider } from "./components/ui/theme-provider";
+import { ThemeProvider } from "./components/layouts/theme-provider";
 import AppRoutes from "./routes/AppRoutes";
 import { store } from "./store/store";
 const App = () => {
-  // useEffect(() => {
-  //   const refreshToken = Cookies.get("refreshToken");
-
-  //   if (!refreshToken) {
-  //     localStorage.removeItem("accessToken");
-  //   }
-  // }, []);
   return (
     <Provider store={store}>
       <Toaster />

@@ -9,7 +9,7 @@ import postService from "../services/post.service";
  * @returns {Promise<any>} - A promise that resolves to the response object.
  * @throws {AppError} - Throws an app error if any issue in post and catch by express async handler and processed by middleware
  */
-export const handleCreatePost = asyncHandler(
+const handleCreatePost = asyncHandler(
   async (
     request: Request,
     response: Response,
@@ -30,7 +30,7 @@ export const handleCreatePost = asyncHandler(
  * @return {Promise<>}
  */
 
-export const handleGetPostsForNotLoginUser = asyncHandler(
+const handleGetPostsForNotLoginUser = asyncHandler(
   async (
     request: Request,
     response: Response,
@@ -49,7 +49,7 @@ export const handleGetPostsForNotLoginUser = asyncHandler(
  * @description Get post for login user which they follow and public post also
  */
 
-export const handleGetPostForLoginUser = asyncHandler(
+const handleGetPostForLoginUser = asyncHandler(
   async (
     request: Request,
     response: Response,
@@ -60,10 +60,37 @@ export const handleGetPostForLoginUser = asyncHandler(
 /**
  * @description Delete post by id
  */
-export const handleDeletePost = asyncHandler(
+const handleDeletePost = asyncHandler(
   async (
     request: Request,
     response: Response,
     next: NextFunction
   ): Promise<any> => {}
 );
+
+const handleLikePost = asyncHandler(
+  async (request: Request, response: Response): Promise<any> => {
+    const { postId } = request.params;
+
+    const { _id: likedUserId } = request.user;
+
+    await postService.like({ likedUserId, postId });
+
+    response.status(200).json({ success: true, message: "Post Liked", posts });
+
+    return;
+  }
+);
+
+const handleUnLikePost = asyncHandler(
+  async (request: Request, response: Response): Promise<any> => {}
+);
+
+export {
+  handleCreatePost,
+  handleDeletePost,
+  handleGetPostForLoginUser,
+  handleGetPostsForNotLoginUser,
+  handleLikePost,
+  handleUnLikePost,
+};

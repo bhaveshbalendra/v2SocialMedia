@@ -61,8 +61,8 @@ export class AppError extends Error {
    * Creating 400 Invalid data or empty error instance
    * @returns {AppError}
    */
-  static emptyOrInvalidData(): AppError {
-    return new AppError("Data Invalid or Empty", 400);
+  static emptyOrInvalidData(message = "Data Invalid or Empty"): AppError {
+    return new AppError(message, 400);
   }
 
   /**

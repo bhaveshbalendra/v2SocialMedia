@@ -1,52 +1,5 @@
-import { Document, Model, Schema, model } from "mongoose";
-
-//Interface for User
-export interface IUser extends Document {
-  _id: string;
-  __v: number;
-  createdAt: Date;
-  updatedAt: Date;
-  username: string;
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  followers: Schema.Types.ObjectId[];
-  following: Schema.Types.ObjectId[];
-  bookmarks: Schema.Types.ObjectId[];
-  posts: Schema.Types.ObjectId[];
-  mobileNumber?: string;
-  bio?: string;
-  profilePicture?: string;
-  dateOfBirth?: Date;
-  location: {
-    type: string;
-    coordinates: number[];
-    city: string;
-    country: string;
-    state: string;
-    zip: string;
-  };
-  isVerified: boolean;
-  isPrivate: boolean;
-  isPremium: boolean;
-  isBlocked: boolean;
-  isDeleted: boolean;
-  isEmailVerified: boolean;
-  isMobileVerified: boolean;
-  isAdmin: boolean;
-  isSuperAdmin: boolean;
-  emailVerificationToken?: string;
-  emailVerificationTokenExpires?: Date;
-  mobileVerificationToken?: string;
-  mobileVerificationTokenExpires?: Date;
-  passwordResetToken?: string;
-  passwordResetTokenExpires?: Date;
-  googleId?: string;
-  // facebookId?: string;
-  // githubId?: string;
-  twitterId?: string;
-}
+import { Model, Schema, model } from "mongoose";
+import { IUser } from "../types/schema.types";
 
 /**
  * @description schema for user
@@ -92,6 +45,8 @@ const userSchema: Schema<IUser> = new Schema<IUser>(
     following: [{ type: Schema.Types.ObjectId, ref: "User" }],
     posts: [{ type: Schema.Types.ObjectId, ref: "Post" }],
     bookmarks: [{ type: Schema.Types.ObjectId, ref: "Post" }],
+    followRequest: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    notification: [{ type: Schema.Types.ObjectId, ref: "Notification" }],
     mobileNumber: {
       type: String,
       index: {
@@ -164,6 +119,30 @@ const userSchema: Schema<IUser> = new Schema<IUser>(
       type: Boolean,
       default: false,
     },
+    website: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    gender: {
+      type: String,
+      enum: ["male", "female", "other", "prefer_not_to_say"],
+      default: "prefer_not_to_say",
+    },
+    socialLinks: {
+      instagram: { type: String, trim: true, default: "" },
+      x: { type: String, trim: true, default: "" },
+      facebook: { type: String, trim: true, default: "" },
+      youtube: { type: String, trim: true, default: "" },
+      github: { type: String, trim: true, default: "" },
+      linkedin: { type: String, trim: true, default: "" },
+    },
+    notificationSettings: {
+      emailNotifications: { type: Boolean, default: true },
+      pushNotifications: { type: Boolean, default: true },
+      smsNotifications: { type: Boolean, default: false },
+    },
+    blockedUsers: [{ type: Schema.Types.ObjectId, ref: "User" }],
 
     isPrivate: {
       type: Boolean,

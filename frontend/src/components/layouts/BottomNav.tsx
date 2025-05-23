@@ -9,7 +9,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { useLogout } from "@/hooks/useLogout";
-import { useCallback } from "react";
+import { generateRoute, PATH } from "@/routes/pathConstants";
+import { MouseEvent, useCallback } from "react";
 import { AiFillMessage } from "react-icons/ai";
 import { FaChevronDown } from "react-icons/fa6";
 import { ImSpinner2 } from "react-icons/im";
@@ -19,8 +20,8 @@ import CreatePostModal from "../common/CreatePost1";
 import { Button } from "../ui/button";
 
 const navItems = [
-  { label: "Home", icon: <TiHome size={24} />, path: "/" },
-  { label: "Messages", icon: <AiFillMessage size={22} />, path: "/messages" },
+  { label: "Home", icon: <TiHome size={24} />, path: PATH.HOME },
+  { label: "Messages", icon: <AiFillMessage size={22} />, path: PATH.MESSAGES },
 ];
 
 const BottomNav = () => {
@@ -38,24 +39,29 @@ const BottomNav = () => {
 
   // Handler for nav item clicks
   const handleNavClick = useCallback(
-    (e, path) => {
+    (e: MouseEvent<HTMLAnchorElement>, path: string) => {
       if (path !== "/" && !user) {
         e.preventDefault();
-        navigate("/login");
+        navigate(PATH.LOGIN);
       }
     },
     [user, navigate]
   );
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-30 bg-white border-t shadow flex justify-around items-center h-16 md:hidden lg:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-30 border-t bg-background shadow flex justify-around items-center h-16">
       {navItems.map((item) => (
         <Link
           key={item.label}
           to={item.path}
-          className={`flex flex-col items-center justify-center text-xs ${
-            isActive(item.path) ? "text-blue-600 font-bold" : "text-gray-500"
-          }`}
+          className={`flex flex-col items-center justify-center text-xs transition-colors
+            ${
+              isActive(item.path)
+                ? "text-foreground font-bold"
+                : "text-muted-foreground"
+            }
+            hover:text-foreground
+          `}
           onClick={(e) => handleNavClick(e, item.path)}
         >
           {item.icon}
@@ -63,21 +69,22 @@ const BottomNav = () => {
         </Link>
       ))}
       {/* Create Post Button */}
-      <CreatePostModal>
-        <button className="flex flex-col items-center justify-center text-xs text-blue-500">
-          <span className="text-2xl font-bold leading-none">+</span>
-          <span className="mt-1">Create</span>
-        </button>
-      </CreatePostModal>
+      <CreatePostModal />
+
       {/* Profile Dropdown */}
       {user ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className={`flex flex-col items-center justify-center text-xs px-2 py-1 ${
-                isProfileActive ? "text-blue-600 font-bold" : "text-gray-500"
-              }`}
+              className={`flex flex-col items-center justify-center text-xs px-2 py-1 transition-colors
+                ${
+                  isProfileActive
+                    ? "text-primary font-bold"
+                    : "text-muted-foreground"
+                }
+                hover:text-foreground
+              `}
             >
               <span className="flex items-center gap-1">
                 <Avatar className="w-6 h-6">
@@ -95,10 +102,18 @@ const BottomNav = () => {
             <DropdownMenuLabel>{firstName}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link to={_id ? `/profile/${_id}` : "#"}>Profile</Link>
+              <Link
+                to={
+                  _id
+                    ? generateRoute(PATH.PROFILE, { username: user.username })
+                    : "#"
+                }
+              >
+                Profile
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to={_id ? `/settings/${_id}` : "#"}>Settings</Link>
+              <Link to={_id ? PATH.SETTINGS : "#"}>Settings</Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => handleLogout()}>
@@ -109,7 +124,7 @@ const BottomNav = () => {
       ) : (
         <Link
           to="/login"
-          className="flex flex-col items-center text-xs text-blue-500"
+          className="flex flex-col items-center text-xs text-primary"
         >
           <Avatar className="w-6 h-6">
             <AvatarFallback>U</AvatarFallback>

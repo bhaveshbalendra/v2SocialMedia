@@ -1,12 +1,5 @@
-import { Document, model, Model, Schema, Types } from "mongoose";
-
-// Interface for FollowRequest document
-export interface IFollowRequest extends Document {
-  from: Types.ObjectId;
-  to: Types.ObjectId;
-  status: "pending" | "accepted" | "rejected";
-  createdAt: Date;
-}
+import { model, Model, Schema } from "mongoose";
+import { IFollowRequest } from "../types/schema.types";
 
 // Interface for FollowRequest model (static methods)
 interface IFollowRequestModel extends Model<IFollowRequest> {}

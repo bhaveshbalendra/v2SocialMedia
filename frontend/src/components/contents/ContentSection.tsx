@@ -8,7 +8,6 @@ const ContentSection = () => {
   return (
     <div>
       <Stories />
-
       <Feeds posts={posts} isLoading={feedLoading} />
     </div>
   );

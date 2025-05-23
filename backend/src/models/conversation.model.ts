@@ -1,10 +1,5 @@
-import { Document, Model, model, Schema } from "mongoose";
-
-//interface for conversation
-interface IConversation extends Document {
-  participants: Schema.Types.ObjectId[];
-  messages: Schema.Types.ObjectId[];
-}
+import { Model, model, Schema } from "mongoose";
+import { IConversation } from "../types/schema.types";
 
 /**
  * @description message schema

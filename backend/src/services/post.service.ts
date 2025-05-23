@@ -1,10 +1,12 @@
 import { Request } from "express";
+import { ObjectId, Types } from "mongoose";
 import sharp from "sharp";
 import cloudinary from "../config/cloudinary.config";
 import { AppError } from "../middlewares/error.middleware";
-import Comment from "../models/comment.model";
 import Post from "../models/post.model";
 import User from "../models/user.model";
+import { IPostLikeParameter, IPostUnLikeParameter } from "../types/post.types";
+import { IUser } from "../types/schema.types";
 import getDataUri from "../utils/datauri";
 
 class PostService {
@@ -129,27 +131,53 @@ class PostService {
     return posts;
   }
 
-  // async like({ likedUserId, postId }) {
-  //   const userWhoLike = await User.findById(likedUserId);
+  async like({ likedUserId, postId }: IPostLikeParameter) {
+    const userWhoLike = await User.findById(likedUserId);
 
-  //   if (!userWhoLike) {
-  //     throw AppError.notFoundError("User");
-  //   }
+    if (!userWhoLike) {
+      throw AppError.notFoundError("User");
+    }
 
-  //   const likedPost = await Post.findById(postId);
+    const likedPost = await Post.findById(postId);
 
-  //   if (!likedPost) {
-  //     throw AppError.notFoundError("Post");
-  //   }
+    if (!likedPost) {
+      throw AppError.notFoundError("Post");
+    }
+    const userWhoLikeId = new Types.ObjectId(userWhoLike._id);
 
-  //   await likedPost.updateOne({
-  //     $addToSet: {
-  //       likes: userWhoLike,
-  //     },
-  //   });
+    if (!likedPost.likes.includes(userWhoLikeId)) {
+      await likedPost.updateOne({
+        $addToSet: {
+          likes: userWhoLike._id,
+        },
+      });
+    }
+    return;
+  }
 
-  //   await likedPost.save();
-  // }
+  async unlike({ unlikedUserId, postId }: IPostUnLikeParameter) {
+    const userWhoUnLike = await User.findById(unlikedUserId);
+
+    if (!userWhoUnLike) {
+      throw AppError.notFoundError("User");
+    }
+
+    const unLikedPost = await Post.findById(postId);
+
+    if (!unLikedPost) {
+      throw AppError.notFoundError("Post");
+    }
+    const userWhoUnLikeId = new Types.ObjectId(userWhoUnLike._id);
+
+    if (unLikedPost.likes.includes(userWhoUnLikeId)) {
+      await unLikedPost.updateOne({
+        $pull: {
+          likes: userWhoUnLike._id,
+        },
+      });
+    }
+    return;
+  }
 }
 
 export default new PostService();
