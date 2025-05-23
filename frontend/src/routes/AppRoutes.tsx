@@ -10,7 +10,7 @@ import SettingPage from "@/pages/SettingPage";
 import SignupPage from "@/pages/SignupPage";
 import { Route, Routes } from "react-router";
 import { PATH } from "./pathConstants";
-import ProtectedRoute from "./ProtectedRoute";
+// import ProtectedRoute from "./ProtectedRoute";
 
 const AppRoutes = () => {
   return (
@@ -38,14 +38,14 @@ const AppRoutes = () => {
       </Route>
 
       {/* Protected routes */}
-      <Route element={<ProtectedRoute />}>
-        <Route element={<MainLayout />}>
-          <Route path={PATH.PROFILE} element={<ProfilePage />} />
-          <Route path={PATH.MESSAGES} element={<ChatPage />} />
-          <Route path={PATH.EDIT_PROFILE} element={<EditProfilePage />} />
-          <Route path={PATH.SETTINGS} element={<SettingPage />} />
-        </Route>
+      {/* <Route element={<ProtectedRoute />}> */}
+      <Route element={<MainLayout />}>
+        <Route path={PATH.PROFILE} element={<ProfilePage />} />
+        <Route path={PATH.MESSAGES} element={<ChatPage />} />
+        <Route path={PATH.EDIT_PROFILE} element={<EditProfilePage />} />
+        <Route path={PATH.SETTINGS} element={<SettingPage />} />
       </Route>
+      {/* </Route> */}
 
       {/* Not Found Page */}
       <Route path="*" element={<NotFoundPage />} />
