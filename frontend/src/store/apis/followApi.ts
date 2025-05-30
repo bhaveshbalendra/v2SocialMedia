@@ -21,7 +21,7 @@ export const followApi = createApi({
         url: `/${username}/follow`,
         method: "POST",
       }),
-      invalidatesTags: (result, error, username) => [
+      invalidatesTags: (_result, _error, username) => [
         { type: "Profile", id: username },
         { type: "Follow", id: "LIST" },
       ],
@@ -31,7 +31,7 @@ export const followApi = createApi({
         url: `/${username}/unfollow`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, username) => [
+      invalidatesTags: (_result, _error, username) => [
         { type: "Profile", id: username },
         { type: "Follow", id: "LIST" },
       ],

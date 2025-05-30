@@ -22,7 +22,7 @@ export const profileApi = createApi({
         url: `/${username}`,
         method: "GET",
       }),
-      providesTags: (result, error, username) => [
+      providesTags: (_result, _error, username) => [
         { type: "Profile", id: username },
       ],
     }),

@@ -152,7 +152,7 @@ export const commentApi = createApi({
         method: "PUT",
         body: { content },
       }),
-      invalidatesTags: (result, error, { commentId }) => [
+      invalidatesTags: (_result, _error, { commentId }) => [
         { type: "Comment", id: commentId },
         "Comments",
       ],
@@ -174,7 +174,7 @@ export const commentApi = createApi({
         method: "POST",
       }),
       // Optimistic update for better UX
-      async onQueryStarted(commentId, { queryFulfilled }) {
+      async onQueryStarted(_commentId, { queryFulfilled }) {
         try {
           await queryFulfilled;
           // Could add optimistic updates here if needed
