@@ -1,4 +1,4 @@
-import { useAppSelector } from "@/hooks/useAppSelector";
+import { useAppSelector } from "@/hooks/redux/useAppSelector";
 import { useEffect } from "react";
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {

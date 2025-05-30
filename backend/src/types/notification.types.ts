@@ -81,6 +81,14 @@ export interface INotification extends Document {
 }
 
 /**
+ * Interface for populated notification with entity data
+ */
+export interface IPopulatedNotification
+  extends Omit<INotification, "entityId"> {
+  entityData?: any; // The populated entity data based on entityModel
+}
+
+/**
  * Interface for creating a notification
  */
 export interface CreateNotificationParams {

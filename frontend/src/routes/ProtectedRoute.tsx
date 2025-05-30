@@ -1,46 +1,35 @@
-// import { useAppDispatch } from "@/hooks/useAppDispatch";
-// import { useAppSelector } from "@/hooks/useAppSelector";
-// import { useAuthUserRouteQuery } from "@/store/apis/authApi";
-// import { setCredentials } from "@/store/slices/authSlice";
-// import { useEffect } from "react";
-// import { Navigate, Outlet, useLocation } from "react-router";
-// import { PATH } from "./pathConstants";
+import RouteSpinner from "@/components/common/RouteSpinner";
+import { useSyncAuthCredentials } from "@/hooks/auth/useSyncAuthCredentials";
+import { useAppSelector } from "@/hooks/redux/useAppSelector";
+import { useAuthUserRouteQuery } from "@/store/apis/authApi";
+import { Navigate, Outlet, useLocation } from "react-router";
+import { PATH } from "./pathConstants";
+const ProtectedRoute = () => {
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const location = useLocation();
 
-// const ProtectedRoute = () => {
-//   const { isAuthenticated, accessToken } = useAppSelector(
-//     (state) => state.auth
-//   );
-//   const { data, isLoading, error } = useAuthUserRouteQuery();
-//   const location = useLocation();
-//   const dispatch = useAppDispatch();
+  // Call the ME endpoint to validate the token and get a refreshed token if needed
+  const { data, isLoading, error } = useAuthUserRouteQuery();
 
-//   //   useEffect(() => {
-//   //     // Check if we have both user data and accessToken
-//   //     if (data?.success && data?.user && data?.accessToken) {
-//   //       console.log(
-//   //         "Setting credentials from /me response in ProtectedRoute:",
-//   //         data
-//   //       );
-//   //       dispatch(
-//   //         setCredentials({
-//   //           user: data.user,
-//   //           accessToken: data.accessToken,
-//   //         })
-//   //       );
+  // Use the custom hook to sync credentials when data changes
+  useSyncAuthCredentials(data);
 
-//   //     }
-//   //   }, []);
+  if (isLoading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <RouteSpinner />
+      </div>
+    );
+  }
 
-//   if (isLoading) {
-//     return <div>Loading...</div>;
-//   }
+  // If there's an error or user is not authenticated, redirect to login
+  if (error || !isAuthenticated) {
+    // Redirect to login page but save the attempted url
+    return <Navigate to={PATH.LOGIN} state={{ from: location }} replace />;
+  }
 
-//   if (error || !isAuthenticated || !accessToken) {
-//     // Redirect to login page but save the attempted url
-//     return <Navigate to={PATH.LOGIN} state={{ from: location }} replace />;
-//   }
+  // The user is authenticated - render the protected content
+  return <Outlet />;
+};
 
-//   return <Outlet />;
-// };
-
-// export default ProtectedRoute;
+export default ProtectedRoute;

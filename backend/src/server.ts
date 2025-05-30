@@ -5,13 +5,19 @@ import express, { Application } from "express";
 import http from "http";
 import { config } from "./config/app.config";
 import { connectToMongoDB } from "./config/mongoDB.config";
-import { initializeSocketServer } from "./utils/socket";
+import { initializeSocketServer } from "./utils/socket.util";
 
-import { handleError } from "./middlewares/error.middleware";
-import authRouter from "./routes/auth.route";
-import postRouter from "./routes/post.route";
-import { createRateLimiter } from "./utils/rateLimiter";
-
+import { handleError } from "./middleware/error.middleware";
+import authRouter from "./routes/auth.routes";
+import commentRouter from "./routes/comment.routes";
+import followRouter from "./routes/follow.routes";
+import notificationRouter from "./routes/notification.routes";
+import postRouter from "./routes/post.routes";
+import profileRouter from "./routes/profile.routes";
+import settingsRouter from "./routes/settings.routes";
+import userRouter from "./routes/user.route";
+import likeRouter from "./routes/like.routes";
+import { createRateLimiter } from "./utils/rateLimiter.util";
 async function startServer() {
   try {
     await connectToMongoDB();
@@ -48,7 +54,14 @@ async function startServer() {
 
     //API Routes
     app.use("/api/v2/auth", authRouter);
-    app.use("/api/v2/post", postRouter);
+    app.use("/api/v2/posts", postRouter);
+    app.use("/api/v2/follows", followRouter);
+    app.use("/api/v2/notifications", notificationRouter);
+    app.use("/api/v2/settings", settingsRouter);
+    app.use("/api/v2/users", userRouter);
+    app.use("/api/v2/likes", likeRouter);
+    app.use("/api/v2/comments", commentRouter);
+    app.use("/api/v2/profiles", profileRouter);
 
     app.use(handleError);
 

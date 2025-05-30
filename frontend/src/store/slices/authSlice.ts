@@ -1,7 +1,7 @@
-import { IAuthUser, User } from "@/types/auth.types";
+import { IAuthUserState, User } from "@/types/auth.types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-const initialState: IAuthUser = {
+const initialState: IAuthUserState = {
   user: null,
   accessToken: localStorage.getItem("accessToken"),
   isAuthenticated: Boolean(localStorage.getItem("accessToken")),
@@ -19,33 +19,29 @@ const authSlice = createSlice({
     ) => {
       const { user, accessToken } = action.payload;
       state.user = user;
+
       state.accessToken = accessToken;
       state.isAuthenticated = true;
-      state.error = null;
+
       localStorage.setItem("accessToken", accessToken);
-    },
-    setAuthLoading: (state, action: PayloadAction<boolean>) => {
-      state.isLoading = action.payload;
-    },
-    setAuthError: (state, action: PayloadAction<string | null>) => {
-      state.error = action.payload;
-      if (action.payload) {
-        state.isAuthenticated = false;
-        state.user = null;
-        state.accessToken = null;
-        localStorage.removeItem("accessToken");
-      }
     },
     logout: (state) => {
       state.user = null;
+
       state.accessToken = null;
       state.isAuthenticated = false;
-      state.error = null;
+
       localStorage.removeItem("accessToken");
+    },
+    setIsLoading: (state, action) => {
+      state.isLoading = action.payload;
+    },
+    setError: (state, action) => {
+      state.error = action.payload;
     },
   },
 });
 
-export const { setCredentials, setAuthLoading, setAuthError, logout } =
+export const { setCredentials, logout, setIsLoading, setError } =
   authSlice.actions;
 export const authReducer = authSlice.reducer;

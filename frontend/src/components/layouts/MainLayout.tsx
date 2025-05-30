@@ -1,14 +1,15 @@
-import { useSocketConnect } from "@/hooks/useSocketConnect";
-import { useSyncAuthCredentials } from "@/hooks/useSyncAuthCredentials";
+import { useSyncAuthCredentials } from "@/hooks/auth/useSyncAuthCredentials";
+import { useSocketConnect } from "@/hooks/sockets/useSocketConnect";
 import { useAuthUserRouteQuery } from "@/store/apis/authApi";
 import { Outlet } from "react-router";
+import SelectPostModel from "../common/SelectPostModel";
 import BottomNav from "./BottomNav";
 import LeftSidebar from "./LeftSidebar";
 import MobileTopNav from "./MobileTopNav";
 import RightSidebar from "./RightSidebar";
 
 const MainLayout = () => {
-  const { data } = useAuthUserRouteQuery();
+  const { data, isLoading } = useAuthUserRouteQuery();
 
   useSyncAuthCredentials(data);
   useSocketConnect();
@@ -23,7 +24,7 @@ const MainLayout = () => {
       <MobileTopNav />
       {/* Desktop Sidebar */}
       <aside className="hidden lg:block">
-        <LeftSidebar />
+        <LeftSidebar isLoading={isLoading} />
       </aside>
 
       <nav className="block lg:hidden">
@@ -31,7 +32,11 @@ const MainLayout = () => {
       </nav>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto px-4 pb-16 pt-4 lg:pb-4">
+      <main
+        className="flex-1 overflow-y-auto px-4 pb-16 pt-4 lg:pb-4 scroll-smooth
+                       scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent
+                       hover:scrollbar-thumb-gray-400 transition-colors duration-200"
+      >
         <Outlet />
       </main>
 
@@ -39,6 +44,9 @@ const MainLayout = () => {
       <aside className="hidden lg:block">
         <RightSidebar />
       </aside>
+
+      {/* Post Dialog */}
+      <SelectPostModel />
     </div>
   );
 };

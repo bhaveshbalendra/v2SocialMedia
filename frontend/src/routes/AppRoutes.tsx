@@ -8,49 +8,110 @@ import NotFoundPage from "@/pages/NotFoundPage";
 import ProfilePage from "@/pages/ProfilePage";
 import SettingPage from "@/pages/SettingPage";
 import SignupPage from "@/pages/SignupPage";
-import { Route, Routes } from "react-router";
 import { PATH } from "./pathConstants";
-// import ProtectedRoute from "./ProtectedRoute";
+import ProtectedRoute from "./ProtectedRoute";
 
-const AppRoutes = () => {
-  return (
-    <Routes>
-      {/* Public routes */}
-      <Route path={PATH.HOME} element={<MainLayout />}>
-        <Route path={PATH.HOME} element={<ContentSection />} />
-        <Route path={PATH.PROFILE} element={<ProfilePage />} />
-      </Route>
+// Define routes in createBrowserRouter format
+export const routesConfig = [
+  {
+    // Public home route
+    path: PATH.HOME,
+    element: <MainLayout />,
+    children: [
+      {
+        index: true,
+        element: <ContentSection />,
+      },
+    ],
+  },
+  {
+    // Auth routes
+    element: <AuthLayout />,
+    children: [
+      {
+        path: PATH.LOGIN,
+        element: <LoginPage />,
+      },
+      {
+        path: PATH.SIGNUP,
+        element: <SignupPage />,
+      },
+      {
+        path: PATH.FORGET_PASSWORD,
+        element: <h1>ForgotPasswordPage</h1>,
+      },
+    ],
+  },
+  {
+    // Protected routes
+    element: <ProtectedRoute />,
+    children: [
+      {
+        element: <MainLayout />,
+        children: [
+          {
+            path: PATH.PROFILE,
+            element: <ProfilePage />,
+          },
+          {
+            path: PATH.MESSAGES,
+            element: <ChatPage />,
+          },
+          {
+            path: PATH.EDIT_PROFILE,
+            element: <EditProfilePage />,
+          },
+          {
+            path: PATH.SETTINGS,
+            element: <SettingPage />,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    // Not Found route
+    path: "*",
+    element: <NotFoundPage />,
+  },
+];
 
-      {/* Auth routes */}
-      <Route element={<AuthLayout />}>
-        <Route path={PATH.LOGIN} element={<LoginPage />} />
-        <Route path={PATH.SIGNUP} element={<SignupPage />} />
+// Legacy component for backward compatibility
+// import { Route, Routes } from "react-router";
 
-        <Route
-          path={PATH.FORGET_PASSWORD}
-          element={<h1>ForgotPasswordPage</h1>}
-        />
-        {/* <Route
-          path="reset-password/:token"
-          element={<h1>ResetPasswordPage</h1>}
-          /> */}
-        {/* <Route path="verify-otp" element={<h1>OTPVerificationPage</h1>} /> */}
-      </Route>
+// const AppRoutes = () => {
+//   return (
+//     <Routes>
+//       {/* Public routes */}
+//       <Route path={PATH.HOME} element={<MainLayout />}>
+//         <Route path={PATH.HOME} element={<ContentSection />} />
+//       </Route>
 
-      {/* Protected routes */}
-      {/* <Route element={<ProtectedRoute />}> */}
-      <Route element={<MainLayout />}>
-        <Route path={PATH.PROFILE} element={<ProfilePage />} />
-        <Route path={PATH.MESSAGES} element={<ChatPage />} />
-        <Route path={PATH.EDIT_PROFILE} element={<EditProfilePage />} />
-        <Route path={PATH.SETTINGS} element={<SettingPage />} />
-      </Route>
-      {/* </Route> */}
+//       {/* Auth routes */}
+//       <Route element={<AuthLayout />}>
+//         <Route path={PATH.LOGIN} element={<LoginPage />} />
+//         <Route path={PATH.SIGNUP} element={<SignupPage />} />
 
-      {/* Not Found Page */}
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
-  );
-};
+//         <Route
+//           path={PATH.FORGET_PASSWORD}
+//           element={<h1>ForgotPasswordPage</h1>}
+//         />
+//       </Route>
 
-export default AppRoutes;
+//       {/* Protected routes - uses ProtectedRoute to ensure authentication */}
+//       <Route element={<ProtectedRoute />}>
+//         <Route element={<MainLayout />}>
+//           <Route path={PATH.PROFILE} element={<ProfilePage />} />
+//           <Route path={PATH.MESSAGES} element={<ChatPage />} />
+//           <Route path={PATH.EDIT_PROFILE} element={<EditProfilePage />} />
+//           <Route path={PATH.SETTINGS} element={<SettingPage />} />
+//         </Route>
+//       </Route>
+
+//       {/* Not Found Page */}
+//       <Route path="*" element={<NotFoundPage />} />
+//     </Routes>
+//   );
+// };
+
+// export default AppRoutes;

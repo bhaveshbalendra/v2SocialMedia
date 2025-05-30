@@ -1,4 +1,7 @@
-interface ISignupReturn {
+import { Request } from "express";
+import { IUser } from "./schema.types";
+
+export interface ISignupServiceReturn {
   user: {
     _id: string;
     firstName: string;
@@ -12,7 +15,7 @@ interface ISignupReturn {
   refreshToken: string;
 }
 
-interface ISignupParameter {
+export interface ISignupServiceParameter {
   username: string;
   email: string;
   password: string;
@@ -20,12 +23,12 @@ interface ISignupParameter {
   lastName: string;
 }
 
-interface ILoginParameter {
+export interface ILoginServiceParameter {
   email_or_username: string;
   password: string;
 }
 
-interface ILoginReturn {
+export interface ILoginServiceReturn {
   user: {
     _id: string;
     firstName: string;
@@ -39,7 +42,7 @@ interface ILoginReturn {
   refreshToken: string;
 }
 
-interface IGoogleParameter {
+export interface IGoogleServiceParameter {
   firstName: string;
   lastName: string;
   email: string;

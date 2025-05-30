@@ -8,14 +8,14 @@ export interface User {
   isVerified: boolean;
 }
 
-export interface IAuthUserRouteResponse {
+export interface IAuthUserRouteApiResponse {
   user: User;
   success: boolean;
   message: string;
   accessToken?: string | null;
 }
 
-export interface IAuthUser {
+export interface IAuthUserState {
   user: User | null;
   accessToken: string | null;
   isAuthenticated: boolean;
@@ -23,33 +23,33 @@ export interface IAuthUser {
   error: string | null;
 }
 
-export interface ILoginRequest {
+export interface ILoginApiRequest {
   email_or_username: string;
   password: string;
 }
 
-export interface ILoginResponseWithToken {
+export interface ILoginApiResponseWithToken {
   success: boolean;
   message?: string;
   user: User;
   accessToken: string;
 }
 
-export interface IGoogleAuthResponseWithToken {
+export interface IGoogleAuthApiResponseWithToken {
   success: boolean;
   message?: string;
   user: User;
   accessToken: string;
 }
 
-export interface IGoogleAuthRequest {
+export interface IGoogleAuthApiRequest {
   firstName: string;
   lastName: string;
   email: string;
   uid: string;
 }
 
-export interface ISignupRequest {
+export interface ISignupApiRequest {
   firstName: string;
   lastName: string;
   email: string;
@@ -58,14 +58,14 @@ export interface ISignupRequest {
   confirmPassword: string;
 }
 
-export interface ISignupResponseWithToken {
+export interface ISignupApiResponseWithToken {
   success: boolean;
   message?: string;
   user: User;
   accessToken: string;
 }
 
-export interface ILogoutResponse {
+export interface ILogoutApiResponse {
   success: boolean;
   message?: string;
 }

@@ -7,29 +7,18 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 // import { Checkbox } from "@/components/ui/checkbox";
+import { Icons } from "@/components/export/Icons";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useSignup } from "@/hooks/useSignup";
-import { signupSchema } from "@/validations/validators";
+import { useSignup } from "@/hooks/auth/useSignup";
+import {
+  initialSignupCredentials,
+  SignupFormData,
+  signupSchema,
+} from "@/validations/signupValidators";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { FaGoogle } from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
-import { ImSpinner2 } from "react-icons/im";
 import { Link } from "react-router";
-import { z } from "zod";
-
-const credentials = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  username: "",
-  password: "",
-  confirmPassword: "",
-  terms: false,
-};
-
-type SignupFormData = z.infer<typeof signupSchema>;
 
 const SignupPage = () => {
   const { handleSignup, isLoading } = useSignup();
@@ -41,7 +30,7 @@ const SignupPage = () => {
     formState: { errors },
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
-    defaultValues: credentials,
+    defaultValues: initialSignupCredentials,
   });
 
   const onSubmit = async (data: SignupFormData) => {
@@ -165,16 +154,16 @@ const SignupPage = () => {
                 <div className="flex flex-col gap-2">
                   <Button type="submit" disabled={isLoading}>
                     {isLoading ? (
-                      <ImSpinner2 className="animate-spin" />
+                      <Icons.Spinner className="animate-spin" />
                     ) : (
                       "Signup"
                     )}
                   </Button>
                   <Button type="button" disabled={isLoading} variant="outline">
-                    <FaGoogle className="mr-2" /> Continue with Google
+                    <Icons.Google className="mr-2" /> Continue with Google
                   </Button>
                   <Button type="button" disabled={isLoading} variant="outline">
-                    <FaXTwitter className="mr-2" /> Continue with X
+                    <Icons.Twitter className="mr-2" /> Continue with X
                   </Button>
                 </div>
               </div>

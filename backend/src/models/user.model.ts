@@ -45,7 +45,7 @@ const userSchema: Schema<IUser> = new Schema<IUser>(
     following: [{ type: Schema.Types.ObjectId, ref: "User" }],
     posts: [{ type: Schema.Types.ObjectId, ref: "Post" }],
     bookmarks: [{ type: Schema.Types.ObjectId, ref: "Post" }],
-    followRequest: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    followRequest: [{ type: Schema.Types.ObjectId, ref: "followRequest" }],
     notification: [{ type: Schema.Types.ObjectId, ref: "Notification" }],
     mobileNumber: {
       type: String,

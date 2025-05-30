@@ -7,21 +7,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAppSelector } from "@/hooks/useAppSelector";
-import { useLogout } from "@/hooks/useLogout";
+import { useAppSelector } from "@/hooks/redux/useAppSelector";
+import { useLogout } from "@/hooks/auth/useLogout";
 import { generateRoute, PATH } from "@/routes/pathConstants";
 import { MouseEvent, useCallback } from "react";
-import { AiFillMessage } from "react-icons/ai";
-import { FaChevronDown } from "react-icons/fa6";
-import { ImSpinner2 } from "react-icons/im";
-import { TiHome } from "react-icons/ti";
 import { Link, useLocation, useNavigate } from "react-router";
-import CreatePostModal from "../common/CreatePost1";
+import CreatePostDialog from "../common/CreatePostDialog";
+import { Icons } from "../export/Icons";
 import { Button } from "../ui/button";
 
 const navItems = [
-  { label: "Home", icon: <TiHome size={24} />, path: PATH.HOME },
-  { label: "Messages", icon: <AiFillMessage size={22} />, path: PATH.MESSAGES },
+  { label: "Home", icon: <Icons.Home size={24} />, path: PATH.HOME },
+  { label: "Messages", icon: <Icons.Message size={22} />, path: PATH.MESSAGES },
 ];
 
 const BottomNav = () => {
@@ -69,7 +66,7 @@ const BottomNav = () => {
         </Link>
       ))}
       {/* Create Post Button */}
-      <CreatePostModal />
+      <CreatePostDialog />
 
       {/* Profile Dropdown */}
       {user ? (
@@ -93,7 +90,7 @@ const BottomNav = () => {
                     {firstName[0]?.toUpperCase() || "U"}
                   </AvatarFallback>
                 </Avatar>
-                <FaChevronDown size={14} />
+                <Icons.ChevronDown size={14} />
               </span>
               <span className="mt-1">Profile</span>
             </Button>
@@ -117,7 +114,7 @@ const BottomNav = () => {
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => handleLogout()}>
-              {isLoadingLogout ? <ImSpinner2 /> : "Logout"}
+              {isLoadingLogout ? <Icons.Spinner /> : "Logout"}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

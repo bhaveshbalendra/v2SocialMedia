@@ -9,7 +9,14 @@ export const errorMiddleware: Middleware = () => (next) => (action) => {
       action.error?.message ||
       "An unknown error occurred";
     // console.log("errorMiddleware", errorMessage);
-    toast(errorMessage);
+    toast(errorMessage, {
+      action: {
+        label: "X",
+        onClick: () => {
+          toast.dismiss();
+        },
+      },
+    });
   }
   return next(action);
 };

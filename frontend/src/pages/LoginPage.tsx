@@ -1,3 +1,4 @@
+import { Icons } from "@/components/export/Icons";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,25 +9,18 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useGoogleLoginSignup } from "@/hooks/useGoogleLoginSignup";
-import { useLogin } from "@/hooks/useLogin";
+import { useGoogleLoginSignup } from "@/hooks/auth/useGoogleLoginSignup";
+import { useLogin } from "@/hooks/auth/useLogin";
 import { auth, provider } from "@/utils/firebase_googleLogin";
-import { loginSchema } from "@/validations/validators";
+import {
+  initialLoginCredentials,
+  LoginFormData,
+  loginSchema,
+} from "@/validations/loginValidators";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signInWithPopup } from "firebase/auth";
 import { useForm } from "react-hook-form";
-import { FaGoogle } from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
-import { ImSpinner2 } from "react-icons/im";
 import { Link } from "react-router";
-import { z } from "zod";
-
-const credentials = {
-  email_or_username: "",
-  password: "",
-};
-
-type LoginFormData = z.infer<typeof loginSchema>;
 
 const LoginPage = () => {
   const { handleLogin, isLoading } = useLogin();
@@ -38,7 +32,7 @@ const LoginPage = () => {
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
-    defaultValues: credentials,
+    defaultValues: initialLoginCredentials,
   });
 
   const handleGoogleLogin = async () => {
@@ -118,7 +112,7 @@ const LoginPage = () => {
                 <div className="flex flex-col gap-2">
                   <Button type="submit" disabled={isLoading}>
                     {isLoading ? (
-                      <ImSpinner2 className="animate-spin" />
+                      <Icons.Spinner className="animate-spin" />
                     ) : (
                       "Login"
                     )}
@@ -129,10 +123,10 @@ const LoginPage = () => {
                     disabled={isLoading}
                     variant="outline"
                   >
-                    <FaGoogle className="mr-2" /> Login with Google
+                    <Icons.Google className="mr-2" /> Login with Google
                   </Button>
                   <Button type="button" disabled={isLoading} variant="outline">
-                    <FaXTwitter className="mr-2" /> Login with X
+                    <Icons.Twitter className="mr-2" /> Login with X
                   </Button>
                 </div>
               </div>

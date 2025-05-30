@@ -1,13 +1,13 @@
 import { apiUrl } from "@/config/configs";
 import {
-  IAuthUserRouteResponse,
-  IGoogleAuthRequest,
-  IGoogleAuthResponseWithToken,
-  ILoginRequest,
-  ILoginResponseWithToken,
-  ILogoutResponse,
-  ISignupRequest,
-  ISignupResponseWithToken,
+  IAuthUserRouteApiResponse,
+  IGoogleAuthApiRequest,
+  IGoogleAuthApiResponseWithToken,
+  ILoginApiRequest,
+  ILoginApiResponseWithToken,
+  ILogoutApiResponse,
+  ISignupApiRequest,
+  ISignupApiResponseWithToken,
 } from "@/types/auth.types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
@@ -26,54 +26,59 @@ export const authApi = createApi({
   }),
   tagTypes: ["Auth"],
   endpoints: (builder) => ({
-    login: builder.mutation<ILoginResponseWithToken, ILoginRequest>({
+    login: builder.mutation<ILoginApiResponseWithToken, ILoginApiRequest>({
       query: (credentials) => ({
         url: "/login",
         method: "POST",
         body: credentials,
       }),
       invalidatesTags: ["Auth"],
-      transformResponse: (response: ILoginResponseWithToken) => {
+      transformResponse: (response: ILoginApiResponseWithToken) => {
         if (response.accessToken) {
           localStorage.setItem("accessToken", response.accessToken);
         }
         return response;
       },
     }),
-    signup: builder.mutation<ISignupResponseWithToken, ISignupRequest>({
+    signup: builder.mutation<ISignupApiResponseWithToken, ISignupApiRequest>({
       query: (credentials) => ({
         url: "/signup",
         method: "POST",
         body: credentials,
       }),
-      // invalidatesTags: ["Auth"],
-      transformResponse: (response: ISignupResponseWithToken) => {
+      transformResponse: (response: ISignupApiResponseWithToken) => {
         if (response.accessToken) {
           localStorage.setItem("accessToken", response.accessToken);
         }
         return response;
       },
     }),
-    google: builder.mutation<IGoogleAuthResponseWithToken, IGoogleAuthRequest>({
+    google: builder.mutation<
+      IGoogleAuthApiResponseWithToken,
+      IGoogleAuthApiRequest
+    >({
       query: (credentials) => ({
         url: "/google",
         method: "POST",
         body: credentials,
       }),
     }),
-    logout: builder.mutation<ILogoutResponse, void>({
+    logout: builder.mutation<ILogoutApiResponse, void>({
       query: () => ({
         url: "/logout",
         method: "POST",
       }),
     }),
-    authUserRoute: builder.query<IAuthUserRouteResponse, void>({
+
+    authUserRoute: builder.query<IAuthUserRouteApiResponse, void>({
       query: () => ({
         url: "/me",
         method: "GET",
       }),
-      providesTags: ["Auth"],
-      transformResponse: (response: IAuthUserRouteResponse) => {
+      // Skip caching to ensure we always get a fresh token
+      keepUnusedDataFor: 0,
+      providesTags: (result) => (result ? ["Auth"] : []),
+      transformResponse: (response: IAuthUserRouteApiResponse) => {
         if (response.accessToken) {
           localStorage.setItem("accessToken", response.accessToken);
         }

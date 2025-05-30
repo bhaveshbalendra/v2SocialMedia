@@ -1,11 +1,10 @@
-// src/store/apis/feedApi.ts
 import { apiUrl } from "@/config/configs";
-import { FeedResponse, ICreatePostResponse } from "@/types/post.types";
+import { ICreatePostApiResponse, IFeedApiResponse } from "@/types/post.types";
 import { createApi, fetchBaseQuery, retry } from "@reduxjs/toolkit/query/react";
 
 const staggeredBaseQuery = retry(
   fetchBaseQuery({
-    baseUrl: `${apiUrl}/post`,
+    baseUrl: `${apiUrl}/posts`,
     credentials: "include",
     prepareHeaders: (headers) => {
       const token = localStorage.getItem("accessToken");
@@ -23,32 +22,35 @@ export const postApi = createApi({
   baseQuery: staggeredBaseQuery,
   tagTypes: ["Post"],
   endpoints: (builder) => ({
-    getPublicFeed: builder.query<FeedResponse, { page: number; limit: number }>(
-      {
-        query: () => ({
-          url: "/public",
-          // params: { page, limit },
-        }),
-        providesTags: ["Post"],
-      }
-    ),
-    getAuthenticatedFeed: builder.query<
-      FeedResponse,
+    getPublicFeed: builder.query<
+      IFeedApiResponse,
       { page: number; limit: number }
     >({
       query: () => ({
         url: "/public",
-        // url: "/media/feed",
+        method: "GET",
         // params: { page, limit },
       }),
       providesTags: ["Post"],
     }),
-    createPost: builder.mutation<ICreatePostResponse, FormData>({
+    getAuthenticatedFeed: builder.query<
+      IFeedApiResponse,
+      { page: number; limit: number }
+    >({
+      query: () => ({
+        url: "/feed",
+        method: "GET",
+        // params: { page, limit },
+      }),
+      providesTags: ["Post"],
+    }),
+    createPost: builder.mutation<ICreatePostApiResponse, FormData>({
       query: (credentials) => ({
         url: "/create-post",
         method: "POST",
         body: credentials,
       }),
+      invalidatesTags: ["Post"],
     }),
   }),
 });

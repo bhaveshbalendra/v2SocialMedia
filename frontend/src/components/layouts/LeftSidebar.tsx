@@ -7,21 +7,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAppSelector } from "@/hooks/useAppSelector";
-import { useLogout } from "@/hooks/useLogout";
-import { useToggleTheme } from "@/hooks/useToggleTheme";
+import { useLogout } from "@/hooks/auth/useLogout";
+import useNotification from "@/hooks/notifications/useNotification";
+import { useAppSelector } from "@/hooks/redux/useAppSelector";
+import { useToggleTheme } from "@/hooks/themes/useToggleTheme";
 import { generateRoute, PATH } from "@/routes/pathConstants";
 import { FC, useCallback, useState } from "react";
-import { AiFillMessage } from "react-icons/ai";
-import { CgProfile } from "react-icons/cg";
-import { FaSearch } from "react-icons/fa";
-import { FaChevronDown } from "react-icons/fa6";
-import { ImSpinner2 } from "react-icons/im";
-import { IoNotifications } from "react-icons/io5";
-import { MdDarkMode } from "react-icons/md";
-import { TiHome } from "react-icons/ti";
 import { Link, useLocation, useNavigate } from "react-router";
-import CreatePostModal from "../common/CreatePost1";
+import CreatePostDialog from "../common/CreatePostDialog";
+import { Icons } from "../export/Icons";
+import NotificationModal from "../notifications/NotificationModal";
 import { Button } from "../ui/button";
 
 // --- Types ---
@@ -49,24 +44,14 @@ const SearchModal: FC<ModalProps> = ({ open, onClose }) =>
     </div>
   ) : null;
 
-const NotificationModal: FC<ModalProps> = ({ open, onClose }) =>
-  open ? (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-background p-6 rounded shadow-lg">
-        <h2 className="text-lg font-bold mb-4">Notifications</h2>
-        <div className="mb-4">You have no new notifications.</div>
-        <Button onClick={onClose}>Close</Button>
-      </div>
-    </div>
-  ) : null;
-
 // --- Main Sidebar ---
-const LeftSidebar: FC = () => {
+const LeftSidebar: FC<{ isLoading: boolean }> = ({ isLoading }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.user) as User | null;
   const { handleLogout, isLoading: isLoadingLogout } = useLogout();
   const { toggle } = useToggleTheme();
+  const { unreadCount } = useNotification();
 
   const [searchOpen, setSearchOpen] = useState<boolean>(false);
   const [notificationOpen, setNotificationOpen] = useState<boolean>(false);
@@ -92,7 +77,9 @@ const LeftSidebar: FC = () => {
   return (
     <aside className="max-w-60 w-full flex flex-col justify-between h-full">
       <div>
-        <h1 className="font-bold text-center py-4">Social Media</h1>
+        <h1 className="font-bold text-center py-4">
+          <Link to={PATH.HOME}>Social Media</Link>
+        </h1>
         <nav>
           <ul>
             {/* Home */}
@@ -107,7 +94,7 @@ const LeftSidebar: FC = () => {
                 `}
                 onClick={(e) => handleNavClick(e, PATH.HOME)}
               >
-                <TiHome size={24} />
+                <Icons.Home size={24} />
                 <span>Home</span>
               </Link>
             </li>
@@ -118,7 +105,7 @@ const LeftSidebar: FC = () => {
                 className="flex items-center gap-3 px-3 py-2 rounded bg-background text-foreground hover:bg-muted hover:text-foreground dark:hover:bg-muted dark:hover:text-foreground w-full"
                 onClick={() => setSearchOpen(true)}
               >
-                <FaSearch size={20} />
+                <Icons.Search size={20} />
                 <span>Search</span>
               </button>
             </li>
@@ -134,7 +121,7 @@ const LeftSidebar: FC = () => {
                 `}
                 onClick={(e) => handleNavClick(e, PATH.MESSAGES)}
               >
-                <AiFillMessage size={22} />
+                <Icons.Message size={22} />
                 <span>Messages</span>
               </Link>
             </li>
@@ -145,7 +132,14 @@ const LeftSidebar: FC = () => {
                 className="flex items-center gap-3 px-3 py-2 rounded bg-background text-foreground hover:bg-muted hover:text-foreground dark:hover:bg-muted dark:hover:text-foreground w-full"
                 onClick={() => setNotificationOpen(true)}
               >
-                <IoNotifications size={22} />
+                <div className="relative">
+                  <Icons.Notifications size={22} />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
+                  )}
+                </div>
                 <span>Notifications</span>
               </button>
             </li>
@@ -153,68 +147,77 @@ const LeftSidebar: FC = () => {
         </nav>
       </div>
       {/* Profile row and dropdown */}
-      <div className="relative px-3 flex flex-col gap-2 py-2">
-        <CreatePostModal />
-        <Button onClick={toggle}>
-          DarkMode
-          <MdDarkMode />
-        </Button>
-        {user ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className={`flex items-center gap-3 w-full justify-between px-0 py-2 rounded hover:bg-gray-100 ${
-                  isProfileActive ? "bg-gray-200 font-bold" : ""
-                }`}
-              >
-                <span className="flex items-center gap-3">
-                  <Avatar className="w-6 h-6">
-                    <AvatarImage src={profilePicture} alt={firstName} />
-                    <AvatarFallback>
-                      {firstName[0]?.toUpperCase() || "U"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span>{firstName}</span>
-                  <CgProfile size={22} />
-                </span>
-                <FaChevronDown />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-48">
-              <DropdownMenuLabel>{firstName}</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link
-                  to={
-                    _id
-                      ? generateRoute(PATH.PROFILE, { username: user.username })
-                      : "#"
-                  }
+      {isLoading ? (
+        <div className="flex justify-center items-center h-full">
+          <Icons.Spinner className="animate-spin" />
+        </div>
+      ) : (
+        <div className="relative px-3 flex flex-col gap-2 py-2">
+          <CreatePostDialog />
+
+          <Button onClick={toggle}>
+            DarkMode
+            <Icons.DarkMode />
+          </Button>
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className={`flex items-center gap-3 w-full justify-between px-0 py-2 rounded hover:bg-gray-100 ${
+                    isProfileActive ? "bg-gray-200 font-bold" : ""
+                  }`}
                 >
-                  Profile
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to={_id ? PATH.SETTINGS : "#"}>Settings</Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => handleLogout()}>
-                {isLoadingLogout ? <ImSpinner2 /> : "Logout"}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : (
-          <Link to={PATH.LOGIN}>
-            <Button className="w-full">Login</Button>
-          </Link>
-        )}
-      </div>
+                  <span className="flex items-center gap-3">
+                    <Avatar className="w-6 h-6">
+                      <AvatarImage src={profilePicture} alt={firstName} />
+                      <AvatarFallback>
+                        {firstName[0]?.toUpperCase() || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span>{firstName}</span>
+                    <Icons.Profile size={22} />
+                  </span>
+                  <Icons.ChevronDown />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+                <DropdownMenuLabel>{firstName}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link
+                    to={
+                      _id
+                        ? generateRoute(PATH.PROFILE, {
+                            username: user.username,
+                          })
+                        : "#"
+                    }
+                  >
+                    Profile
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to={_id ? PATH.SETTINGS : "#"}>Settings</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => handleLogout()}>
+                  {isLoadingLogout ? <Icons.Spinner /> : "Logout"}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Link to={PATH.LOGIN}>
+              <Button className="w-full">Login</Button>
+            </Link>
+          )}
+        </div>
+      )}
       {/* Modals */}
       <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
       <NotificationModal
+        onClick={() => setNotificationOpen(!notificationOpen)}
         open={notificationOpen}
-        onClose={() => setNotificationOpen(false)}
       />
     </aside>
   );

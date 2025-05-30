@@ -7,6 +7,34 @@
     <title>Social Media Beta</title>
   </head>
   <body>
+    <!-- public/index.html -->
+    <div id="spinner-root">
+      <style>
+        #spinner-root {
+          position: fixed;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #fff;
+          z-index: 9999;
+        }
+        .spinner {
+          width: 48px;
+          height: 48px;
+          border: 6px solid #eee;
+          border-top: 6px solid #333;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+          100% {
+            transform: rotate(360deg);
+          }
+        }
+      </style>
+      <div class="spinner"></div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
