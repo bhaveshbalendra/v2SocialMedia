@@ -1,5 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ChatState, MessageState, OnlineUserState } from "@/types/chat.types";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: ChatState = {
   messages: [],
