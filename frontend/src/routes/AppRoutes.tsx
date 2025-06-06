@@ -1,7 +1,6 @@
 import ContentSection from "@/components/contents/ContentSection";
 import AuthLayout from "@/components/layouts/AuthLayout";
 import MainLayout from "@/components/layouts/MainLayout";
-import BookmarksPage from "@/pages/BookmarksPage";
 import ChatPage from "@/pages/ChatPage";
 import EditProfilePage from "@/pages/EditProfilePage";
 import LoginPage from "@/pages/LoginPage";
@@ -11,7 +10,6 @@ import SettingPage from "@/pages/SettingPage";
 import SignupPage from "@/pages/SignupPage";
 import { PATH } from "./pathConstants";
 import ProtectedRoute from "./ProtectedRoute";
-import PublicRoute from "./PublicRoute";
 
 // Define routes in createBrowserRouter format
 export const routesConfig = [
@@ -27,25 +25,20 @@ export const routesConfig = [
     ],
   },
   {
-    // Auth routes - protected from authenticated users
-    element: <PublicRoute />,
+    // Auth routes
+    element: <AuthLayout />,
     children: [
       {
-        element: <AuthLayout />,
-        children: [
-          {
-            path: PATH.LOGIN,
-            element: <LoginPage />,
-          },
-          {
-            path: PATH.SIGNUP,
-            element: <SignupPage />,
-          },
-          {
-            path: PATH.FORGET_PASSWORD,
-            element: <h1>ForgotPasswordPage</h1>,
-          },
-        ],
+        path: PATH.LOGIN,
+        element: <LoginPage />,
+      },
+      {
+        path: PATH.SIGNUP,
+        element: <SignupPage />,
+      },
+      {
+        path: PATH.FORGET_PASSWORD,
+        element: <h1>ForgotPasswordPage</h1>,
       },
     ],
   },
@@ -71,10 +64,6 @@ export const routesConfig = [
           {
             path: PATH.SETTINGS,
             element: <SettingPage />,
-          },
-          {
-            path: PATH.BOOKMARKS,
-            element: <BookmarksPage />,
           },
         ],
       },

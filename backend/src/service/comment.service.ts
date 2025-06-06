@@ -278,18 +278,6 @@ class CommentService {
       $inc: { commentsCount: -totalDeleted },
     });
 
-    // Emit real-time notification for comment deletion
-    for (const [socketUserId, socketIds] of userSocketMap.entries()) {
-      if (socketUserId !== userId) {
-        socketIds.forEach((socketId) => {
-          io.to(socketId).emit("commentDeleted", {
-            postId: comment.post.toString(),
-            commentId: commentId,
-          });
-        });
-      }
-    }
-
     return { message: "Comment deleted successfully" };
   }
 

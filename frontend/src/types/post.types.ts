@@ -2,11 +2,6 @@ export interface IPublicFeedApiResponse {
   success: boolean;
   message: string;
   posts: IPost[];
-  pagination: {
-    nextCursor: string | null;
-    hasMore: boolean;
-    limit: number;
-  };
 }
 
 export interface IFeedState {
@@ -15,7 +10,7 @@ export interface IFeedState {
   isLoading: boolean;
   error: string | null;
   hasMore: boolean;
-  nextCursor: string | null;
+  page: number;
 }
 
 export interface IPost {
@@ -60,11 +55,6 @@ export interface IFeedApiResponse {
   success: boolean;
   message: string;
   posts: IPost[];
-  pagination: {
-    nextCursor: string | null;
-    hasMore: boolean;
-    limit: number;
-  };
 }
 
 export interface ICreatePostApiRequest {

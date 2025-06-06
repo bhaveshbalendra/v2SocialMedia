@@ -1,42 +1,29 @@
-import { Router } from "express";
+// import { Router } from "express";
+// import {
+//   createGroupChat,
+//   createSingleChat,
+//   deleteChat,
+//   getChatById,
+//   getUserChats,
+//   updateGroupChat,
+// } from "../controllers/chat.controller";
+// import { authenticate } from "../middlewares/auth.middleware";
+// import { validateRequest } from "../middlewares/validator.middleware";
+// import { chatValidation } from "../utils/validators";
 
-import {
-  findOrCreateConversation,
-  getConversations,
-  getMessages,
-  sendMessage,
-} from "../controller/chat.controller";
-import { authenticate } from "../middleware/auth.middleware";
+// const router = Router();
 
-const router = Router();
-
-/**
- * @route   GET /api/v2/chat/friends
- * @desc    Get all friends
- * @access  Private
- */
-router.get("/conversations", authenticate, getConversations);
-
-/**
- * @route   POST /api/v2/chat/individual
- * @desc    Create a new one-on-one chat
- * @access  Private
- */
-router.post("/individual", authenticate, sendMessage);
-
-/**
- * @route   POST /api/v2/chat/find-or-create
- * @desc    Find or create a conversation with a specific user
- * @access  Private
- */
-router.post("/find-or-create", authenticate, findOrCreateConversation);
-
-/**
- * @route   GET /api/v2/chat/messages/:conversationId
- * @desc    Get all messages for a conversation
- * @access  Private
- */
-router.get("/messages/:conversationId", authenticate, getMessages);
+// /**
+//  * @route   POST /api/v2/chat/single
+//  * @desc    Create a new one-on-one chat
+//  * @access  Private
+//  */
+// router.post(
+//   "/single",
+//   authenticate,
+//   validateRequest(chatValidation.create),
+//   createSingleChat
+// );
 
 // /**
 //  * @route   POST /api/v2/chat/group
@@ -83,4 +70,4 @@ router.get("/messages/:conversationId", authenticate, getMessages);
 //  */
 // router.delete("/:chatId", authenticate, deleteChat);
 
-export default router;
+// export default router;

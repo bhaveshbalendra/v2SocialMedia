@@ -37,17 +37,11 @@ const handleGetPostsForNotLoginUser = asyncHandler(
     response: Response,
     next: NextFunction
   ): Promise<any> => {
-    const cursor = request.query.cursor as string;
-    const limit = parseInt(request.query.limit as string) || 5;
+    const posts = await postService.getAllPostsNotLoginUser();
 
-    const result = await postService.getAllPostsNotLoginUser(cursor, limit);
-
-    response.status(200).json({
-      success: true,
-      message: "Posts are fetched",
-      posts: result.posts,
-      pagination: result.pagination,
-    });
+    response
+      .status(200)
+      .json({ success: true, message: "Post are Fetched", posts });
     return;
   }
 );
@@ -61,18 +55,12 @@ const handleGetPostForLoginUser = asyncHandler(
     response: Response,
     next: NextFunction
   ): Promise<any> => {
-    const userId = request.user._id.toString();
-    const cursor = request.query.cursor as string;
-    const limit = parseInt(request.query.limit as string) || 5;
+    const userId = request.user._id;
+    const posts = await postService.getPostForLoginUser(userId);
 
-    const result = await postService.getPostForLoginUser(userId, cursor, limit);
-
-    response.status(200).json({
-      success: true,
-      message: "Posts fetched successfully",
-      posts: result.posts,
-      pagination: result.pagination,
-    });
+    response
+      .status(200)
+      .json({ success: true, message: "Posts fetched successfully", posts });
     return;
   }
 );
@@ -85,18 +73,7 @@ const handleDeletePost = asyncHandler(
     request: Request,
     response: Response,
     next: NextFunction
-  ): Promise<any> => {
-    const { postId } = request.params;
-    const userId = request.user._id.toString();
-
-    const result = await postService.deletePost(userId, postId);
-
-    response.status(200).json({
-      success: true,
-      message: result.message,
-    });
-    return;
-  }
+  ): Promise<any> => {}
 );
 
 /**
@@ -158,7 +135,7 @@ const handleDebugPosts = asyncHandler(
       message: "Debug info",
       counts,
       samplePosts: postInfo,
-      publicFeedWorking: sampleUsers.posts.length > 0,
+      publicFeedWorking: sampleUsers.length > 0,
     });
     return;
   }

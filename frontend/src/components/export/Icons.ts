@@ -4,7 +4,6 @@ import { CgProfile } from "react-icons/cg";
 import {
   FaGoogle,
   FaHeart,
-  FaLock,
   FaRegComment,
   FaRegHeart,
   FaSearch,
@@ -13,14 +12,9 @@ import {
 import { FaChevronDown, FaSquarePlus, FaXTwitter } from "react-icons/fa6";
 import { ImSpinner2 } from "react-icons/im";
 import { IoIosRefresh, IoMdEye } from "react-icons/io";
-import { IoClose, IoNotifications } from "react-icons/io5";
-import {
-  MdBookmark,
-  MdDarkMode,
-  MdOutlineBookmarkBorder,
-} from "react-icons/md";
+import { IoNotifications } from "react-icons/io5";
+import { MdDarkMode, MdOutlineBookmarkBorder } from "react-icons/md";
 import { TiHome } from "react-icons/ti";
-
 export const Icons = {
   Spinner: ImSpinner2,
   Google: FaGoogle,
@@ -40,9 +34,6 @@ export const Icons = {
   DarkMode: MdDarkMode,
   Notification: IoNotifications,
   Bookmark: MdOutlineBookmarkBorder,
-  BookmarkFill: MdBookmark,
   ThreeDots: BsThreeDots,
   HeartFill: FaHeart,
-  X: IoClose,
-  Lock: FaLock,
 };

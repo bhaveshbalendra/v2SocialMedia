@@ -7,7 +7,6 @@ export const PATH = {
   FORGET_PASSWORD: "/forget-password",
   MESSAGES: "/direct/inbox",
   SETTINGS: "/settings",
-  BOOKMARKS: "/bookmarks",
 };
 
 // Helper function to generate dynamic routes

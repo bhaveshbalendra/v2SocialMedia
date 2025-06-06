@@ -24,23 +24,23 @@ export const postApi = createApi({
   endpoints: (builder) => ({
     getPublicFeed: builder.query<
       IFeedApiResponse,
-      { cursor?: string; limit?: number }
+      { page: number; limit: number }
     >({
-      query: ({ cursor, limit = 5 }) => ({
+      query: () => ({
         url: "/public",
         method: "GET",
-        params: { cursor, limit },
+        // params: { page, limit },
       }),
       providesTags: ["Post"],
     }),
     getAuthenticatedFeed: builder.query<
       IFeedApiResponse,
-      { cursor?: string; limit?: number }
+      { page: number; limit: number }
     >({
-      query: ({ cursor, limit = 5 }) => ({
+      query: () => ({
         url: "/feed",
         method: "GET",
-        params: { cursor, limit },
+        // params: { page, limit },
       }),
       providesTags: ["Post"],
     }),
@@ -52,46 +52,6 @@ export const postApi = createApi({
       }),
       invalidatesTags: ["Post"],
     }),
-    deletePost: builder.mutation<
-      { success: boolean; message: string },
-      { postId: string }
-    >({
-      query: ({ postId }) => ({
-        url: `/${postId}/delete`,
-        method: "DELETE",
-      }),
-      async onQueryStarted({ postId }, { dispatch, queryFulfilled }) {
-        // Optimistic update: remove post from both feeds
-        const patchResults = [
-          dispatch(
-            postApi.util.updateQueryData(
-              "getPublicFeed",
-              { limit: 5 },
-              (draft) => {
-                draft.posts = draft.posts.filter((post) => post._id !== postId);
-              }
-            )
-          ),
-          dispatch(
-            postApi.util.updateQueryData(
-              "getAuthenticatedFeed",
-              { limit: 5 },
-              (draft) => {
-                draft.posts = draft.posts.filter((post) => post._id !== postId);
-              }
-            )
-          ),
-        ];
-
-        try {
-          await queryFulfilled;
-        } catch {
-          // Revert optimistic updates on failure
-          patchResults.forEach((patchResult) => patchResult.undo());
-        }
-      },
-      invalidatesTags: ["Post"],
-    }),
   }),
 });
 
@@ -99,7 +59,4 @@ export const {
   useGetPublicFeedQuery,
   useGetAuthenticatedFeedQuery,
   useCreatePostMutation,
-  useDeletePostMutation,
-  useLazyGetPublicFeedQuery,
-  useLazyGetAuthenticatedFeedQuery,
 } = postApi;

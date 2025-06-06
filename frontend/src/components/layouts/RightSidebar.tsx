@@ -1,42 +1,56 @@
-import SuggestedUsers from "@/components/suggestions/SuggestedUsers";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAppSelector } from "@/hooks/redux/useAppSelector";
-import { PATH } from "@/routes/pathConstants";
-import { Link } from "react-router";
+import { Card, CardContent } from "@/components/ui/card";
+import { useState } from "react";
+
+const users = [
+  {
+    name: "Bhavesh",
+    src: "https://avatar.iran.liara.run/public/boy",
+  },
+  {
+    name: "Aisha",
+    src: "https://avatar.iran.liara.run/public/girl",
+  },
+  {
+    name: "Rohan",
+    src: "https://avatar.iran.liara.run/public/boy2",
+  },
+  {
+    name: "Priya",
+    src: "https://avatar.iran.liara.run/public/girl2",
+  },
+];
 
 const RightSidebar = () => {
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  // Track followed users by index
+  const [followed, setFollowed] = useState(Array(users.length).fill(false));
+
+  const handleFollow = (idx: number) => {
+    setFollowed((prev) => prev.map((f, i) => (i === idx ? !f : f)));
+  };
 
   return (
     <div className="w-full space-y-4 p-4">
-      {isAuthenticated ? (
-        <SuggestedUsers />
-      ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold">
-              Welcome to Social Media
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Join our community to discover amazing people and connect with
-              friends.
-            </p>
-            <div className="space-y-2">
-              <Link to={PATH.SIGNUP}>
-                <Button className="w-full">Sign up</Button>
-              </Link>
-              <Link to={PATH.LOGIN}>
-                <Button variant="outline" className="w-full">
-                  Log in
-                </Button>
-              </Link>
+      {users.map((user, idx) => (
+        <Card key={idx}>
+          <CardContent className="flex items-center justify-between p-3 gap-2">
+            <div className="flex items-center space-x-3">
+              <Avatar>
+                <AvatarImage src={user.src} alt={user.name} />
+                <AvatarFallback>{user.name[0]}</AvatarFallback>
+              </Avatar>
+              <span className="font-medium">{user.name}</span>
             </div>
+            <Button
+              variant={followed[idx] ? "secondary" : "default"}
+              onClick={() => handleFollow(idx)}
+            >
+              {followed[idx] ? "Following" : "Follow"}
+            </Button>
           </CardContent>
         </Card>
-      )}
+      ))}
     </div>
   );
 };

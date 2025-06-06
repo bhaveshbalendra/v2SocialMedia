@@ -1,7 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { authApi } from "./apis/authApi";
-import { bookmarkApi } from "./apis/bookmarkApi";
-import { chatApi } from "./apis/chatApi";
 import { commentApi } from "./apis/commentApi";
 import { followApi } from "./apis/followApi";
 import { likeApi } from "./apis/likeApi";
@@ -17,11 +15,10 @@ import { postReducer } from "./slices/postSlice";
 import { profileReducer } from "./slices/profileSlice";
 import { settingsReducer } from "./slices/settingsSlice";
 import { uiReducer } from "./slices/uiSlice";
+
 export const store = configureStore({
   reducer: {
     [authApi.reducerPath]: authApi.reducer,
-    [bookmarkApi.reducerPath]: bookmarkApi.reducer,
-    [chatApi.reducerPath]: chatApi.reducer,
     [commentApi.reducerPath]: commentApi.reducer,
     [postApi.reducerPath]: postApi.reducer,
     [notificationApi.reducerPath]: notificationApi.reducer,
@@ -40,8 +37,6 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
       .concat(authApi.middleware)
-      .concat(bookmarkApi.middleware)
-      .concat(chatApi.middleware)
       .concat(commentApi.middleware)
       .concat(postApi.middleware)
       .concat(notificationApi.middleware)

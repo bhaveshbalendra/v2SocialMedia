@@ -5,49 +5,14 @@ import profileService from "../service/profile.service";
 const handleGetUserProfile = asyncHandler(
   async (request: Request, response: Response) => {
     const { username } = request.params;
-
-    try {
-      const user = await profileService.getUserProfile(username);
-      response
-        .status(200)
-        .json({ success: true, message: "User profile fetched", user });
-    } catch (error: any) {
-      // Log the error for debugging
-      console.error(
-        `Error fetching profile for username "${username}":`,
-        error.message
-      );
-
-      // Re-throw the error to be handled by the global error handler
-      throw error;
-    }
+    const user = await profileService.getUserProfile(username);
+    response
+      .status(200)
+      .json({ success: true, message: "User profile fetched", user });
   }
 );
 
-/**
- * @desc    Search profiles
- * @route   GET /api/profiles/search?q=searchTerm
- * @access  Private
- */
-const handleSearchProfiles = asyncHandler(
-  async (request: Request, response: Response) => {
-    const { q: searchTerm, limit = 10 } = request.query;
-    const currentUserId = request.user!._id.toString();
-
-    const profiles = await profileService.searchProfiles(
-      searchTerm as string,
-      currentUserId,
-      Number(limit)
-    );
-
-    response.status(200).json({
-      success: true,
-      data: profiles,
-    });
-  }
-);
-
-export { handleGetUserProfile, handleSearchProfiles };
+export { handleGetUserProfile };
 
 // import { Request, Response } from "express";
 // import asyncHandler from "express-async-handler";

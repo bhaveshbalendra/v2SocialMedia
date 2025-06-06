@@ -2,7 +2,6 @@ import express, { RequestHandler, Router } from "express";
 import {
   handleCreatePost,
   handleDebugPosts,
-  handleDeletePost,
   handleGetPostForLoginUser,
   handleGetPostsForNotLoginUser,
 } from "../controller/post.controller";
@@ -56,16 +55,11 @@ router.get("/feed", authenticate, handleGetPostForLoginUser);
  */
 router.get("/debug", handleDebugPosts);
 
-/**
- * @route   DELETE /:postId/delete
- * @desc    Delete a post
- * @access  Private (requires authentication)
- */
-router.delete(
-  "/:postId/delete",
-  authenticate,
-  handleDeletePost as RequestHandler
-);
+// /**
+//  * @route   DELETE /
+//  * @desc    (Route not implemented) Delete a post
+//  */
+// router.delete("/:postId/delete");
 
 // /**
 //  * @route POST /api/v2/post/:postId/comment

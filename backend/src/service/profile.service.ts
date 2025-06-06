@@ -7,15 +7,7 @@ import { io } from "../utils/socket.util";
 
 class ProfileService {
   async getUserProfile(username: string) {
-    // Validate username input
-    if (!username || typeof username !== "string" || username.trim() === "") {
-      throw AppError.emptyOrInvalidData("Invalid username provided");
-    }
-
-    const user = await User.findOne({
-      username: username.trim().toLowerCase(),
-      isDeleted: { $ne: true }, // Exclude deleted users
-    })
+    const user = await User.findOne({ username })
       .populate("followers following", "username profilePicture")
       .populate("posts", "media _id title likes ")
       .lean();
@@ -37,34 +29,6 @@ class ProfileService {
       isPrivate: user.isPrivate,
       isBlocked: user.isBlocked,
     };
-  }
-
-  /**
-   * Search profiles
-   */
-  async searchProfiles(
-    searchTerm: string,
-    currentUserId: string,
-    limit: number = 10
-  ) {
-    if (!searchTerm || searchTerm.trim() === "") {
-      return [];
-    }
-
-    const users = await User.find({
-      _id: { $ne: currentUserId },
-      blockedUsers: { $ne: currentUserId }, // Exclude users who blocked current user
-      $or: [
-        { username: { $regex: searchTerm, $options: "i" } },
-        { firstName: { $regex: searchTerm, $options: "i" } },
-        { lastName: { $regex: searchTerm, $options: "i" } },
-      ],
-    })
-      .select("username profilePicture firstName lastName bio isPrivate")
-      .limit(limit)
-      .lean();
-
-    return users;
   }
 }
 
@@ -321,6 +285,6 @@ export default new ProfileService();
 //       isPrivate: user.isPrivate,
 //     };
 //   }
-//}
+// }
 
-//export default new ProfileService();
+// export default new ProfileService();

@@ -11,7 +11,7 @@ const createComment = asyncHandler(
   async (request: Request, response: Response): Promise<any> => {
     const { postId } = request.params;
     const { content } = request.body;
-    const userId = request.user._id.toString();
+    const userId = request.user._id;
 
     const comment = await commentService.createComment({
       userId,
@@ -36,7 +36,7 @@ const createReply = asyncHandler(
   async (request: Request, response: Response): Promise<any> => {
     const { commentId } = request.params;
     const { content } = request.body;
-    const userId = request.user._id.toString();
+    const userId = request.user._id;
 
     const reply = await commentService.createReply({
       userId,
@@ -107,7 +107,7 @@ const updateComment = asyncHandler(
   async (request: Request, response: Response): Promise<any> => {
     const { commentId } = request.params;
     const { content } = request.body;
-    const userId = request.user._id.toString();
+    const userId = request.user._id;
 
     const comment = await commentService.updateComment({
       userId,
@@ -131,7 +131,7 @@ const updateComment = asyncHandler(
 const deleteComment = asyncHandler(
   async (request: Request, response: Response): Promise<any> => {
     const { commentId } = request.params;
-    const userId = request.user._id.toString();
+    const userId = request.user._id;
 
     const result = await commentService.deleteComment(userId, commentId);
 
@@ -150,7 +150,7 @@ const deleteComment = asyncHandler(
 const toggleCommentLike = asyncHandler(
   async (request: Request, response: Response): Promise<any> => {
     const { commentId } = request.params;
-    const userId = request.user._id.toString();
+    const userId = request.user._id;
 
     const result = await commentService.toggleCommentLike({
       userId,

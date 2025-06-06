@@ -9,18 +9,15 @@ import { initializeSocketServer } from "./utils/socket.util";
 
 import { handleError } from "./middleware/error.middleware";
 import authRouter from "./routes/auth.routes";
-import bookmarkRouter from "./routes/bookmark.routes";
-import chatRouter from "./routes/chat.routes";
 import commentRouter from "./routes/comment.routes";
 import followRouter from "./routes/follow.routes";
-import likeRouter from "./routes/like.routes";
 import notificationRouter from "./routes/notification.routes";
 import postRouter from "./routes/post.routes";
 import profileRouter from "./routes/profile.routes";
 import settingsRouter from "./routes/settings.routes";
 import userRouter from "./routes/user.route";
+import likeRouter from "./routes/like.routes";
 import { createRateLimiter } from "./utils/rateLimiter.util";
-
 async function startServer() {
   try {
     await connectToMongoDB();
@@ -57,7 +54,6 @@ async function startServer() {
 
     //API Routes
     app.use("/api/v2/auth", authRouter);
-    app.use("/api/v2/bookmarks", bookmarkRouter);
     app.use("/api/v2/posts", postRouter);
     app.use("/api/v2/follows", followRouter);
     app.use("/api/v2/notifications", notificationRouter);
@@ -66,7 +62,6 @@ async function startServer() {
     app.use("/api/v2/likes", likeRouter);
     app.use("/api/v2/comments", commentRouter);
     app.use("/api/v2/profiles", profileRouter);
-    app.use("/api/v2/chat", chatRouter);
 
     app.use(handleError);
 

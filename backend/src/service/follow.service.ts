@@ -28,19 +28,7 @@ class FollowService {
     followingUserName,
     followerId,
   }: IFollowServiceParameter): Promise<IFollowServiceReturn> {
-    // Validate input
-    if (
-      !followingUserName ||
-      typeof followingUserName !== "string" ||
-      followingUserName.trim() === ""
-    ) {
-      throw AppError.emptyOrInvalidData("Invalid username provided");
-    }
-
-    const following = await User.findOne({
-      username: followingUserName.trim().toLowerCase(),
-      isDeleted: { $ne: true }, // Exclude deleted users
-    });
+    const following = await User.findOne({ username: followingUserName });
 
     if (!following) {
       throw AppError.notFoundError("User not found");
@@ -401,21 +389,11 @@ class FollowService {
       // Get users followed by users you follow (2nd degree connections)
       // This is a simple implementation - in production you'd want to optimize this query
       const suggestions = await User.aggregate([
-        // Match users who are followed by people the current user follows AND are public
+        // Match users who are followed by people the current user follows
         {
           $match: {
-            $and: [
-              { followers: { $in: user.following } },
-              {
-                _id: { $nin: followingIds.map((id) => new Types.ObjectId(id)) },
-              },
-              { isPrivate: { $ne: true } }, // Only include public users
-              { isBlocked: { $ne: true } }, // Exclude blocked users
-              { isDeleted: { $ne: true } }, // Exclude deleted users
-              { username: { $exists: true, $ne: "", $type: "string" } }, // Ensure valid username
-              { firstName: { $exists: true, $ne: "", $type: "string" } }, // Ensure valid firstName
-              { lastName: { $exists: true, $ne: "", $type: "string" } }, // Ensure valid lastName
-            ],
+            followers: { $in: user.following },
+            _id: { $nin: followingIds.map((id) => new Types.ObjectId(id)) },
           },
         },
         // Randomly select users to add variety
@@ -434,22 +412,10 @@ class FollowService {
         },
       ]);
 
-      // If we don't have enough suggestions, add some new public users
+      // If we don't have enough suggestions, add some new users
       if (suggestions.length < limit) {
         const additionalUsers = await User.find({
-          $and: [
-            {
-              _id: {
-                $nin: [...followingIds, ...suggestions.map((u) => u._id)],
-              },
-            },
-            { isPrivate: { $ne: true } }, // Only include public users
-            { isBlocked: { $ne: true } }, // Exclude blocked users
-            { isDeleted: { $ne: true } }, // Exclude deleted users
-            { username: { $exists: true, $ne: "", $type: "string" } }, // Ensure valid username
-            { firstName: { $exists: true, $ne: "", $type: "string" } }, // Ensure valid firstName
-            { lastName: { $exists: true, $ne: "", $type: "string" } }, // Ensure valid lastName
-          ],
+          _id: { $nin: [...followingIds, ...suggestions.map((u) => u._id)] },
         })
           .sort({ createdAt: -1 }) // New users first
           .limit(limit - suggestions.length)
