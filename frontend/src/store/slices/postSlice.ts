@@ -8,20 +8,34 @@ const initialState: IFeedState = {
   isLoading: false,
   error: null,
   hasMore: true,
-  page: 1,
+  nextCursor: null,
 };
 
 const postSlice = createSlice({
   name: "post",
   initialState,
   reducers: {
-    setPosts: (state, action: PayloadAction<IPost[]>) => {
-      state.posts = action.payload;
-      state.page = 1;
+    setPosts: (
+      state,
+      action: PayloadAction<{
+        posts: IPost[];
+        pagination: { nextCursor: string | null; hasMore: boolean };
+      }>
+    ) => {
+      state.posts = action.payload.posts;
+      state.nextCursor = action.payload.pagination.nextCursor;
+      state.hasMore = action.payload.pagination.hasMore;
     },
-    appendPosts: (state, action: PayloadAction<IPost[]>) => {
-      state.posts = [...state.posts, ...action.payload];
-      state.page += 1;
+    appendPosts: (
+      state,
+      action: PayloadAction<{
+        posts: IPost[];
+        pagination: { nextCursor: string | null; hasMore: boolean };
+      }>
+    ) => {
+      state.posts = [...state.posts, ...action.payload.posts];
+      state.nextCursor = action.payload.pagination.nextCursor;
+      state.hasMore = action.payload.pagination.hasMore;
     },
     prependPosts: (state, action: PayloadAction<IPost[]>) => {
       state.posts = [...action.payload, ...state.posts];
@@ -52,7 +66,6 @@ const postSlice = createSlice({
         );
       }
     },
-
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
@@ -64,7 +77,7 @@ const postSlice = createSlice({
     },
     resetFeed: (state) => {
       state.posts = [];
-      state.page = 1;
+      state.nextCursor = null;
       state.hasMore = true;
       state.error = null;
     },

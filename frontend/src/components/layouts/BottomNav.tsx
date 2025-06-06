@@ -7,8 +7,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAppSelector } from "@/hooks/redux/useAppSelector";
 import { useLogout } from "@/hooks/auth/useLogout";
+import { useAppSelector } from "@/hooks/redux/useAppSelector";
 import { generateRoute, PATH } from "@/routes/pathConstants";
 import { MouseEvent, useCallback } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
@@ -25,6 +25,7 @@ const BottomNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.user);
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
   const { handleLogout, isLoading: isLoadingLogout } = useLogout();
 
   const firstName = user?.firstName || "User";
@@ -47,24 +48,33 @@ const BottomNav = () => {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-30 border-t bg-background shadow flex justify-around items-center h-16">
-      {navItems.map((item) => (
-        <Link
-          key={item.label}
-          to={item.path}
-          className={`flex flex-col items-center justify-center text-xs transition-colors
-            ${
-              isActive(item.path)
-                ? "text-foreground font-bold"
-                : "text-muted-foreground"
-            }
-            hover:text-foreground
-          `}
-          onClick={(e) => handleNavClick(e, item.path)}
-        >
-          {item.icon}
-          <span className="mt-1">{item.label}</span>
-        </Link>
-      ))}
+      {navItems.map((item) => {
+        const isDisabled =
+          item.path === PATH.MESSAGES && (!isAuthenticated || !user);
+
+        return (
+          <Link
+            key={item.label}
+            to={item.path}
+            className={`flex flex-col items-center justify-center text-xs transition-colors
+              ${
+                isActive(item.path)
+                  ? "text-foreground font-bold"
+                  : "text-muted-foreground"
+              }
+              ${
+                isDisabled
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:text-foreground"
+              }
+            `}
+            onClick={(e) => handleNavClick(e, item.path)}
+          >
+            {item.icon}
+            <span className="mt-1">{item.label}</span>
+          </Link>
+        );
+      })}
       {/* Create Post Button */}
       <CreatePostDialog />
 

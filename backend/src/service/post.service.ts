@@ -11,7 +11,28 @@ import getDataUri from "../utils/datauri.util";
 
 class PostService {
   async createPost(request: Request) {
-    const { caption, tags, title, description, location } = request.body;
+    const { caption, title, description, location } = request.body;
+    let { tags } = request.body;
+
+    // Parse tags if they come as JSON string from FormData
+    // Note: The validation middleware might have already parsed this
+    if (typeof tags === "string") {
+      try {
+        console.log("Parsing tags from JSON string:", tags);
+        tags = JSON.parse(tags);
+        console.log("Parsed tags:", tags);
+      } catch (error) {
+        console.log("Failed to parse tags JSON, treating as single tag:", tags);
+        // If parsing fails, treat it as a single tag or empty array
+        tags = tags ? [tags] : [];
+      }
+    } else if (Array.isArray(tags)) {
+      console.log("Tags already parsed as array:", tags);
+    } else {
+      console.log("Tags received as:", typeof tags, tags);
+      tags = tags ? [tags] : [];
+    }
+
     const files = request.files as Express.Multer.File[];
     const userId = request.user._id;
 
@@ -149,29 +170,47 @@ class PostService {
     }
   }
 
-  async getAllPostsNotLoginUser() {
-    const posts = await Post.find({
+  async getAllPostsNotLoginUser(cursor?: string, limit: number = 5) {
+    const query: any = {
       visibility: "public",
       isArchived: false,
       isDeleted: false,
-    })
+    };
+
+    // If cursor is provided, add condition to get posts created before cursor
+    if (cursor) {
+      query.createdAt = { $lt: new Date(cursor) };
+    }
+
+    const posts = await Post.find(query)
       .select("-updatedAt -__v")
-      .sort({ createdAt: -1 }) // FIX: use createdAt, not created
+      .sort({ createdAt: -1 })
+      .limit(limit)
       .populate({
         path: "author",
         select: "username profilePicture",
       });
-    // .populate({
-    //   path: "comments",
-    //   options: {
-    //     sort: { createdAt: -1 },
-    //   },
-    //   populate: { path: "author", select: "username profilePicture" },
-    // });
-    return posts;
+
+    // Get the cursor for next page (createdAt of last post)
+    const nextCursor =
+      posts.length > 0 ? posts[posts.length - 1].createdAt : null;
+    const hasMore = posts.length === limit;
+
+    return {
+      posts,
+      pagination: {
+        nextCursor,
+        hasMore,
+        limit,
+      },
+    };
   }
 
-  async getPostForLoginUser(userId: string) {
+  async getPostForLoginUser(
+    userId: string,
+    cursor?: string,
+    limit: number = 5
+  ) {
     // Get the current user with their following list
     const currentUser = await User.findById(userId).select("following");
 
@@ -182,22 +221,29 @@ class PostService {
     // Convert userId to ObjectId for comparison
     const userObjectId = new Types.ObjectId(userId);
 
-    const posts = await Post.aggregate([
-      {
-        $match: {
-          isArchived: false,
-          isDeleted: false,
-          $or: [
-            { visibility: "public" }, // All public posts
-            { author: userObjectId }, // Your own posts (public/private)
-            {
-              $and: [
-                { author: { $in: currentUser.following } }, // Posts from followed users
-                { visibility: "private" }, // Only their private posts
-              ],
-            },
+    const matchStage: any = {
+      isArchived: false,
+      isDeleted: false,
+      $or: [
+        { visibility: "public" }, // All public posts
+        { author: userObjectId }, // Your own posts (public/private)
+        {
+          $and: [
+            { author: { $in: currentUser.following } }, // Posts from followed users
+            { visibility: "private" }, // Only their private posts
           ],
         },
+      ],
+    };
+
+    // Add cursor condition if provided
+    if (cursor) {
+      matchStage.createdAt = { $lt: new Date(cursor) };
+    }
+
+    const posts = await Post.aggregate([
+      {
+        $match: matchStage,
       },
       {
         $lookup: {
@@ -227,9 +273,74 @@ class PostService {
       {
         $sort: { createdAt: -1 },
       },
+      {
+        $limit: limit,
+      },
     ]);
 
-    return posts;
+    // Get the cursor for next page (createdAt of last post)
+    const nextCursor =
+      posts.length > 0 ? posts[posts.length - 1].createdAt : null;
+    const hasMore = posts.length === limit;
+
+    return {
+      posts,
+      pagination: {
+        nextCursor,
+        hasMore,
+        limit,
+      },
+    };
+  }
+
+  async deletePost(userId: string, postId: string) {
+    // Find the post
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      throw AppError.notFoundError("Post not found");
+    }
+
+    // Check if the user is the author of the post
+    if (post.author.toString() !== userId) {
+      throw AppError.unauthorizedError("You can only delete your own posts");
+    }
+
+    // Check if post is already deleted
+    if (post.isDeleted) {
+      throw AppError.emptyOrInvalidData("Post is already deleted");
+    }
+
+    // Delete images from Cloudinary
+    if (post.media && post.media.length > 0) {
+      await Promise.all(
+        post.media.map(async (mediaItem) => {
+          if (mediaItem.publicId) {
+            try {
+              await cloudinary.uploader.destroy(mediaItem.publicId);
+            } catch (error) {
+              console.error(
+                `Failed to delete image ${mediaItem.publicId}:`,
+                error
+              );
+              // Continue with deletion even if cloudinary deletion fails
+            }
+          }
+        })
+      );
+    }
+
+    // Mark post as deleted (soft delete) or completely remove
+    await Post.findByIdAndDelete(postId);
+
+    // Remove post reference from user's posts array
+    await User.findByIdAndUpdate(
+      userId,
+      { $pull: { posts: postId } },
+      { new: true }
+    );
+
+    return { message: "Post deleted successfully" };
   }
 }
 

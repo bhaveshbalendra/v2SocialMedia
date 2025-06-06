@@ -13,14 +13,14 @@ export const createPostSchema = z.object({
   tags: z
     .string()
     .optional()
-    .transform((val) =>
-      val
-        ? val
-            .split(/[#,\s]+/)
-            .map((tag) => tag.trim())
-            .filter(Boolean)
-        : []
-    ),
+    .default("")
+    .transform((val) => {
+      if (!val || val.trim() === "") return [];
+      return val
+        .split(/[#,\s]+/)
+        .map((tag) => tag.trim())
+        .filter(Boolean);
+    }),
   media: z
     .any()
     .optional()

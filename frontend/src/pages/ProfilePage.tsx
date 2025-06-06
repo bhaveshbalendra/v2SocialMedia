@@ -3,29 +3,108 @@ import { Icons } from "@/components/export/Icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import useMessageUser from "@/hooks/chat/useMessageUser";
 import useProfile from "@/hooks/profiles/useProfile";
 import { useAppSelector } from "@/hooks/redux/useAppSelector";
+import {
+  useFollowUserMutation,
+  useUnfollowUserMutation,
+} from "@/store/apis/followApi";
+import { useCheckFollowStatusQuery } from "@/store/apis/profileApi";
 import {
   IUserPostForProfileData,
   IUserProfileData,
 } from "@/types/profile.types";
-import { Link } from "react-router";
+import { toast } from "sonner";
+
 const ProfilePage = () => {
   const {
     isLoadingProfile,
     errorProfile,
     userProfileData: user,
-    handleFollow,
-    handleUnfollow,
   } = useProfile();
   const userInfo = useAppSelector((state) => state.auth.user);
   const userId = userInfo?._id;
+  const { handleMessageUser, isLoading: isMessageLoading } = useMessageUser();
+
+  // Get follow status for the current user viewing this profile
+  const userData = user as IUserProfileData | null;
+  const { data: followStatusData, isLoading: followStatusLoading } =
+    useCheckFollowStatusQuery(userData?._id || "", {
+      skip: !userData?._id || !userId || userData?._id === userId,
+    });
+
+  const [followUser, { isLoading: isFollowLoading }] = useFollowUserMutation();
+  const [unfollowUser, { isLoading: isUnfollowLoading }] =
+    useUnfollowUserMutation();
+
+  const handleFollow = async () => {
+    if (!userData || !userData.username) return;
+
+    try {
+      const result = await followUser(userData.username).unwrap();
+      toast.success(result.message);
+    } catch (error: unknown) {
+      const errorMessage =
+        error && typeof error === "object" && "data" in error
+          ? (error as { data?: { message?: string } }).data?.message
+          : "Failed to follow user";
+      toast.error(errorMessage);
+    }
+  };
+
+  const handleUnfollow = async () => {
+    if (!userData || !userData.username) return;
+
+    try {
+      const result = await unfollowUser(userData.username).unwrap();
+      toast.success(result.message);
+    } catch (error: unknown) {
+      const errorMessage =
+        error && typeof error === "object" && "data" in error
+          ? (error as { data?: { message?: string } }).data?.message
+          : "Failed to unfollow user";
+      toast.error(errorMessage);
+    }
+  };
+
+  const getFollowButtonContent = () => {
+    if (followStatusLoading || isFollowLoading || isUnfollowLoading) {
+      return <Icons.Spinner className="animate-spin h-4 w-4" />;
+    }
+
+    const status = followStatusData?.data?.status;
+
+    switch (status) {
+      case "following":
+        return "Unfollow";
+      case "requested":
+        return "Follow Request Sent";
+      case "private":
+        return "Follow";
+      case "not_following":
+      default:
+        return "Follow";
+    }
+  };
+
+  const getFollowButtonAction = () => {
+    const status = followStatusData?.data?.status;
+
+    if (status === "following") {
+      return handleUnfollow;
+    } else if (status === "requested") {
+      return () => {}; // No action for pending requests
+    } else {
+      return handleFollow;
+    }
+  };
 
   if (isLoadingProfile) return <RouteSpinner />;
   if (errorProfile) return <div>Error: {errorProfile.toString()}</div>;
 
   if (user) {
-    // Use a type assertion with unknown as an intermediary step
+    // Type guard to ensure we have a proper user object
     const userData = user as IUserProfileData;
     const profilePicture = userData.profilePicture || "";
     const username = userData.username || "";
@@ -33,7 +112,6 @@ const ProfilePage = () => {
     const following = userData.following || [];
     const bio = userData.bio || "";
     const posts = userData.posts || [];
-    const isFollowing = followers.find((follower) => follower._id === userId);
 
     return (
       <div className="max-w-2xl mx-auto py-8 px-4">
@@ -53,24 +131,40 @@ const ProfilePage = () => {
                 </Button>
               </div>
               <div className="flex flex-col sm:flex-row items-center gap-4 mb-2">
-                {/* {user.isOwnProfile && (
-                  <Button size="sm" variant="outline">
-                    Edit Profile
-                  </Button>
-                )} */}
                 {userId !== userData._id && (
                   <Button
                     size="sm"
-                    variant="outline"
-                    onClick={isFollowing ? handleUnfollow : handleFollow}
+                    variant={
+                      followStatusData?.data?.status === "following"
+                        ? "secondary"
+                        : "outline"
+                    }
+                    onClick={getFollowButtonAction()}
+                    disabled={
+                      followStatusLoading ||
+                      isFollowLoading ||
+                      isUnfollowLoading ||
+                      followStatusData?.data?.status === "requested"
+                    }
                   >
-                    {isFollowing ? "Unfollow" : "Follow"}
+                    {getFollowButtonContent()}
                   </Button>
                 )}
 
-                <Button variant="outline" size="sm">
-                  <Link to="/direct/inbox">Message</Link>
-                </Button>
+                {userId !== userData._id && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleMessageUser(userData._id)}
+                    disabled={isMessageLoading}
+                  >
+                    {isMessageLoading ? (
+                      <Icons.Spinner className="animate-spin" />
+                    ) : (
+                      "Message"
+                    )}
+                  </Button>
+                )}
               </div>
             </div>
             <div className="flex gap-6 text-sm mb-2">

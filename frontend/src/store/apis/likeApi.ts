@@ -48,7 +48,7 @@ export const likeApi = createApi({
           dispatch(
             postApi.util.updateQueryData(
               "getPublicFeed",
-              { page: 1, limit: 10 },
+              { limit: 5 },
               (draft) => {
                 const post = draft.posts.find((p) => p._id === postId);
                 if (post && post.likes && !post.likes.includes(userId)) {
@@ -60,7 +60,7 @@ export const likeApi = createApi({
           dispatch(
             postApi.util.updateQueryData(
               "getAuthenticatedFeed",
-              { page: 1, limit: 10 },
+              { limit: 5 },
               (draft) => {
                 const post = draft.posts.find((p) => p._id === postId);
                 if (post && post.likes && !post.likes.includes(userId)) {
@@ -109,7 +109,7 @@ export const likeApi = createApi({
             dispatch(
               postApi.util.updateQueryData(
                 "getPublicFeed",
-                { page: 1, limit: 10 },
+                { limit: 5 },
                 (draft) => {
                   const post = draft.posts.find((p) => p._id === postId);
                   if (post && post.likes) {
@@ -121,7 +121,7 @@ export const likeApi = createApi({
             dispatch(
               postApi.util.updateQueryData(
                 "getAuthenticatedFeed",
-                { page: 1, limit: 10 },
+                { limit: 5 },
                 (draft) => {
                   const post = draft.posts.find((p) => p._id === postId);
                   if (post && post.likes) {

@@ -4,33 +4,50 @@ import {
   useCreatePostMutation,
   useGetAuthenticatedFeedQuery,
   useGetPublicFeedQuery,
+  useLazyGetAuthenticatedFeedQuery,
+  useLazyGetPublicFeedQuery,
 } from "@/store/apis/postApi";
-import { prependPosts, setLoading, setPosts } from "@/store/slices/postSlice";
-import { useEffect } from "react";
+import {
+  appendPosts,
+  prependPosts,
+  resetFeed,
+  setLoading,
+  setPosts,
+} from "@/store/slices/postSlice";
+import { useCallback, useEffect } from "react";
 import { toast } from "sonner";
 
-export const usePost = (page: number = 1, limit: number = 10) => {
+export const usePost = () => {
   const dispatch = useAppDispatch();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const {
+    posts,
+    isLoading: feedLoading,
+    hasMore,
+    nextCursor,
+  } = useAppSelector((state) => state.post);
+
   const [createPost, { isLoading: isLoadingCreatePost }] =
     useCreatePostMutation();
 
-  const { posts, isLoading: feedLoading } = useAppSelector(
-    (state) => state.post
-  );
-
-  // Use the appropriate query based on authentication status
+  // Initial feed query - always fetch first page
   const {
     data: publicData,
     isLoading: publicLoading,
     error: publicError,
-  } = useGetPublicFeedQuery({ page, limit }, { skip: isAuthenticated });
+    refetch: refetchPublic,
+  } = useGetPublicFeedQuery({ limit: 5 }, { skip: isAuthenticated });
 
   const {
     data: authData,
     isLoading: authLoading,
     error: authError,
-  } = useGetAuthenticatedFeedQuery({ page, limit }, { skip: !isAuthenticated });
+    refetch: refetchAuth,
+  } = useGetAuthenticatedFeedQuery({ limit: 5 }, { skip: !isAuthenticated });
+
+  // For loading more posts
+  const [loadMorePublic] = useLazyGetPublicFeedQuery();
+  const [loadMoreAuth] = useLazyGetAuthenticatedFeedQuery();
 
   const handleCreatePost = async (credentials: FormData) => {
     try {
@@ -72,14 +89,77 @@ export const usePost = (page: number = 1, limit: number = 10) => {
     }
   };
 
+  // Load more posts function
+  const loadMorePosts = useCallback(async () => {
+    if (!hasMore || feedLoading) {
+      return;
+    }
+
+    try {
+      dispatch(setLoading(true));
+
+      if (isAuthenticated) {
+        const result = await loadMoreAuth({
+          cursor: nextCursor || undefined,
+          limit: 5,
+        });
+        if (result.data) {
+          dispatch(
+            appendPosts({
+              posts: result.data.posts,
+              pagination: result.data.pagination,
+            })
+          );
+        }
+      } else {
+        const result = await loadMorePublic({
+          cursor: nextCursor || undefined,
+          limit: 5,
+        });
+        if (result.data) {
+          dispatch(
+            appendPosts({
+              posts: result.data.posts,
+              pagination: result.data.pagination,
+            })
+          );
+        }
+      }
+    } catch (error) {
+      console.error("Error loading more posts:", error);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  }, [
+    hasMore,
+    feedLoading,
+    isAuthenticated,
+    nextCursor,
+    posts.length,
+    loadMoreAuth,
+    loadMorePublic,
+    dispatch,
+  ]);
+
+  // Refresh feed function
+  const refreshFeed = useCallback(() => {
+    dispatch(resetFeed());
+    if (isAuthenticated) {
+      refetchAuth();
+    } else {
+      refetchPublic();
+    }
+  }, [isAuthenticated, refetchAuth, refetchPublic, dispatch]);
+
   // Determine which data to use based on authentication
   const data = isAuthenticated ? authData : publicData;
   const isLoading = isAuthenticated ? authLoading : publicLoading;
   const error = isAuthenticated ? authError : publicError;
 
+  // Set initial posts when data is available
   useEffect(() => {
     if (data) {
-      dispatch(setPosts(data.posts));
+      dispatch(setPosts({ posts: data.posts, pagination: data.pagination }));
     }
   }, [data, dispatch]);
 
@@ -91,8 +171,12 @@ export const usePost = (page: number = 1, limit: number = 10) => {
     posts,
     feedLoading,
     error,
+    hasMore,
+    nextCursor,
     handleCreatePost,
     isLoadingCreatePost,
+    loadMorePosts,
+    refreshFeed,
   };
 };
 
