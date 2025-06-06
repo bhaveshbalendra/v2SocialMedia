@@ -29,7 +29,10 @@ export const useComments = ({
     isLoading: isLoadingComments,
     error: commentsError,
     refetch: refetchComments,
-  } = useGetPostCommentsQuery({ postId, page, limit });
+  } = useGetPostCommentsQuery(
+    { postId, page, limit },
+    { skip: !postId || postId.trim() === "" }
+  );
 
   // Mutations
   const [createComment, { isLoading: isCreatingComment }] =

@@ -1,3 +1,4 @@
+import UserSearchModal from "@/components/search/UserSearchModal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -20,29 +21,12 @@ import NotificationModal from "../notifications/NotificationModal";
 import { Button } from "../ui/button";
 
 // --- Types ---
-type ModalProps = {
-  open: boolean;
-  onClose: () => void;
-};
-
 type User = {
   _id: string;
   firstName: string;
   profilePicture?: string;
   username: string;
 };
-
-// --- Modal Components ---
-const SearchModal: FC<ModalProps> = ({ open, onClose }) =>
-  open ? (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-background p-6 rounded shadow-lg">
-        <h2 className="text-lg font-bold mb-4">Search</h2>
-        <input className="border p-2 w-full mb-4" placeholder="Search..." />
-        <Button onClick={onClose}>Close</Button>
-      </div>
-    </div>
-  ) : null;
 
 // --- Main Sidebar ---
 const LeftSidebar: FC<{ isLoading: boolean }> = ({ isLoading }) => {
@@ -118,6 +102,7 @@ const LeftSidebar: FC<{ isLoading: boolean }> = ({ isLoading }) => {
                   hover:bg-muted hover:text-foreground 
                   dark:hover:bg-muted dark:hover:text-foreground
                   ${isActive(PATH.MESSAGES) ? "bg-muted/80 font-bold" : ""}
+                  ${!user ? "opacity-50 cursor-not-allowed" : ""}
                 `}
                 onClick={(e) => handleNavClick(e, PATH.MESSAGES)}
               >
@@ -129,12 +114,15 @@ const LeftSidebar: FC<{ isLoading: boolean }> = ({ isLoading }) => {
             <li>
               <button
                 type="button"
-                className="flex items-center gap-3 px-3 py-2 rounded bg-background text-foreground hover:bg-muted hover:text-foreground dark:hover:bg-muted dark:hover:text-foreground w-full"
-                onClick={() => setNotificationOpen(true)}
+                className={`flex items-center gap-3 px-3 py-2 rounded bg-background text-foreground hover:bg-muted hover:text-foreground dark:hover:bg-muted dark:hover:text-foreground w-full
+                  ${!user ? "opacity-50 cursor-not-allowed" : ""}
+                `}
+                onClick={() => user && setNotificationOpen(true)}
+                disabled={!user}
               >
                 <div className="relative">
                   <Icons.Notifications size={22} />
-                  {unreadCount > 0 && (
+                  {user && unreadCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
                       {unreadCount > 9 ? "9+" : unreadCount}
                     </span>
@@ -214,7 +202,7 @@ const LeftSidebar: FC<{ isLoading: boolean }> = ({ isLoading }) => {
         </div>
       )}
       {/* Modals */}
-      <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <UserSearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
       <NotificationModal
         onClick={() => setNotificationOpen(!notificationOpen)}
         open={notificationOpen}

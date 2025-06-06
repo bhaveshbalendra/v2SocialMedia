@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 // import RouteSpinner from "./components/common/RouteSpinner";
 import { ThemeProvider } from "./components/layouts/theme-provider";
 import { useTokenPolling } from "./hooks/auth/useSyncAuthCredentials";
+import { useSocket } from "./hooks/sockets/useSocket";
 import { routesConfig } from "./routes/AppRoutes";
 import { store } from "./store/store";
 
@@ -17,6 +18,9 @@ const AppContent = () => {
   // Use polling to refresh the token every 6 hours
   // const navigation = useNavigation();
   useTokenPolling();
+
+  // Initialize socket connection for real-time features
+  useSocket();
 
   return (
     <ThemeProvider>

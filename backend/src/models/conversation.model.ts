@@ -50,7 +50,6 @@ const conversationSchema: Schema<IConversation> = new Schema<IConversation>(
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
     },
     lastMessage: {
       type: Schema.Types.ObjectId,
