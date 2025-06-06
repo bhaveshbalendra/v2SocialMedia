@@ -10,6 +10,7 @@ export interface SuggestedUser {
   profilePicture?: string;
   bio?: string;
   isPrivate: boolean;
+  isVerified?: boolean;
 }
 
 export interface SuggestedUsersResponse {

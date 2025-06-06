@@ -82,7 +82,7 @@ export const chatApi = createApi({
         }
         return response;
       },
-      providesTags: (result, error, { conversationId }) => [
+      providesTags: (_result, _error, { conversationId }) => [
         { type: "Messages", id: conversationId },
       ],
     }),
