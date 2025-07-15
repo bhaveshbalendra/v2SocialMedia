@@ -23,7 +23,8 @@ const handleSignupUser = asyncHandler(
     // Store the refresh token in an HTTP-only cookie for security
     response.cookie("refreshToken", refreshToken, {
       httpOnly: true, // Prevents JavaScript access to the cookie (mitigates XSS)
-      secure: config.node_env === "production", // Only send cookie over HTTPS in production
+      secure: true, // Required for SameSite=None (cross-site cookies)
+      sameSite: "none", // Allow cross-site cookie usage
       maxAge: Number(config.jwt.refreshTokenExpiry) * 1000, // Set cookie expiry (milliseconds)
     });
 
@@ -60,7 +61,8 @@ const handleLoginUser = asyncHandler(
     // Store the refresh token in an HTTP-only cookie
     response.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: config.node_env === "production",
+      secure: true, // Required for SameSite=None (cross-site cookies)
+      sameSite: "none", // Allow cross-site cookie usage
       maxAge: Number(config.jwt.refreshTokenExpiry) * 1000, // Note: should be *1000 for ms if config is in seconds
     });
 
@@ -138,7 +140,8 @@ const handleGoogleLogin = asyncHandler(
     // Store the refresh token in an HTTP-only cookie
     response.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: config.node_env === "production",
+      secure: true, // Required for SameSite=None (cross-site cookies)
+      sameSite: "none", // Allow cross-site cookie usage
       maxAge: Number(config.jwt.refreshTokenExpiry) * 1000, // Note: should be *1000 for ms if config is in seconds
     });
 
