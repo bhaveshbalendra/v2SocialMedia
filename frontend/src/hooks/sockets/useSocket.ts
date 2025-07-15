@@ -1,6 +1,8 @@
 import { useAppDispatch } from "@/hooks/redux/useAppDispatch";
 import { useAppSelector } from "@/hooks/redux/useAppSelector";
+import { addRealTimeMessage } from "@/store/slices/chatSlice";
 import { likePost, unlikePost } from "@/store/slices/postSlice";
+import { ICommentRTM } from "@/types/comment.types";
 import { ILikePostRTM, IUnlikePostRTM } from "@/types/like.types";
 import { IPost } from "@/types/post.types";
 import { useEffect, useState } from "react";
@@ -62,6 +64,38 @@ export function useSocket() {
       socketInstance.on("postUnliked", (data: IUnlikePostRTM) => {
         if (posts.find((post: IPost) => post._id === data.postId)) {
           dispatch(unlikePost(data));
+        }
+      });
+
+      socketInstance.on("newComment", (data: ICommentRTM) => {
+        console.log(data);
+      });
+
+      // Handle incoming real-time messages
+      socketInstance.on("newMessage", (message) => {
+        console.log("Real-time message received:", message);
+
+        // IMPORTANT: Only handle messages from OTHER users, not yourself
+        if (message.senderId !== user._id) {
+          // Convert the message to match our frontend interface
+          const formattedMessage = {
+            id: message._id,
+            senderId: message.senderId,
+            conversationId: message.conversationId,
+            content: message.content,
+            messageType: message.messageType || "text",
+            isEdited: message.isEdited || false,
+            editedAt: message.editedAt,
+            readBy: message.readBy || [],
+            replyTo: message.replyTo,
+            reactions: message.reactions || [],
+            systemData: message.systemData,
+            isRead: message.isRead || false,
+            createdAt: message.createdAt,
+            updatedAt: message.updatedAt,
+          };
+
+          dispatch(addRealTimeMessage(formattedMessage));
         }
       });
 

@@ -1,4 +1,5 @@
 import { Types } from "mongoose";
+import { config } from "../config/app.config";
 import { AppError } from "../middleware/error.middleware";
 import Comment from "../models/comment.model";
 import Post from "../models/post.model";
@@ -78,10 +79,12 @@ class CommentService {
     }
 
     // Populate the comment with user details
-    const populatedComment = await Comment.findById(comment._id).populate({
-      path: "user",
-      select: "username profilePicture",
-    });
+    const populatedComment = await Comment.findById(comment._id)
+      .populate({
+        path: "user",
+        select: "username profilePicture ",
+      })
+      .select("-updatedAt -__v ");
 
     // Emit real-time notification
     for (const [socketUserId, socketIds] of userSocketMap.entries()) {
@@ -94,6 +97,22 @@ class CommentService {
         });
       }
     }
+
+    // {
+    //     "_id": "6870e37049335dac9723d34e",
+    //     "user": {
+    //         "_id": "6843235b3116e92073ea1f0d",
+    //         "username": "bhavesh",
+    //         "profilePicture": ""
+    //     },
+    //     "post": "68709f70e69b0a4e159dcd33",
+    //     "content": "are you ok",
+    //     "likes": [],
+    //     "likesCount": 0,
+    //     "parentComment": null,
+    //     "createdAt": "2025-07-11T10:12:00.776Z",
+    //     "id": "6870e37049335dac9723d34e"
+    // }
 
     return populatedComment;
   }
@@ -157,64 +176,65 @@ class CommentService {
   /**
    * Get comments for a post
    */
-  async getPostComments(postId: string, page: number = 1, limit: number = 20) {
+  async getPostComments(postId: string, cursor: string | null = null) {
     // Check if post exists
     const post = await Post.findById(postId);
     if (!post) {
       throw AppError.notFoundError("Post not found");
     }
 
-    const skip = (page - 1) * limit;
-
     // Get parent comments (not replies)
     const comments = await Comment.find({
       post: postId,
-      parentComment: null,
+      createdAt: cursor ? { $lt: new Date(cursor) } : { $exists: true },
     })
+      .sort({ createdAt: -1 })
+      .limit(config.comment_limit) // Use commentLimit from config
       .populate({
         path: "user",
-        select: "username profilePicture",
-      })
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
+        select: "username profilePicture _id",
+      });
+
+    const nextCursor =
+      comments.length > 0
+        ? comments[comments.length - 1].createdAt.toISOString()
+        : null;
+    const hasMore = comments.length === config.comment_limit;
 
     // Get replies for each comment
-    const commentsWithReplies = await Promise.all(
-      comments.map(async (comment) => {
-        const replies = await Comment.find({
-          parentComment: comment._id,
-        })
-          .populate({
-            path: "user",
-            select: "username profilePicture",
-          })
-          .sort({ createdAt: 1 })
-          .limit(5); // Limit replies shown initially
+    // const commentsWithReplies = await Promise.all(
+    //   comments.map(async (comment) => {
+    //     const replies = await Comment.find({
+    //       parentComment: comment._id,
+    //     })
+    //       .populate({
+    //         path: "user",
+    //         select: "username profilePicture",
+    //       })
+    //       .sort({ createdAt: 1 })
+    //       .limit(5); // Limit replies shown initially
 
-        return {
-          ...comment.toObject(),
-          replies,
-          repliesCount: await Comment.countDocuments({
-            parentComment: comment._id,
-          }),
-        };
-      })
-    );
+    //     return {
+    //       ...comment.toObject(),
+    //       replies,
+    //       repliesCount: await Comment.countDocuments({
+    //         parentComment: comment._id,
+    //       }),
+    //     };
+    //   })
+    // );
 
-    const totalComments = await Comment.countDocuments({
-      post: postId,
-      parentComment: null,
-    });
+    // const totalComments = await Comment.countDocuments({
+    //   post: postId,
+    //   parentComment: null,
+    // });
 
     return {
-      comments: commentsWithReplies,
+      postId,
+      comments,
       pagination: {
-        page,
-        limit,
-        total: totalComments,
-        pages: Math.ceil(totalComments / limit),
-        hasMore: page * limit < totalComments,
+        nextCursor,
+        hasMore,
       },
     };
   }

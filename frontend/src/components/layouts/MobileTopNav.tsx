@@ -6,10 +6,13 @@ import { useState } from "react";
 import { Link } from "react-router";
 import { Icons } from "../export/Icons";
 import NotificationModal from "../notifications/NotificationModal";
+import UserSearchModal from "../search/UserSearchModal";
+
 const MobileTopNav = () => {
   const { toggle } = useToggleTheme();
   const { unreadCount } = useNotification();
   const [notificationOpen, setNotificationOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   return (
     <div className="flex items-center gap-2 px-4 py-2 border-b justify-between lg:hidden">
@@ -22,6 +25,7 @@ const MobileTopNav = () => {
         type="text"
         placeholder="Search"
         className="flex-1 max-w-xs rounded-md"
+        onFocus={() => setSearchOpen(true)}
       />
       {/* Notification Button */}
       <Button
@@ -42,6 +46,8 @@ const MobileTopNav = () => {
         open={notificationOpen}
         onClick={() => setNotificationOpen(!notificationOpen)}
       />
+
+      <UserSearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
 
       <Button onClick={toggle}>
         <Icons.DarkMode />

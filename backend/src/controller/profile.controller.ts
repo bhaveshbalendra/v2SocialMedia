@@ -12,8 +12,6 @@ const handleGetUserProfile = asyncHandler(
   }
 );
 
-export { handleGetUserProfile };
-
 // import { Request, Response } from "express";
 // import asyncHandler from "express-async-handler";
 // import profileService from "../service/profile.service";
@@ -80,28 +78,24 @@ export { handleGetUserProfile };
 //   }
 // );
 
-// /**
-//  * @desc    Search profiles
-//  * @route   GET /api/profiles/search?q=searchTerm
-//  * @access  Private
-//  */
-// const handleSearchProfiles = asyncHandler(
-//   async (request: Request, response: Response) => {
-//     const { q: searchTerm, limit = 10 } = request.query;
-//     const currentUserId = request.user!._id.toString();
+/**
+ * @desc    Search profiles
+ * @route   GET /api/profiles/search?q=searchTerm
+ * @access  Private
+ */
+const handleSearchProfiles = asyncHandler(
+  async (request: Request, response: Response) => {
+    const { q: searchTerm } = request.query;
+    console.log("search", searchTerm);
 
-//     const profiles = await profileService.searchProfiles(
-//       searchTerm as string,
-//       currentUserId,
-//       Number(limit)
-//     );
+    const profiles = await profileService.searchProfiles(searchTerm as string);
 
-//     response.status(200).json({
-//       success: true,
-//       data: profiles,
-//     });
-//   }
-// );
+    response.status(200).json({
+      success: true,
+      profiles,
+    });
+  }
+);
 
 // /**
 //  * @desc    Update privacy settings
@@ -163,12 +157,10 @@ export { handleGetUserProfile };
 //   }
 // );
 
-// export {
-//   handleGetMyProfile,
-//   handleGetProfile,
-//   handleGetProfileSettings,
-//   handleSearchProfiles,
-//   handleUpdateMyProfile,
-//   handleUpdatePrivacy,
-//   handleUpdateProfileSettings,
-// };
+export {
+  handleGetUserProfile,
+  // handleGetMyProfile,
+  // handleGetProfile,
+  // handleGetProfileSettings,
+  handleSearchProfiles,
+};

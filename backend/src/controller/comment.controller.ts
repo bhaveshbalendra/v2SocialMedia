@@ -7,6 +7,7 @@ import commentService from "../service/comment.service";
  * @route POST /api/v2/comments/:postId
  * @access Private
  */
+
 const createComment = asyncHandler(
   async (request: Request, response: Response): Promise<any> => {
     const { postId } = request.params;
@@ -60,10 +61,9 @@ const createReply = asyncHandler(
 const getPostComments = asyncHandler(
   async (request: Request, response: Response): Promise<any> => {
     const { postId } = request.params;
-    const page = parseInt(request.query.page as string) || 1;
-    const limit = parseInt(request.query.limit as string) || 20;
+    const cursor = (request.query.nextCursor as string) || null;
 
-    const result = await commentService.getPostComments(postId, page, limit);
+    const result = await commentService.getPostComments(postId, cursor);
 
     response.status(200).json({
       success: true,

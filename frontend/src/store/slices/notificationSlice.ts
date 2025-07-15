@@ -44,7 +44,7 @@ const notificationSlice = createSlice({
         state.unreadCount -= 1;
       }
     },
-    markAllAsRead: (state) => {
+    setMarkAllAsRead: (state) => {
       state.notifications = state.notifications.map((item) => ({
         ...item,
         read: true,
@@ -74,7 +74,7 @@ export const {
   setNotifications,
   addNotification,
   markAsRead,
-  markAllAsRead,
+  setMarkAllAsRead,
   removeNotification,
 
   clearNotifications,

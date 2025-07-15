@@ -1,3 +1,4 @@
+import useMarkReadNotification from "@/hooks/notifications/useMarkReadNotifiaction";
 import useNotification from "@/hooks/notifications/useNotification";
 import useProfile from "@/hooks/profiles/useProfile";
 import { formatDistanceToNow } from "date-fns";
@@ -55,10 +56,18 @@ const NotificationModal = ({
     new Set()
   );
 
-  const handleAcceptRequest = async (requestId: string) => {
+  const { markAllNotificationsAsRead } = useMarkReadNotification();
+
+  const handleAcceptRequest = async ({
+    requestId,
+    notificationId,
+  }: {
+    requestId: string;
+    notificationId: string;
+  }) => {
     try {
       setProcessingRequests((prev) => new Set(prev).add(requestId));
-      await handleAcceptFollowRequest(requestId);
+      await handleAcceptFollowRequest({ requestId, notificationId });
     } catch (error) {
       console.error("Error accepting follow request:", error);
     } finally {
@@ -70,10 +79,16 @@ const NotificationModal = ({
     }
   };
 
-  const handleRejectRequest = async (requestId: string) => {
+  const handleRejectRequest = async ({
+    requestId,
+    notificationId,
+  }: {
+    requestId: string;
+    notificationId: string;
+  }) => {
     try {
       setProcessingRequests((prev) => new Set(prev).add(requestId));
-      await handleRejectFollowRequest(requestId);
+      await handleRejectFollowRequest({ requestId, notificationId });
     } catch (error) {
       console.error("Error rejecting follow request:", error);
     } finally {
@@ -90,17 +105,17 @@ const NotificationModal = ({
       case "FOLLOW_REQUEST":
       case "FOLLOWED":
       case "FOLLOW_ACCEPTED":
-        return <User className="h-4 w-4 text-blue-500" />;
+        return <User className="h-4 w-4 text-foreground" />;
       case "POST_LIKED":
       case "COMMENT_LIKED":
-        return <Heart className="h-4 w-4 text-red-500" />;
+        return <Heart className="h-4 w-4 text-foreground" />;
       case "POST_COMMENTED":
       case "COMMENT_REPLIED":
-        return <MessageCircle className="h-4 w-4 text-green-500" />;
+        return <MessageCircle className="h-4 w-4 text-foreground" />;
       case "POST_SHARED":
-        return <Share className="h-4 w-4 text-purple-500" />;
+        return <Share className="h-4 w-4 text-foreground" />;
       default:
-        return <User className="h-4 w-4 text-gray-500" />;
+        return <User className="h-4 w-4 text-foreground" />;
     }
   };
 
@@ -112,7 +127,7 @@ const NotificationModal = ({
     const entityData = notification.entityData;
 
     return (
-      <div className="flex items-start gap-3 p-3 border rounded-md hover:bg-gray-50 transition-colors">
+      <div className="flex items-start gap-3 p-3 border border-foreground rounded-md hover:bg-background transition-colors">
         {/* Sender Avatar */}
         <Avatar className="h-10 w-10">
           <AvatarImage
@@ -128,14 +143,14 @@ const NotificationModal = ({
           {/* Notification Content */}
           <div className="flex items-center gap-2 mb-1">
             {getNotificationIcon(notification.type)}
-            <p className="text-sm font-medium text-gray-900">
+            <p className="text-sm font-medium text-foreground">
               {notification.content}
             </p>
           </div>
 
           {/* Entity Data Display */}
           {entityData && (
-            <div className="mt-2 p-2 bg-gray-50 rounded-md">
+            <div className="mt-2 p-2 bg-background rounded-md">
               {notification.entityModel === "FollowRequest" && (
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -148,7 +163,7 @@ const NotificationModal = ({
                         {entityData.from?.username?.[0]?.toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="text-xs text-gray-600">
+                    <span className="text-xs text-foreground">
                       @{entityData.from?.username}
                     </span>
                   </div>
@@ -158,8 +173,13 @@ const NotificationModal = ({
                         <Button
                           size="sm"
                           variant="outline"
-                          className="h-6 px-2 text-xs text-green-600 border-green-600 hover:bg-green-50"
-                          onClick={() => handleAcceptRequest(entityData._id!)}
+                          className="h-6 px-2 text-xs text-foreground border-foreground hover:bg-foreground hover:text-background"
+                          onClick={() =>
+                            handleAcceptRequest({
+                              requestId: entityData._id!,
+                              notificationId: notification._id!,
+                            })
+                          }
                           disabled={
                             processingRequests.has(entityData._id) ||
                             isAcceptFollowRequestLoading
@@ -170,8 +190,13 @@ const NotificationModal = ({
                         <Button
                           size="sm"
                           variant="outline"
-                          className="h-6 px-2 text-xs text-red-600 border-red-600 hover:bg-red-50"
-                          onClick={() => handleRejectRequest(entityData._id!)}
+                          className="h-6 px-2 text-xs text-foreground border-foreground hover:bg-foreground hover:text-background"
+                          onClick={() =>
+                            handleRejectRequest({
+                              requestId: entityData._id!,
+                              notificationId: notification._id!,
+                            })
+                          }
                           disabled={
                             processingRequests.has(entityData._id) ||
                             isRejectFollowRequestLoading
@@ -193,7 +218,7 @@ const NotificationModal = ({
                       className="h-8 w-8 rounded object-cover"
                     />
                   )}
-                  <span className="text-xs text-gray-600 truncate">
+                  <span className="text-xs text-foreground truncate">
                     {entityData.title || "Post"}
                   </span>
                 </div>
@@ -210,7 +235,7 @@ const NotificationModal = ({
                       {entityData.username?.[0]?.toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-xs text-gray-600">
+                  <span className="text-xs text-foreground">
                     @{entityData.username}
                   </span>
                 </div>
@@ -228,7 +253,7 @@ const NotificationModal = ({
 
         {/* Read Status Indicator */}
         {!notification.read && (
-          <div className="h-2 w-2 bg-blue-500 rounded-full mt-2"></div>
+          <div className="h-2 w-2 bg-foreground rounded-full mt-2"></div>
         )}
       </div>
     );
@@ -236,18 +261,31 @@ const NotificationModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onClick}>
-      <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto bg-background text-foreground">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold mb-4">
             Notifications
           </DialogTitle>
+          {/* Mark All as Read Button */}
+          {notifications && notifications.length > 0 && (
+            <div className="mt-4 pt-4 border-t">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full text-foreground border-foreground hover:bg-foreground hover:text-background"
+                onClick={() => markAllNotificationsAsRead()}
+              >
+                Mark all as read
+              </Button>
+            </div>
+          )}
         </DialogHeader>
 
         <div className="space-y-3 mt-2">
           {isLoading ? (
             <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-              <p className="mt-2 text-sm text-gray-600">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-foreground mx-auto"></div>
+              <p className="mt-2 text-sm text-foreground">
                 Loading notifications...
               </p>
             </div>
@@ -259,31 +297,14 @@ const NotificationModal = ({
             ))
           ) : (
             <div className="text-center py-8">
-              <User className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-              <p className="text-gray-600">No notifications yet</p>
-              <p className="text-sm text-gray-400">
+              <User className="h-12 w-12 text-foreground mx-auto mb-2" />
+              <p className="text-foreground">No notifications yet</p>
+              <p className="text-sm text-muted-foreground">
                 You'll see notifications here when someone interacts with you
               </p>
             </div>
           )}
         </div>
-
-        {/* Mark All as Read Button */}
-        {notifications && notifications.length > 0 && (
-          <div className="mt-4 pt-4 border-t">
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full"
-              onClick={() => {
-                // TODO: Implement mark all as read functionality
-                console.log("Mark all as read");
-              }}
-            >
-              Mark all as read
-            </Button>
-          </div>
-        )}
       </DialogContent>
     </Dialog>
   );

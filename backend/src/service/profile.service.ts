@@ -1,4 +1,5 @@
 import { Types } from "mongoose";
+import { config } from "../config/app.config";
 import { AppError } from "../middleware/error.middleware";
 import Notification from "../models/notification.model";
 import User from "../models/user.model";
@@ -29,6 +30,30 @@ class ProfileService {
       isPrivate: user.isPrivate,
       isBlocked: user.isBlocked,
     };
+  }
+
+  /**
+   * Search profiles
+   */
+  async searchProfiles(searchTerm: string) {
+    console.log(searchTerm);
+    if (!searchTerm || searchTerm.trim() === "") {
+      return [];
+    }
+
+    console.log(searchTerm);
+    const users = await User.find({
+      $or: [
+        { username: { $regex: searchTerm, $options: "i" } },
+        { firstName: { $regex: searchTerm, $options: "i" } },
+        { lastName: { $regex: searchTerm, $options: "i" } },
+      ],
+    })
+      .select("username profilePicture firstName lastName")
+      .limit(config.search_limit)
+      .lean();
+
+    return users;
   }
 }
 

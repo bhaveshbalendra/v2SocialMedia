@@ -44,3 +44,18 @@ export interface IGetUserProfileApiResponse {
   message?: string;
   success: boolean;
 }
+
+export interface ISearchProfile {
+  username: string;
+  profilePicture: string;
+  firstName: string;
+  lastName: string;
+}
+export interface IGetUserSearchProfileApiResponse {
+  success: boolean;
+  profiles: ISearchProfile[];
+}
+
+export interface IUserSearchProfileApiRequest {
+  searchTerm: string;
+}

@@ -1,3 +1,5 @@
+import { IComment } from "./comment.types";
+
 export interface IPublicFeedApiResponse {
   success: boolean;
   message: string;
@@ -9,8 +11,10 @@ export interface IFeedState {
   selectedPost: IPost | null;
   isLoading: boolean;
   error: string | null;
-  hasMore: boolean;
-  page: number;
+  hasMorePost: boolean;
+  hasMoreComment: boolean;
+  nextCursorPost: string | null;
+  nextCursorComment: string | null;
 }
 
 export interface IPost {
@@ -23,7 +27,7 @@ export interface IPost {
   media?: IMedia[];
   author?: IAuthor;
   likes?: string[];
-  comments?: string[];
+  comments?: IComment[];
   location?: string;
   tags?: string[];
   title?: string;

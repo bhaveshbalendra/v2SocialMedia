@@ -1,4 +1,10 @@
 import { apiUrl } from "@/config/configs";
+import {
+  ICreateCommentRequest,
+  ICreateCommentResponse,
+  IGetCommentsRequest,
+  IGetCommentsResponse,
+} from "@/types/comment.types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 // Types for comments
@@ -14,33 +20,8 @@ export interface IComment {
   likes: string[];
   likesCount: number;
   parentComment?: string;
-  replies?: IComment[];
-  repliesCount?: number;
+
   createdAt: string;
-  updatedAt: string;
-}
-
-export interface ICreateCommentRequest {
-  content: string;
-}
-
-export interface ICreateCommentResponse {
-  success: boolean;
-  message: string;
-  comment: IComment;
-}
-
-export interface IGetCommentsResponse {
-  success: boolean;
-  message: string;
-  comments: IComment[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    pages: number;
-    hasMore: boolean;
-  };
 }
 
 export interface IGetRepliesResponse {
@@ -95,7 +76,7 @@ export const commentApi = createApi({
     // Create a comment on a post
     createComment: builder.mutation<
       ICreateCommentResponse,
-      { postId: string; content: string }
+      ICreateCommentRequest
     >({
       query: ({ postId, content }) => ({
         url: `/${postId}`,
@@ -119,12 +100,12 @@ export const commentApi = createApi({
     }),
 
     // Get comments for a post
-    getPostComments: builder.query<
-      IGetCommentsResponse,
-      { postId: string; page?: number; limit?: number }
-    >({
-      query: ({ postId, page = 1, limit = 20 }) => ({
-        url: `/${postId}?page=${page}&limit=${limit}`,
+    getPostComments: builder.query<IGetCommentsResponse, IGetCommentsRequest>({
+      query: ({ postId, nextCursor }) => ({
+        url: `/${postId}`,
+        params: {
+          nextCursor,
+        },
         method: "GET",
       }),
       providesTags: ["Comments"],

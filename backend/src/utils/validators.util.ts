@@ -73,7 +73,7 @@ export const postValidator = {
     description: Joi.string().trim().max(500).optional().messages({
       "string.max": "Description must be at most 500 characters",
     }),
-    tags: Joi.array().items(Joi.string().trim().max(20)).max(10).optional(),
+    tags: Joi.string().trim(),
     location: Joi.string().trim().optional(),
   }),
 };

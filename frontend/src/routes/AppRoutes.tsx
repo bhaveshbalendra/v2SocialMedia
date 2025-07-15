@@ -1,6 +1,7 @@
 import ContentSection from "@/components/contents/ContentSection";
 import AuthLayout from "@/components/layouts/AuthLayout";
 import MainLayout from "@/components/layouts/MainLayout";
+
 import ChatPage from "@/pages/ChatPage";
 import EditProfilePage from "@/pages/EditProfilePage";
 import LoginPage from "@/pages/LoginPage";
@@ -10,6 +11,7 @@ import SettingPage from "@/pages/SettingPage";
 import SignupPage from "@/pages/SignupPage";
 import { PATH } from "./pathConstants";
 import ProtectedRoute from "./ProtectedRoute";
+import PublicRoute from "./PublicRoute";
 
 // Define routes in createBrowserRouter format
 export const routesConfig = [
@@ -25,20 +27,25 @@ export const routesConfig = [
     ],
   },
   {
-    // Auth routes
-    element: <AuthLayout />,
+    // Auth routes - protected from authenticated users
+    element: <PublicRoute />,
     children: [
       {
-        path: PATH.LOGIN,
-        element: <LoginPage />,
-      },
-      {
-        path: PATH.SIGNUP,
-        element: <SignupPage />,
-      },
-      {
-        path: PATH.FORGET_PASSWORD,
-        element: <h1>ForgotPasswordPage</h1>,
+        element: <AuthLayout />,
+        children: [
+          {
+            path: PATH.LOGIN,
+            element: <LoginPage />,
+          },
+          {
+            path: PATH.SIGNUP,
+            element: <SignupPage />,
+          },
+          {
+            path: PATH.FORGET_PASSWORD,
+            element: <h1>ForgotPasswordPage</h1>,
+          },
+        ],
       },
     ],
   },

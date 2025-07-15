@@ -20,7 +20,7 @@ router.use(authenticate);
 
 router.post("/:userId/follow", authenticate, handleFollow as RequestHandler);
 
-router.post(
+router.patch(
   "/:requestId/accept-follow-request",
   authenticate,
   handleAcceptFollowRequest as RequestHandler
@@ -37,6 +37,9 @@ router.delete(
   authenticate,
   handleUnfollow as RequestHandler
 );
+
+// Suggestions and mutual followers
+router.get("/suggestions", handleGetSuggestions);
 
 // // Follow/unfollow routes
 // router.post("/:userId", handleFollow);

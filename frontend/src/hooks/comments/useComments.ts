@@ -1,35 +1,21 @@
+import { useAppDispatch } from "@/hooks/redux/useAppDispatch";
 import {
   useCreateCommentMutation,
   useCreateReplyMutation,
   useDeleteCommentMutation,
-  useGetPostCommentsQuery,
   useToggleCommentLikeMutation,
   useUpdateCommentMutation,
 } from "@/store/apis/commentApi";
+import { setSelectedPost } from "@/store/slices/postSlice";
+import { ICreateCommentRequest } from "@/types/comment.types";
 import { useState } from "react";
 import { toast } from "sonner";
 
-interface UseCommentsProps {
-  postId: string;
-  page?: number;
-  limit?: number;
-}
-
-export const useComments = ({
-  postId,
-  page = 1,
-  limit = 20,
-}: UseCommentsProps) => {
+export const useComments = () => {
   const [isReplying, setIsReplying] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState<string | null>(null);
 
-  // Queries
-  const {
-    data: commentsData,
-    isLoading: isLoadingComments,
-    error: commentsError,
-    refetch: refetchComments,
-  } = useGetPostCommentsQuery({ postId, page, limit });
+  const dispatch = useAppDispatch();
 
   // Mutations
   const [createComment, { isLoading: isCreatingComment }] =
@@ -42,25 +28,31 @@ export const useComments = ({
     useDeleteCommentMutation();
   const [toggleCommentLike, { isLoading: isTogglingLike }] =
     useToggleCommentLikeMutation();
-
   // Handlers
-  const handleCreateComment = async (content: string) => {
-    if (!content.trim()) {
-      toast.error("Comment cannot be empty");
-      return false;
-    }
-
+  const handleCreateComment = async ({
+    content,
+    postId,
+  }: ICreateCommentRequest) => {
     try {
-      await createComment({ postId, content }).unwrap();
-      toast.success("Comment added successfully!");
-      return true;
+      const res = await createComment({ postId, content }).unwrap();
+
+      if (res.success && res.comment) {
+        // Update the selected post's comments array
+        dispatch(
+          setSelectedPost({
+            type: "ADD_COMMENT",
+            comment: res.comment,
+            postId,
+          })
+        );
+        toast.success("Comment added successfully!");
+      }
     } catch (error: unknown) {
       const errorMessage =
         error && typeof error === "object" && "data" in error
           ? (error as { data?: { message?: string } }).data?.message
           : "Failed to add comment";
       toast.error(errorMessage || "Failed to add comment");
-      return false;
     }
   };
 
@@ -151,12 +143,8 @@ export const useComments = ({
   const cancelEdit = () => setIsEditing(null);
 
   return {
-    // Data
-    comments: commentsData?.comments || [],
-    pagination: commentsData?.pagination,
-
     // Loading states
-    isLoadingComments,
+
     isCreatingComment,
     isCreatingReply,
     isUpdatingComment,
@@ -164,7 +152,6 @@ export const useComments = ({
     isTogglingLike,
 
     // Error states
-    commentsError,
 
     // UI states
     isReplying,
@@ -176,7 +163,6 @@ export const useComments = ({
     handleUpdateComment,
     handleDeleteComment,
     handleToggleLike,
-    refetchComments,
 
     // UI helpers
     startReplying,

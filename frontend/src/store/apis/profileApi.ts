@@ -1,5 +1,9 @@
 import { apiUrl } from "@/config/configs";
-import { IGetUserProfileApiResponse } from "@/types/profile.types";
+import {
+  IGetUserProfileApiResponse,
+  IGetUserSearchProfileApiResponse,
+  IUserSearchProfileApiRequest,
+} from "@/types/profile.types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const profileApi = createApi({
@@ -26,7 +30,18 @@ export const profileApi = createApi({
         { type: "Profile", id: username },
       ],
     }),
+    searchUserProfiles: builder.query<
+      IGetUserSearchProfileApiResponse,
+      IUserSearchProfileApiRequest
+    >({
+      query: ({ searchTerm }) => ({
+        url: "/search",
+        method: "GET",
+        params: { q: searchTerm },
+      }),
+    }),
   }),
 });
 
-export const { useGetUserProfileQuery } = profileApi;
+export const { useGetUserProfileQuery, useLazySearchUserProfilesQuery } =
+  profileApi;

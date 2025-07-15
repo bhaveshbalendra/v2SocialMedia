@@ -1,9 +1,9 @@
 import { useAppDispatch } from "@/hooks/redux/useAppDispatch";
+import { useAppSelector } from "@/hooks/redux/useAppSelector";
 import { useAuthUserRouteQuery } from "@/store/apis/authApi";
 import { setCredentials } from "@/store/slices/authSlice";
 import { IAuthUserRouteApiResponse } from "@/types/auth.types";
 import { useEffect, useRef } from "react";
-
 /**
  * Syncs authentication credentials from the provided user data
  * into the Redux store whenever the data changes.
@@ -73,6 +73,7 @@ export function useTokenRefresh() {
  * ```
  */
 export function useTokenPolling() {
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
   // The polling interval is set to 6 hours
   const SIX_HOURS = 6 * 60 * 60 * 1000;
 
@@ -80,5 +81,6 @@ export function useTokenPolling() {
   // the data every 6 hours while the component is mounted
   useAuthUserRouteQuery(undefined, {
     pollingInterval: SIX_HOURS,
+    skip: !isAuthenticated,
   });
 }

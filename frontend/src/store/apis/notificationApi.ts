@@ -36,7 +36,7 @@ export const notificationApi = createApi({
 
     markAllAsRead: builder.mutation<void, void>({
       query: () => ({
-        url: "/notifications/read-all",
+        url: "/read-all",
         method: "PATCH",
       }),
       invalidatesTags: ["Notifications"],
@@ -44,7 +44,7 @@ export const notificationApi = createApi({
 
     deleteNotification: builder.mutation<void, string>({
       query: (notificationId) => ({
-        url: `/notifications/${notificationId}`,
+        url: `/${notificationId}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Notifications"],

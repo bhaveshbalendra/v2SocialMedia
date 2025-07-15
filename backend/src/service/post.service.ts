@@ -160,14 +160,10 @@ class PostService {
       .populate({
         path: "author",
         select: "username profilePicture",
-      });
-    // .populate({
-    //   path: "comments",
-    //   options: {
-    //     sort: { createdAt: -1 },
-    //   },
-    //   populate: { path: "author", select: "username profilePicture" },
-    // });
+      })
+
+      .lean(); // Use lean to return plain JavaScript objects
+
     return posts;
   }
 

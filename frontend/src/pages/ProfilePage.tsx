@@ -3,13 +3,13 @@ import { Icons } from "@/components/export/Icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import useMessageUser from "@/hooks/chat/useMessageUser";
 import useProfile from "@/hooks/profiles/useProfile";
 import { useAppSelector } from "@/hooks/redux/useAppSelector";
 import {
   IUserPostForProfileData,
   IUserProfileData,
 } from "@/types/profile.types";
-import { Link } from "react-router";
 const ProfilePage = () => {
   const {
     isLoadingProfile,
@@ -18,6 +18,7 @@ const ProfilePage = () => {
     handleFollow,
     handleUnfollow,
   } = useProfile();
+  const { handleMessageUser } = useMessageUser();
   const userInfo = useAppSelector((state) => state.auth.user);
   const userId = userInfo?._id;
 
@@ -68,8 +69,12 @@ const ProfilePage = () => {
                   </Button>
                 )}
 
-                <Button variant="outline" size="sm">
-                  <Link to="/direct/inbox">Message</Link>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleMessageUser(userData._id)}
+                >
+                  Message
                 </Button>
               </div>
             </div>

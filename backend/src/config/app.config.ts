@@ -8,6 +8,10 @@ export const config = {
   node_env: process.env.NODE_ENV || "development",
   port: process.env.PORT || 8000,
 
+  comment_limit: parseInt(process.env.COMMENT_LIMIT || "10", 10),
+  post_limit: parseInt(process.env.POST_LIMIT || "10", 10),
+  search_limit: parseInt(process.env.SEARCH_LIMIT || "10", 10),
+
   allowed_origins:
     process.env.ALLOWED_ORIGINS?.split(",") || "http://localhost:5173",
 

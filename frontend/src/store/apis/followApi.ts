@@ -1,6 +1,18 @@
 import { apiUrl } from "@/config/configs";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
+export interface SuggestedUser {
+  _id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  profilePicture?: string;
+  bio?: string;
+  isPrivate: boolean;
+}
+export interface SuggestedUsersResponse {
+  success: boolean;
+  data: SuggestedUser[];
+}
 export const followApi = createApi({
   reducerPath: "followApi",
   baseQuery: fetchBaseQuery({
@@ -50,6 +62,17 @@ export const followApi = createApi({
       }),
       invalidatesTags: ["Follow", "Profile"],
     }),
+    getSuggestedUsers: builder.query<
+      SuggestedUsersResponse,
+      { limit?: number }
+    >({
+      query: ({ limit = 5 }) => ({
+        url: "/suggestions",
+        method: "GET",
+        params: { limit },
+      }),
+      providesTags: ["Follow"],
+    }),
   }),
 });
 
@@ -58,4 +81,5 @@ export const {
   useAcceptFollowRequestMutation,
   useRejectFollowRequestMutation,
   useUnfollowUserMutation,
+  useGetSuggestedUsersQuery,
 } = followApi;

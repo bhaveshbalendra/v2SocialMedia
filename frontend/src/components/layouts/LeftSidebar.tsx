@@ -17,13 +17,8 @@ import { Link, useLocation, useNavigate } from "react-router";
 import CreatePostDialog from "../common/CreatePostDialog";
 import { Icons } from "../export/Icons";
 import NotificationModal from "../notifications/NotificationModal";
+import UserSearchModal from "../search/UserSearchModal";
 import { Button } from "../ui/button";
-
-// --- Types ---
-type ModalProps = {
-  open: boolean;
-  onClose: () => void;
-};
 
 type User = {
   _id: string;
@@ -31,18 +26,6 @@ type User = {
   profilePicture?: string;
   username: string;
 };
-
-// --- Modal Components ---
-const SearchModal: FC<ModalProps> = ({ open, onClose }) =>
-  open ? (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-background p-6 rounded shadow-lg">
-        <h2 className="text-lg font-bold mb-4">Search</h2>
-        <input className="border p-2 w-full mb-4" placeholder="Search..." />
-        <Button onClick={onClose}>Close</Button>
-      </div>
-    </div>
-  ) : null;
 
 // --- Main Sidebar ---
 const LeftSidebar: FC<{ isLoading: boolean }> = ({ isLoading }) => {
@@ -156,8 +139,8 @@ const LeftSidebar: FC<{ isLoading: boolean }> = ({ isLoading }) => {
           <CreatePostDialog />
 
           <Button onClick={toggle}>
-            DarkMode
             <Icons.DarkMode />
+            DarkMode
           </Button>
           {user ? (
             <DropdownMenu>
@@ -214,7 +197,8 @@ const LeftSidebar: FC<{ isLoading: boolean }> = ({ isLoading }) => {
         </div>
       )}
       {/* Modals */}
-      <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
+      {/* <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} /> */}
+      <UserSearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
       <NotificationModal
         onClick={() => setNotificationOpen(!notificationOpen)}
         open={notificationOpen}

@@ -9,7 +9,7 @@ const ProtectedRoute = () => {
   const location = useLocation();
 
   // Call the ME endpoint to validate the token and get a refreshed token if needed
-  const { data, isLoading, error } = useAuthUserRouteQuery();
+  const { data, isLoading } = useAuthUserRouteQuery();
 
   // Use the custom hook to sync credentials when data changes
   useSyncAuthCredentials(data);
@@ -23,7 +23,7 @@ const ProtectedRoute = () => {
   }
 
   // If there's an error or user is not authenticated, redirect to login
-  if (error || !isAuthenticated) {
+  if (!isAuthenticated) {
     // Redirect to login page but save the attempted url
     return <Navigate to={PATH.LOGIN} state={{ from: location }} replace />;
   }

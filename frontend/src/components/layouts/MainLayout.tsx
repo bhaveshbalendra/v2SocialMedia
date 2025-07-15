@@ -1,4 +1,5 @@
 import { useSyncAuthCredentials } from "@/hooks/auth/useSyncAuthCredentials";
+import { useAppSelector } from "@/hooks/redux/useAppSelector";
 import { useSocketConnect } from "@/hooks/sockets/useSocketConnect";
 import { useAuthUserRouteQuery } from "@/store/apis/authApi";
 import { Outlet } from "react-router";
@@ -9,7 +10,11 @@ import MobileTopNav from "./MobileTopNav";
 import RightSidebar from "./RightSidebar";
 
 const MainLayout = () => {
-  const { data, isLoading } = useAuthUserRouteQuery();
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { selectedPost } = useAppSelector((state) => state.post);
+  const { data, isLoading } = useAuthUserRouteQuery(undefined, {
+    skip: !isAuthenticated,
+  });
 
   useSyncAuthCredentials(data);
   useSocketConnect();
@@ -46,7 +51,7 @@ const MainLayout = () => {
       </aside>
 
       {/* Post Dialog */}
-      <SelectPostModel />
+      {selectedPost && <SelectPostModel />}
     </div>
   );
 };

@@ -8,6 +8,8 @@ import { useGetUserProfileQuery } from "@/store/apis/profileApi";
 
 import { useAppDispatch } from "@/hooks/redux/useAppDispatch";
 import { useAppSelector } from "@/hooks/redux/useAppSelector";
+import { useDeleteNotificationMutation } from "@/store/apis/notificationApi";
+import { removeNotification } from "@/store/slices/notificationSlice";
 import { setUserProfile } from "@/store/slices/profileSlice";
 import { useEffect } from "react";
 import { useParams } from "react-router";
@@ -46,6 +48,7 @@ const useProfile = () => {
   const { userProfileData } = useAppSelector((state) => state.profile);
   const [unfollowUser, { isLoading: isUnfollowLoading, error: unfollowError }] =
     useUnfollowUserMutation();
+  const [deleteNotification] = useDeleteNotificationMutation();
 
   const handleFollow = async () => {
     try {
@@ -61,17 +64,33 @@ const useProfile = () => {
   const handleUnfollow = async () => {
     await unfollowUser(data?.user._id || "");
   };
-  const handleAcceptFollowRequest = async (requestId: string) => {
+  const handleAcceptFollowRequest = async ({
+    requestId,
+    notificationId,
+  }: {
+    requestId: string;
+    notificationId: string;
+  }) => {
     try {
       await acceptFollowRequest(requestId).unwrap();
+      await deleteNotification(notificationId).unwrap();
+      dispatch(removeNotification(notificationId));
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleRejectFollowRequest = async (requestId: string) => {
+  const handleRejectFollowRequest = async ({
+    requestId,
+    notificationId,
+  }: {
+    requestId: string;
+    notificationId: string;
+  }) => {
     try {
       await rejectFollowRequest(requestId).unwrap();
+      await deleteNotification(notificationId).unwrap();
+      dispatch(removeNotification(notificationId));
     } catch (error) {
       console.log(error);
     }
