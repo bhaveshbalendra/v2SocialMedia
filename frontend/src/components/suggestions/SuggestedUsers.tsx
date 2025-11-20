@@ -93,6 +93,7 @@ const SuggestedUsers: React.FC = () => {
           .filter(
             (user) => user && user.username && user.firstName && user.lastName
           ) // Filter out invalid users
+          .slice(0, 5) // Limit to 5 suggestions
           .map((user) => (
             <div key={user._id} className="flex items-center justify-between">
               <Link
@@ -140,15 +141,6 @@ const SuggestedUsers: React.FC = () => {
               </Button>
             </div>
           ))}
-
-        <div className="pt-2">
-          <Link
-            to="/suggestions" // You can create a full suggestions page later
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            See all suggestions
-          </Link>
-        </div>
       </CardContent>
     </Card>
   );
