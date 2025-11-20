@@ -30,13 +30,6 @@ export const userApi = createApi({
       }),
       invalidatesTags: ["BlockedUsers"],
     }),
-    // getBlockedUsers: builder.query<any, void>({
-    //   query: () => ({
-    //     url: "/blocked",
-    //     method: "GET",
-    //   }),
-    //   providesTags: ["BlockedUsers"],
-    // }),
     deactivateAccount: builder.mutation<void, void>({
       query: () => ({
         url: "/deactivate",
@@ -55,7 +48,6 @@ export const userApi = createApi({
 export const {
   useBlockUserMutation,
   useUnblockUserMutation,
-  // useGetBlockedUsersQuery,
   useDeactivateAccountMutation,
   useReactivateAccountMutation,
 } = userApi;

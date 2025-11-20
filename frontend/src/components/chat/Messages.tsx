@@ -2,7 +2,7 @@ import useGetMessages from "@/hooks/chat/useGetMessages";
 import useSendMessage from "@/hooks/chat/useSendMessage";
 import { useAppSelector } from "@/hooks/redux/useAppSelector";
 import { formatDistanceToNow } from "date-fns";
-import { ArrowLeft, MoreVertical, Phone, Send, Video } from "lucide-react";
+import { ArrowLeft, Send } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { Icons } from "../export/Icons";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -70,9 +70,9 @@ const Messages = ({ onBackClick }: MessagesProps) => {
   }
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div className="flex flex-col h-full bg-background min-h-0 overflow-hidden">
       {/* Chat Header */}
-      <div className="flex items-center gap-3 p-4 border-b bg-card">
+      <div className="flex items-center gap-3 p-2 sm:p-4 border-b bg-card flex-shrink-0 min-w-0">
         {/* Back button for mobile */}
         {onBackClick && (
           <Button
@@ -97,31 +97,15 @@ const Messages = ({ onBackClick }: MessagesProps) => {
           </AvatarFallback>
         </Avatar>
 
-        <div className="flex-1 min-w-0">
-          <h1 className="font-semibold text-base text-foreground truncate">
+        <div className="flex-1 min-w-0 overflow-hidden">
+          <h1 className="font-semibold text-sm sm:text-base text-foreground truncate">
             {otherParticipant?.username || "Unknown User"}
           </h1>
-          <p className="text-xs text-muted-foreground">
-            Active now {/* You can implement real online status here */}
-          </p>
-        </div>
-
-        {/* Action buttons */}
-        <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" className="hidden sm:flex">
-            <Phone className="h-5 w-5" />
-          </Button>
-          <Button variant="ghost" size="icon" className="hidden sm:flex">
-            <Video className="h-5 w-5" />
-          </Button>
-          <Button variant="ghost" size="icon">
-            <MoreVertical className="h-5 w-5" />
-          </Button>
         </div>
       </div>
 
       {/* Messages Display */}
-      <ScrollArea className="flex-1 px-4">
+      <ScrollArea className="flex-1 min-h-0 px-2 sm:px-4">
         <div className="py-4 space-y-4">
           {messages && messages.length > 0 ? (
             messages.map((msg, index) => {
@@ -158,7 +142,7 @@ const Messages = ({ onBackClick }: MessagesProps) => {
                   )}
 
                   <div
-                    className={`group relative max-w-[70%] sm:max-w-[60%] ${
+                    className={`group relative max-w-[min(70%,calc(100vw-8rem))] sm:max-w-[60%] ${
                       isOwnMessage ? "ml-auto" : ""
                     }`}
                   >
@@ -212,16 +196,16 @@ const Messages = ({ onBackClick }: MessagesProps) => {
       </ScrollArea>
 
       {/* Message Input */}
-      <form onSubmit={handleSubmit} className="p-4 border-t bg-card">
-        <div className="flex gap-2 items-end">
-          <div className="flex-1">
+      <form onSubmit={handleSubmit} className="p-2 sm:p-4 border-t bg-card flex-shrink-0 min-w-0">
+        <div className="flex gap-2 items-end min-w-0">
+          <div className="flex-1 min-w-0">
             <Input
               onChange={handleSendMessage}
               onKeyPress={handleKeyPress}
               value={message}
               type="text"
               placeholder={`Message ${otherParticipant?.username || "user"}...`}
-              className="resize-none border-0 bg-muted focus-visible:ring-1 focus-visible:ring-ring"
+              className="resize-none border-0 bg-muted focus-visible:ring-1 focus-visible:ring-ring text-sm sm:text-base min-w-0"
               disabled={isSending}
               autoComplete="off"
               autoCapitalize="sentences"
@@ -231,7 +215,7 @@ const Messages = ({ onBackClick }: MessagesProps) => {
             type="submit"
             disabled={!message.trim() || isSending}
             size="icon"
-            className="shrink-0"
+            className="shrink-0 h-8 w-8 sm:h-10 sm:w-10"
           >
             {isSending ? (
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current" />

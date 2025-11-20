@@ -37,14 +37,7 @@ export const usePost = (page: number = 1, limit: number = 10) => {
       const response = await createPost(credentials).unwrap();
 
       // Show success message
-      toast.success("Post created successfully!", {
-        action: {
-          label: "X",
-          onClick: () => {
-            toast.dismiss();
-          },
-        },
-      });
+      toast.success("Post created successfully!");
 
       // Add the new post to the beginning of the current posts array
       if (response?.success && response?.post) {
@@ -60,14 +53,7 @@ export const usePost = (page: number = 1, limit: number = 10) => {
           : "Failed to create post";
 
       console.error("Failed to create post:", error);
-      toast.error(errorMessage || "Failed to create post", {
-        action: {
-          label: "X",
-          onClick: () => {
-            toast.dismiss();
-          },
-        },
-      });
+      toast.error(errorMessage || "Failed to create post");
       throw error;
     }
   };

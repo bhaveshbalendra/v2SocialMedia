@@ -10,9 +10,7 @@ import { NotificationType } from "../types/notification.types";
 import { io, userSocketMap } from "../utils/socket.util";
 import notificationService from "./notification.service";
 
-/**
- * Follow status enum for the frontend response
- */
+// Follow status enum for the frontend response
 export enum FollowStatusCheck {
   FOLLOWING = "following",
   NOT_FOLLOWING = "not_following",
@@ -21,9 +19,7 @@ export enum FollowStatusCheck {
 }
 
 class FollowService {
-  /**
-   * Send a follow request or follow a user directly based on privacy settings
-   */
+  // Send a follow request or follow a user directly based on privacy settings
   async follow({
     followingUserName,
     followerId,
@@ -119,9 +115,7 @@ class FollowService {
     }
   }
 
-  /**
-   * Direct follow for public accounts
-   */
+  // Direct follow for public accounts
   async directFollow(followerId: string, followingId: string) {
     const follower = await User.findById(followerId);
     const following = await User.findById(followingId);
@@ -154,15 +148,11 @@ class FollowService {
     return { message: "Successfully followed user" };
   }
 
-  /**
-   * Accept a follow request
-   */
+  // Accept a follow request
   async acceptFollowRequest(requestId: string, userId: string) {
-    console.log(requestId, userId);
     // Find the request
     const requestIdObject = new Types.ObjectId(requestId);
     const request = await FollowRequest.findById(requestIdObject);
-    console.log(request);
     if (!request) {
       throw AppError.notFoundError("Follow request not found");
     }
@@ -218,9 +208,7 @@ class FollowService {
     return { message: "Follow request accepted" };
   }
 
-  /**
-   * Reject a follow request
-   */
+  // Reject a follow request
   async rejectFollowRequest(requestId: string, userId: string) {
     // Find the request
     const request = await FollowRequest.findById(requestId);
@@ -250,9 +238,7 @@ class FollowService {
     return { message: "Follow request rejected" };
   }
 
-  /**
-   * Unfollow a user
-   */
+  // Unfollow a user
   async unfollow(followingId: string, followerId: string) {
     if (followerId === followingId) {
       throw AppError.emptyOrInvalidData("You cannot unfollow yourself.");
@@ -283,9 +269,7 @@ class FollowService {
     return { message: "Successfully unfollowed user" };
   }
 
-  /**
-   * Get follow requests for a user
-   */
+  // Get follow requests for a user
   async getFollowRequests(userId: string) {
     const requests = await FollowRequest.find({
       to: userId,
@@ -295,9 +279,7 @@ class FollowService {
     return requests;
   }
 
-  /**
-   * Get followers of a user
-   */
+  // Get followers of a user
   async getFollowers(userId: string) {
     const user = await User.findById(userId)
       .populate("followers", "username profilePicture")
@@ -310,9 +292,7 @@ class FollowService {
     return user.followers;
   }
 
-  /**
-   * Get users followed by a user
-   */
+  // Get users followed by a user
   async getFollowing(userId: string) {
     const user = await User.findById(userId)
       .populate("following", "username profilePicture")
@@ -325,9 +305,7 @@ class FollowService {
     return user.following;
   }
 
-  /**
-   * Check the follow status between two users
-   */
+  // Check the follow status between two users
   async checkFollowStatus(currentUserId: string, targetUserId: string) {
     try {
       // Check if users exist
@@ -369,12 +347,7 @@ class FollowService {
     }
   }
 
-  /**
-   * Get suggested users to follow based on various algorithms
-   * - Users followed by users you follow (2nd degree connections)
-   * - Users with similar interests (based on post tags)
-   * - New and active users
-   */
+  // Get suggested users to follow based on various algorithms
   async getSuggestedUsers(userId: string, limit: number = 5) {
     try {
       const user = await User.findById(userId);
@@ -433,9 +406,7 @@ class FollowService {
     }
   }
 
-  /**
-   * Get mutual followers between two users
-   */
+  // Get mutual followers between two users
   async getMutualFollowers(
     currentUserId: string,
     targetUserId: string,

@@ -1,109 +1,83 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import Post from "../models/post.model";
 import postService from "../service/post.service";
 
-/**
- * @description Handler for creating post
- * @param {Request} request - The request object containing user data.
- * @param {Response} response - The response object to send the result.
- * @returns {Promise<any>} - A promise that resolves to the response object.
- * @throws {AppError} - Throws an app error if any issue in post and catch by express async handler and processed by middleware
- */
+// Create a new post
 const handleCreatePost = asyncHandler(
-  async (
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ): Promise<any> => {
-    //call the create post service with request as argument
+  async (request: Request, response: Response) => {
     const post = await postService.createPost(request);
 
-    response
-      .status(201)
-      .json({ success: true, message: "Post created successfully", post });
-    return;
+    response.status(201).json({
+      success: true,
+      message: "Post created successfully",
+      post,
+    });
   }
 );
 
-/**
- * @description Get post for user which are not login and show post which are public
- * @return {Promise<>}
- */
-
+// Get public posts for non-authenticated users
 const handleGetPostsForNotLoginUser = asyncHandler(
-  async (
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ): Promise<any> => {
+  async (request: Request, response: Response) => {
     const posts = await postService.getAllPostsNotLoginUser();
 
-    response
-      .status(200)
-      .json({ success: true, message: "Post are Fetched", posts });
-    return;
+    response.status(200).json({
+      success: true,
+      message: "Posts fetched successfully",
+      posts,
+    });
   }
 );
 
-/**
- * @description Get post for login user which they follow and public post also
- */
+// Get posts for authenticated users (following + public posts)
 const handleGetPostForLoginUser = asyncHandler(
-  async (
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ): Promise<any> => {
-    const userId = request.user._id;
+  async (request: Request, response: Response) => {
+    const userId = request.user._id.toString();
     const posts = await postService.getPostForLoginUser(userId);
 
-    response
-      .status(200)
-      .json({ success: true, message: "Posts fetched successfully", posts });
-    return;
+    response.status(200).json({
+      success: true,
+      message: "Posts fetched successfully",
+      posts,
+    });
   }
 );
 
-/**
- * @description Delete post by id
- */
+// Delete a post by id
 const handleDeletePost = asyncHandler(
-  async (
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ): Promise<any> => {}
+  async (request: Request, response: Response) => {
+    response.status(501).json({
+      success: false,
+      message: "Post deletion not yet implemented",
+    });
+  }
 );
 
-/**
- * @description Debug endpoint to check posts in database
- */
+// Debug endpoint to check posts in database
 const handleDebugPosts = asyncHandler(
-  async (
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ): Promise<any> => {
+  async (request: Request, response: Response) => {
     // Get all posts with their actual field values
     const allPosts = await Post.find({})
       .populate("author", "username")
       .limit(10)
       .sort({ createdAt: -1 });
 
-    const postInfo = allPosts.map((post: any) => ({
-      _id: post._id,
-      title: post.title || "No title",
-      caption: post.caption || "No caption",
-      visibility: post.visibility,
-      isArchived: post.isArchived,
-      isDeleted: post.isDeleted,
-      author: {
-        _id: post.author?._id,
-        username: post.author?.username || "No username",
-      },
-      createdAt: post.createdAt,
-    }));
+    const postInfo = allPosts.map((post) => {
+      const author = post.author as { _id?: unknown; username?: string } | null;
+      return {
+        _id: post._id,
+        title: post.title || "No title",
+        caption: post.caption || "No caption",
+        visibility: post.visibility,
+        isArchived: post.isArchived,
+        isDeleted: post.isDeleted,
+        author: {
+          _id: author?._id,
+          username: author?.username || "No username",
+        },
+        createdAt: post.createdAt,
+      };
+    });
 
     const counts = {
       total: await Post.countDocuments({}),
@@ -137,7 +111,6 @@ const handleDebugPosts = asyncHandler(
       samplePosts: postInfo,
       publicFeedWorking: sampleUsers.length > 0,
     });
-    return;
   }
 );
 

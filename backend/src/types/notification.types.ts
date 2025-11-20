@@ -1,9 +1,6 @@
 import { Document, Types } from "mongoose";
 
-/**
- * NotificationType Enum
- * Describes all supported notification types in the system.
- */
+// NotificationType Enum - describes all supported notification types in the system
 export enum NotificationType {
   // Social interactions
   FOLLOW_REQUEST = "FOLLOW_REQUEST",
@@ -51,9 +48,7 @@ export enum NotificationType {
   CUSTOM = "CUSTOM",
 }
 
-/**
- * EntityModelType Enum
- */
+// EntityModelType Enum
 export type EntityModelType =
   | "Post"
   | "Comment"
@@ -63,9 +58,7 @@ export type EntityModelType =
   | "User"
   | "Subscription";
 
-/**
- * Interface for Notification Document
- */
+// Interface for Notification Document
 export interface INotification extends Document {
   _id: string;
   __v: number;
@@ -80,17 +73,13 @@ export interface INotification extends Document {
   content: string;
 }
 
-/**
- * Interface for populated notification with entity data
- */
+// Interface for populated notification with entity data
 export interface IPopulatedNotification
   extends Omit<INotification, "entityId"> {
-  entityData?: any; // The populated entity data based on entityModel
+  entityData?: unknown; // The populated entity data based on entityModel
 }
 
-/**
- * Interface for creating a notification
- */
+// Interface for creating a notification
 export interface CreateNotificationParams {
   sender: string | Types.ObjectId;
   recipient: string | Types.ObjectId;
@@ -100,9 +89,7 @@ export interface CreateNotificationParams {
   entityModel: EntityModelType;
 }
 
-/**
- * Interface for the helper createNotification method
- */
+// Interface for the helper createNotification method
 export interface CreateNotificationHelperParams {
   sender: string | Types.ObjectId;
   recipient: string | Types.ObjectId;

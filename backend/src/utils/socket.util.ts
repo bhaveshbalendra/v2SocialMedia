@@ -5,7 +5,7 @@ import { config } from "../config/app.config";
 // Extend the SocketIO server type to include our custom method
 declare module "socket.io" {
   interface Server {
-    sendToUser(userId: string, event: string, data: any): boolean;
+    sendToUser(userId: string, event: string, data: unknown): boolean;
   }
 }
 
@@ -64,7 +64,7 @@ export const initializeSocketServer = (httpServer: HttpServer) => {
   });
 
   // Helper function to send message to all of a user's connected devices
-  io.sendToUser = (userId: string, event: string, data: any) => {
+  io.sendToUser = (userId: string, event: string, data: unknown) => {
     const socketIds = userSocketMap.get(userId);
     if (socketIds && socketIds.length > 0) {
       socketIds.forEach((socketId) => {

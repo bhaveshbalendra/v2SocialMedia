@@ -1,7 +1,7 @@
 import { Model, model, Schema } from "mongoose";
 import { IMessage } from "../types/schema.types";
 
-const messageSchema: Schema<IMessage> = new Schema<IMessage>(
+const messageSchema = new Schema<IMessage>(
   {
     senderId: {
       type: Schema.Types.ObjectId,
@@ -40,6 +40,20 @@ const messageSchema: Schema<IMessage> = new Schema<IMessage>(
     },
     editedAt: Date,
 
+    // Delivery receipts (track when message is delivered to recipient)
+    deliveredBy: [
+      {
+        userId: {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+        },
+        deliveredAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
+
     // Read receipts (for individual conversations)
     readBy: [
       {
@@ -75,7 +89,7 @@ const messageSchema: Schema<IMessage> = new Schema<IMessage>(
       },
     ],
 
-    // System message data (for join/leave notifications)
+    // System message data (for join/leave notifications and post shares)
     systemData: {
       action: {
         type: String,
@@ -86,13 +100,14 @@ const messageSchema: Schema<IMessage> = new Schema<IMessage>(
           "user_removed",
           "group_created",
           "group_updated",
+          "post_shared",
         ],
       },
       targetUserId: {
         type: Schema.Types.ObjectId,
         ref: "User",
       },
-      metadata: Schema.Types.Mixed, // For additional system message data
+      metadata: Schema.Types.Mixed, // For additional system message data (e.g., postId for shared posts)
     },
   },
   {
@@ -101,6 +116,11 @@ const messageSchema: Schema<IMessage> = new Schema<IMessage>(
     toObject: { virtuals: true },
   }
 );
+
+// Virtual for delivery status
+messageSchema.virtual("isDelivered").get(function () {
+  return this.deliveredBy && this.deliveredBy.length > 0;
+});
 
 // Virtual for read status in individual conversations
 messageSchema.virtual("isRead").get(function () {

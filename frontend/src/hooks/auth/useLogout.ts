@@ -14,14 +14,7 @@ export function useLogout() {
 
     if (result?.data?.success) {
       dispatch(logoutSlice());
-      toast.success(result.data.message || "Logout successful", {
-        action: {
-          label: "X",
-          onClick: () => {
-            toast.dismiss();
-          },
-        },
-      });
+      toast.success(result.data.message || "Logout successful");
       navigate("/login");
     }
     // Errors are handled globally by errorMiddleware

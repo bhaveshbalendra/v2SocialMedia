@@ -6,6 +6,9 @@ import { useUserSearch } from "@/hooks/profiles/useSearchUserProfile";
 import { PATH, generateRoute } from "@/routes/pathConstants";
 import React from "react";
 import { Link } from "react-router";
+import LoadingSpinner from "../states/LoadingSpinner";
+import ErrorDisplay from "../states/ErrorDisplay";
+import EmptyState from "../states/EmptyState";
 
 interface UserSearchModalProps {
   open: boolean;
@@ -58,24 +61,25 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({ open, onClose }) => {
         <div className="flex-1 overflow-y-auto">
           {isSearching && (
             <div className="flex items-center justify-center py-8">
-              <Icons.Spinner className="animate-spin" size={24} />
-              <span className="ml-2">Searching...</span>
+              <LoadingSpinner size="md" text="Searching..." />
             </div>
           )}
 
           {error && (
-            <div className="text-center py-8 text-red-500">
-              <p>Error searching users. Please try again.</p>
-            </div>
+            <ErrorDisplay
+              title="Error searching users"
+              message="Please try again."
+            />
           )}
 
           {!isSearching &&
             !error &&
             searchQuery &&
             searchResults.length === 0 && (
-              <div className="text-center py-8 text-muted-foreground">
-                <p>No users found for "{searchQuery}"</p>
-              </div>
+              <EmptyState
+                title={`No users found for "${searchQuery}"`}
+                description="Try searching with a different term."
+              />
             )}
 
           {!isSearching && !error && searchResults.length > 0 && (

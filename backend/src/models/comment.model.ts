@@ -1,9 +1,7 @@
 import { Model, model, Schema } from "mongoose";
 import { IComment } from "../types/schema.types";
 
-/**
- * @description comment schema
- */
+// Comment schema
 const commentSchema: Schema<IComment> = new Schema<IComment>(
   {
     user: {

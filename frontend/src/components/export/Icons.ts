@@ -12,7 +12,7 @@ import {
 import { FaChevronDown, FaSquarePlus, FaXTwitter } from "react-icons/fa6";
 import { ImSpinner2 } from "react-icons/im";
 import { IoIosRefresh, IoMdEye } from "react-icons/io";
-import { IoNotifications } from "react-icons/io5";
+import { IoNotifications, IoCloudUploadOutline } from "react-icons/io5";
 import { MdDarkMode, MdOutlineBookmarkBorder, MdClose } from "react-icons/md";
 import { TiHome } from "react-icons/ti";
 export const Icons = {
@@ -37,4 +37,5 @@ export const Icons = {
   ThreeDots: BsThreeDots,
   HeartFill: FaHeart,
   Close: MdClose,
+  Upload: IoCloudUploadOutline,
 };

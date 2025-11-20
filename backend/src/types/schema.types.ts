@@ -78,7 +78,9 @@ export interface IPost extends Document {
   __v: number;
   createdAt: Date;
   updatedAt: Date;
+  title?: string;
   caption?: string;
+  description?: string;
   media: {
     url: string;
     type: "image" | "video";
@@ -89,9 +91,7 @@ export interface IPost extends Document {
   comments: Types.ObjectId[];
   location?: string;
   tags?: string[];
-  title: string;
   visibility: PostVisibility;
-  description: string;
   commentsCount: number;
   sharesCount: number;
   bookmarksCount: number;
@@ -130,7 +130,7 @@ export interface IConversation extends Document {
   groupDescription?: string;
   groupAvatar?: string;
   groupAdmins: Types.ObjectId[];
-  createdBy: Types.ObjectId;
+  createdBy?: Types.ObjectId;
   lastMessage?: Types.ObjectId;
   lastActivity: Date;
   isActive: boolean;
@@ -156,6 +156,10 @@ export interface IMessage extends Document {
   };
   isEdited: boolean;
   editedAt?: Date;
+  deliveredBy: Array<{
+    userId: Types.ObjectId;
+    deliveredAt: Date;
+  }>;
   readBy: Array<{
     userId: Types.ObjectId;
     readAt: Date;
@@ -173,10 +177,12 @@ export interface IMessage extends Document {
       | "user_added"
       | "user_removed"
       | "group_created"
-      | "group_updated";
+      | "group_updated"
+      | "post_shared";
     targetUserId?: Types.ObjectId;
-    metadata?: any;
+    metadata?: Record<string, unknown>;
   };
   // Virtuals
+  isDelivered: boolean;
   isRead: boolean;
 }

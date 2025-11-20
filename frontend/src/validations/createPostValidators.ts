@@ -22,13 +22,13 @@ export const createPostSchema = z.object({
         : []
     ),
   media: z
-    .any()
+    .union([z.instanceof(FileList), z.array(z.instanceof(File))])
     .optional()
     .refine(
       (files) => {
         if (!files || files.length === 0) return true; // optional
         // Handle FileList (multiple files)
-        const fileArray = Array.from(files);
+        const fileArray = files instanceof FileList ? Array.from(files) : files;
 
         return fileArray.every(
           (file) => file instanceof File && allowedTypes.includes(file.type)

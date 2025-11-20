@@ -18,13 +18,13 @@ import { Button } from "../ui/button";
 
 const navItems = [
   { label: "Home", icon: <Icons.Home size={24} />, path: PATH.HOME },
-  { label: "Messages", icon: <Icons.Message size={22} />, path: PATH.MESSAGES },
 ];
 
 const BottomNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.user);
+  const { totalUnreadCount } = useAppSelector((state) => state.chat);
   const { handleLogout, isLoading: isLoadingLogout } = useLogout();
 
   const firstName = user?.firstName || "User";
@@ -65,8 +65,33 @@ const BottomNav = () => {
           <span className="mt-1">{item.label}</span>
         </Link>
       ))}
-      {/* Create Post Button */}
-      <CreatePostDialog />
+      {/* Messages - Only show when logged in */}
+      {user && (
+        <Link
+          to={PATH.MESSAGES}
+          className={`flex flex-col items-center justify-center text-xs transition-colors relative
+            ${
+              isActive(PATH.MESSAGES)
+                ? "text-foreground font-bold"
+                : "text-muted-foreground"
+            }
+            hover:text-foreground
+          `}
+          onClick={(e) => handleNavClick(e, PATH.MESSAGES)}
+        >
+          <div className="relative">
+            <Icons.Message size={22} />
+            {totalUnreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                {totalUnreadCount > 9 ? "9+" : totalUnreadCount}
+              </span>
+            )}
+          </div>
+          <span className="mt-1">Messages</span>
+        </Link>
+      )}
+      {/* Create Post Button - Only show when logged in */}
+      {user && <CreatePostDialog />}
 
       {/* Profile Dropdown */}
       {user ? (

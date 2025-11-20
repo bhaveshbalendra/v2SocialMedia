@@ -49,6 +49,14 @@ export const notificationApi = createApi({
       }),
       invalidatesTags: ["Notifications"],
     }),
+
+    deleteAllNotifications: builder.mutation<void, void>({
+      query: () => ({
+        url: "/",
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Notifications"],
+    }),
   }),
 });
 
@@ -57,4 +65,5 @@ export const {
   useMarkAsReadMutation,
   useMarkAllAsReadMutation,
   useDeleteNotificationMutation,
+  useDeleteAllNotificationsMutation,
 } = notificationApi;

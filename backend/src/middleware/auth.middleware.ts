@@ -8,13 +8,7 @@ import {
 } from "../utils/token.util";
 import { AppError } from "./error.middleware";
 
-/**
- * @description Authenticate middleware for user check if access token is expired first
- * and then check if the cookie which is refreshToken containing userid is present in database is valid or not
- * if no throw error
- * if yes then it check for access token in header if expired it create new one and send it
- * to header and add user id in response object and call next().
- */
+// Authenticate middleware - checks access token and refresh token, validates user
 export const authenticate = asyncHandler(
   async (request: Request, response: Response, next: NextFunction) => {
     //Get the token from the cookie

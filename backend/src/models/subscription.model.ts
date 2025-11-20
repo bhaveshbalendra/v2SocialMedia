@@ -1,9 +1,6 @@
 import { Document, Model, Schema, Types, model } from "mongoose";
 
-/**
- * Interface for Subscription Document
- * @description Defines the structure of premium user subscriptions
- */
+// Interface for Subscription Document - defines the structure of premium user subscriptions
 export interface ISubscription extends Document {
   _id: string;
   user: Types.ObjectId;
@@ -21,10 +18,7 @@ export interface ISubscription extends Document {
   updatedAt: Date;
 }
 
-/**
- * Subscription Schema
- * @description Mongoose schema for user premium subscriptions
- */
+// Subscription Schema - Mongoose schema for user premium subscriptions
 const subscriptionSchema: Schema = new Schema<ISubscription>(
   {
     user: {

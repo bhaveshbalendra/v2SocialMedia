@@ -1,10 +1,7 @@
 import { Model, model, Schema } from "mongoose";
 import { INotification } from "../types/notification.types";
 
-/**
- * Notification Schema
- * @description Mongoose schema for user notifications
- */
+// Notification Schema - Mongoose schema for user notifications
 const notificationSchema: Schema = new Schema<INotification>(
   {
     recipient: {

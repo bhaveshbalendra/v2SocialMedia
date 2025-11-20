@@ -13,9 +13,7 @@ import {
 import { io, userSocketMap } from "../utils/socket.util";
 
 class NotificationService {
-  /**
-   * Create a new notification and emit through socket.io
-   */
+  // Create a new notification and emit through socket.io
   async createNotification({
     sender,
     recipient,
@@ -71,9 +69,7 @@ class NotificationService {
     }
   }
 
-  /**
-   * Helper method to generate content based on notification type
-   */
+  // Helper method to generate content based on notification type
   generateContent(type: NotificationType, senderUsername: string): string {
     switch (type) {
       case NotificationType.FOLLOW_REQUEST:
@@ -103,9 +99,7 @@ class NotificationService {
     }
   }
 
-  /**
-   * Get all notifications for a user
-   */
+  // Get all notifications for a user
   async getUserNotifications(
     userId: string
   ): Promise<IPopulatedNotification[]> {
@@ -164,9 +158,7 @@ class NotificationService {
     }
   }
 
-  /**
-   * Mark notification as read
-   */
+  // Mark notification as read
   async markAsRead(
     notificationId: string,
     userId: string
@@ -189,9 +181,7 @@ class NotificationService {
     }
   }
 
-  /**
-   * Mark all notifications as read for a user
-   */
+  // Mark all notifications as read for a user
   async markAllAsRead(userId: string): Promise<void> {
     try {
       await Notification.updateMany(
@@ -204,9 +194,7 @@ class NotificationService {
     }
   }
 
-  /**
-   * Delete a notification
-   */
+  // Delete a notification
   async deleteNotification(
     notificationId: string,
     userId: string
@@ -228,6 +216,26 @@ class NotificationService {
       );
     } catch (error) {
       console.error("Error deleting notification:", error);
+      throw error;
+    }
+  }
+
+  // Delete all notifications for a user
+  async deleteAllNotifications(userId: string): Promise<void> {
+    try {
+      // Get all notification IDs for the user
+      const notifications = await Notification.find({
+        recipient: userId,
+      }).select("_id");
+      const notificationIds = notifications.map((n) => n._id);
+
+      // Delete all notifications
+      await Notification.deleteMany({ recipient: userId });
+
+      // Clear user's notifications array
+      await User.updateOne({ _id: userId }, { $set: { notification: [] } });
+    } catch (error) {
+      console.error("Error deleting all notifications:", error);
       throw error;
     }
   }

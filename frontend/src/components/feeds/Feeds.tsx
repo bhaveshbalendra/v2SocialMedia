@@ -1,6 +1,7 @@
 import { IPost } from "@/types/post.types";
 
 import PostCard from "../common/PostCard";
+import EmptyState from "../states/EmptyState";
 
 interface FeedsProps {
   posts: IPost[];
@@ -19,12 +20,10 @@ const Feeds = ({ posts }: FeedsProps) => {
           </div>
         ))
       ) : (
-        <div className="text-center py-16 text-gray-500">
-          <p className="text-lg">No posts to show</p>
-          <p className="text-sm mt-2 opacity-75">
-            Follow some accounts to see their posts here
-          </p>
-        </div>
+        <EmptyState
+          title="No posts to show"
+          description="Follow some accounts to see their posts here"
+        />
       )}
 
       {/* Extra bottom spacing for better scroll experience */}

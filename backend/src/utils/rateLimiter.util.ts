@@ -9,13 +9,8 @@ export interface IRateLimiter {
   message?: string;
 }
 
-/**
- * Creates a rate limiter middleware that passes errors to the global error handler.
- * @important by default the express rate limiter throw error by its middleware directly no need to handle that
- * can add in routes also like login and signup
- * @param options Configuration options for rate limiting.
- * @returns Express middleware for rate limiting.
- */
+// Creates a rate limiter middleware that passes errors to the global error handler
+// Can be added in routes like login and signup
 export function createRateLimiter(options: IRateLimiter) {
   return rateLimit({
     windowMs: options.windowMs || 60 * 1000, // 1 minute default

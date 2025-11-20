@@ -1,9 +1,7 @@
 import { Model, Schema, model } from "mongoose";
 import { IUser } from "../types/schema.types";
 
-/**
- * @description schema for user
- */
+// Schema for user
 const userSchema: Schema<IUser> = new Schema<IUser>(
   {
     username: {

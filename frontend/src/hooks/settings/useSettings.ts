@@ -12,8 +12,7 @@ const useSettings = () => {
     if (data) {
       dispatch(setSettings(data.settings));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+  }, [data, dispatch]);
   return { userSettings, isLoading, error };
 };
 

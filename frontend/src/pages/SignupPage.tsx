@@ -1,3 +1,4 @@
+import FormError from "@/components/common/FormError";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -6,7 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-// import { Checkbox } from "@/components/ui/checkbox";
 import { Icons } from "@/components/export/Icons";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,7 +26,6 @@ const SignupPage = () => {
   const {
     register,
     handleSubmit,
-    // control,
     formState: { errors },
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
@@ -55,11 +54,7 @@ const SignupPage = () => {
                 <div className="flex flex-col items-start gap-2">
                   <Label htmlFor="firstName">First Name</Label>
                   <Input id="firstName" {...register("firstName")} required />
-                  {errors.firstName && (
-                    <span className="text-red-500 text-sm">
-                      {errors.firstName.message}
-                    </span>
-                  )}
+                  <FormError error={errors.firstName} />
                 </div>
                 <div className="flex flex-col items-start gap-2">
                   <Label htmlFor="lastName">Last Name</Label>
@@ -69,11 +64,7 @@ const SignupPage = () => {
                     required
                     {...register("lastName")}
                   />
-                  {errors.lastName && (
-                    <span className="text-red-500 text-sm">
-                      {errors.lastName.message}
-                    </span>
-                  )}
+                  <FormError error={errors.lastName} />
                 </div>
                 <div className="flex flex-col items-start gap-2">
                   <Label htmlFor="email">Email</Label>
@@ -83,20 +74,12 @@ const SignupPage = () => {
                     {...register("email")}
                     required
                   />
-                  {errors.email && (
-                    <span className="text-red-500 text-sm">
-                      {errors.email.message}
-                    </span>
-                  )}
+                  <FormError error={errors.email} />
                 </div>
                 <div className="flex flex-col items-start gap-2">
                   <Label htmlFor="username">Username</Label>
                   <Input id="username" {...register("username")} required />
-                  {errors.username && (
-                    <span className="text-red-500 text-sm">
-                      {errors.username.message}
-                    </span>
-                  )}
+                  <FormError error={errors.username} />
                 </div>
                 <div className="flex flex-col items-start gap-2">
                   <Label htmlFor="password">Password</Label>
@@ -106,11 +89,7 @@ const SignupPage = () => {
                     type="password"
                     required
                   />
-                  {errors.password && (
-                    <span className="text-red-500 text-sm">
-                      {errors.password.message}
-                    </span>
-                  )}
+                  <FormError error={errors.password} />
                 </div>
                 <div className="flex flex-col items-start gap-2">
                   <Label htmlFor="confirmPassword">Confirm Password</Label>
@@ -120,37 +99,8 @@ const SignupPage = () => {
                     type="password"
                     required
                   />
-                  {errors.confirmPassword && (
-                    <span className="text-red-500 text-sm">
-                      {errors.confirmPassword.message}
-                    </span>
-                  )}
+                  <FormError error={errors.confirmPassword} />
                 </div>
-                {/* <div className="flex items-center gap-2">
-                  <Controller
-                    name="terms"
-                    control={control}
-                    render={({ field }) => (
-                      <Checkbox
-                        id="terms"
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        className="h-3 w-3"
-                      />
-                    )}
-                  />
-                  <Label htmlFor="terms" className="ml-2">
-                    I agree to the{" "}
-                    <Link to="/terms" className="text-blue-500 underline">
-                      terms and conditions
-                    </Link>
-                  </Label>
-                </div> */}
-                {/* {errors.terms && (
-                  <span className="text-red-500 text-sm">
-                    {errors.terms.message as string}
-                  </span>
-                )} */}
                 <div className="flex flex-col gap-2">
                   <Button type="submit" disabled={isLoading}>
                     {isLoading ? (

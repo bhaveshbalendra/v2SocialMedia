@@ -1,42 +1,35 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import likeService from "../service/like.service";
-/**
- * @description Like Post
- * @route POST /api/v2/post/:postId/likes
- * @access Private
- * @param {string} postId - The id of the post to like
- * @returns {Promise<any>} - A promise that resolves to the response object
- */
 
+// Like a post
 const handleLikePost = asyncHandler(
-  async (
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ): Promise<any> => {
+  async (request: Request, response: Response) => {
     const { postId } = request.params;
-    const { _id: likedUserId } = request.user;
+    const likedUserId = request.user._id.toString();
 
     await likeService.like({ likedUserId, postId });
 
-    response.status(200).json({ success: true, message: "Post Liked" });
-
-    return;
+    response.status(200).json({
+      success: true,
+      message: "Post liked successfully",
+    });
   }
 );
 
-const handleUnLikePost = asyncHandler(
-  async (request: Request, response: Response): Promise<any> => {
+// Unlike a post
+const handleUnlikePost = asyncHandler(
+  async (request: Request, response: Response) => {
     const { postId } = request.params;
-    const { _id: unlikedUserId } = request.user;
+    const unlikedUserId = request.user._id.toString();
 
     await likeService.unlike({ unlikedUserId, postId });
 
-    response.status(200).json({ success: true, message: "Post Unliked" });
-
-    return;
+    response.status(200).json({
+      success: true,
+      message: "Post unliked successfully",
+    });
   }
 );
 
-export { handleLikePost, handleUnLikePost };
+export { handleLikePost, handleUnlikePost };

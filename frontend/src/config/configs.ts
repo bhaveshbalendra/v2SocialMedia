@@ -12,7 +12,7 @@ const firebaseCreds = {
 };
 
 const socketCreds = {
-  backendUrl: import.meta.env.VITE_SOCKETIO_BACKEND_URL,
+  backendUrl: import.meta.env.VITE_SOCKETIO_BACKEND_URL || import.meta.env.VITE_SOCKET_URL || "http://localhost:8000",
 };
 
 export { apiUrl, firebaseCreds, isBeta, socketCreds, version };

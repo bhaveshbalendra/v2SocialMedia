@@ -1,7 +1,9 @@
 import { usePost } from "@/hooks/posts/usePost";
 
+import DemoLoginCard from "../common/DemoLoginCard";
 import Feeds from "../feeds/Feeds";
 import PostSkeleton from "../skeletons/PostSkeleton";
+import EmptyState from "../states/EmptyState";
 import Stories from "../stories/Stories";
 const ContentSection = () => {
   const { posts, feedLoading } = usePost();
@@ -12,14 +14,19 @@ const ContentSection = () => {
 
   if (!posts || posts.length === 0) {
     return (
-      <div className="text-center text-muted-foreground py-10">
-        No posts to show.
-      </div>
+      <>
+        <DemoLoginCard />
+        <EmptyState
+          title="No posts to show"
+          description="There are no posts available at this time. Follow some accounts to see their posts here."
+        />
+      </>
     );
   }
 
   return (
     <div>
+      <DemoLoginCard />
       <Stories />
 
       <Feeds posts={posts} />

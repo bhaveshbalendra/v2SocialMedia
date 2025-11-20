@@ -4,6 +4,7 @@ import { Conversation } from "../models/conversation.model";
 import { Message } from "../models/message.model";
 import User from "../models/user.model";
 import {
+  IConversation,
   IFindOrCreateConversationParameter,
   IFindOrCreateConversationServiceReturn,
   IGetConversationsParameter,
@@ -59,11 +60,46 @@ class ChatService {
     conversation.messages.push(message._id as Types.ObjectId);
     await conversation.save();
 
-    const userSockets = userSocketMap.get(friendId) || [];
+    // Ensure userId and friendId are strings for socket map lookup
+    const userIdString = userId.toString();
+    const friendIdString = friendId.toString();
 
-    if (userSockets && userSockets.length > 0) {
-      userSockets.forEach((socketId) => {
-        io.to(socketId).emit("newMessage", message.toJSON());
+    // Get the message as a plain object
+    const messageData = message.toObject() as any;
+    const messageId = (message._id as Types.ObjectId).toString();
+    const conversationId = (conversation._id as Types.ObjectId).toString();
+
+    // Convert _id to id for frontend compatibility
+    const formattedMessage = {
+      ...messageData,
+      _id: messageData._id?.toString() || messageId,
+      id: messageData._id?.toString() || messageId,
+      senderId: messageData.senderId?.toString() || userIdString,
+      conversationId: messageData.conversationId?.toString() || conversationId,
+      createdAt:
+        messageData.createdAt?.toISOString() || new Date().toISOString(),
+      updatedAt:
+        messageData.updatedAt?.toISOString() || new Date().toISOString(),
+      messageType: messageData.messageType || "text",
+      isEdited: messageData.isEdited || false,
+      readBy: messageData.readBy || [],
+      reactions: messageData.reactions || [],
+      isRead: messageData.isRead || false,
+    };
+
+    // Emit to recipient
+    const recipientSockets = userSocketMap.get(friendIdString) || [];
+    if (recipientSockets && recipientSockets.length > 0) {
+      recipientSockets.forEach((socketId) => {
+        io.to(socketId).emit("newMessage", formattedMessage);
+      });
+    }
+
+    // Also emit to sender so they can replace their optimistic message
+    const senderSockets = userSocketMap.get(userIdString) || [];
+    if (senderSockets && senderSockets.length > 0) {
+      senderSockets.forEach((socketId) => {
+        io.to(socketId).emit("newMessage", formattedMessage);
       });
     }
 
@@ -82,8 +118,10 @@ class ChatService {
       select: "username profilePicture _id",
     });
 
-    if (!conversations) {
-      throw AppError.notFoundError("Start a conversation with the user");
+    if (!conversations || conversations.length === 0) {
+      return {
+        conversations: [],
+      };
     }
 
     return {
@@ -148,14 +186,78 @@ class ChatService {
         type: "individual",
       });
 
-      conversation = await Conversation.findById(newConversation._id).populate({
+      const foundConversation = await Conversation.findById(
+        newConversation._id
+      ).populate({
         path: "participants",
         select: "username profilePicture _id",
       });
+
+      if (!foundConversation) {
+        throw AppError.notFoundError("Conversation");
+      }
+
+      conversation = foundConversation;
+    }
+
+    if (!conversation) {
+      throw AppError.notFoundError("Conversation");
     }
 
     return {
-      conversation,
+      conversation: conversation as IConversation,
+    };
+  }
+
+  // Mark messages as read for a conversation
+  async markMessagesAsRead({
+    userId,
+    conversationId,
+  }: {
+    userId: string;
+    conversationId: string;
+  }): Promise<{ message: string }> {
+    const conversation = await Conversation.findById(conversationId);
+
+    if (!conversation) {
+      throw AppError.notFoundError("Conversation not found");
+    }
+
+    // Check if user is a participant
+    const isParticipant = conversation.participants.some(
+      (p) => p.toString() === userId
+    );
+
+    if (!isParticipant) {
+      throw AppError.unauthorizedError(
+        "Not authorized to access this conversation"
+      );
+    }
+
+    // Get all unread messages in this conversation
+    const unreadMessages = await Message.find({
+      conversationId: conversation._id,
+      senderId: { $ne: userId }, // Messages not sent by current user
+      readBy: { $not: { $elemMatch: { userId: new Types.ObjectId(userId) } } }, // Not read by current user
+    });
+
+    // Mark all unread messages as read
+    if (unreadMessages.length > 0) {
+      await Message.updateMany(
+        { _id: { $in: unreadMessages.map((m) => m._id) } },
+        {
+          $addToSet: {
+            readBy: {
+              userId: new Types.ObjectId(userId),
+              readAt: new Date(),
+            },
+          },
+        }
+      );
+    }
+
+    return {
+      message: "Messages marked as read",
     };
   }
 }

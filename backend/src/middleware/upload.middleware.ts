@@ -25,7 +25,7 @@ export const uploadMultiple = (field: string, maxCount: number = 5) => {
   }).array(field, maxCount);
 
   return (req: Request, res: Response, next: NextFunction): void => {
-    upload(req, res, (error: any) => {
+    upload(req, res, (error: unknown) => {
       if (error instanceof multer.MulterError) {
         if (error.code === "LIMIT_FILE_SIZE") {
           return next(new AppError("File too large. Maximum size is 2MB", 400));
@@ -33,7 +33,9 @@ export const uploadMultiple = (field: string, maxCount: number = 5) => {
           return next(new AppError("Too many files uploaded", 400));
         }
       } else if (error) {
-        return next(new AppError(error.message, 400));
+        const errorMessage =
+          error instanceof Error ? error.message : "File upload error";
+        return next(new AppError(errorMessage, 400));
       }
       next();
     });

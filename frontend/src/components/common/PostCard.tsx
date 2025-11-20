@@ -1,6 +1,13 @@
 import { Icons } from "@/components/export/Icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import {
   Card,
   CardAction,
   CardContent,
@@ -15,6 +22,22 @@ import { setSelectedPost } from "@/store/slices/postSlice";
 import { IPost } from "@/types/post.types";
 import { useState } from "react";
 import { Link } from "react-router";
+
+// Helper function to normalize tags (handle both array and string formats)
+const normalizeTags = (tags: string[] | string | undefined): string[] => {
+  if (!tags) return [];
+  if (Array.isArray(tags)) return tags;
+  if (typeof tags === 'string') {
+    try {
+      const parsed = JSON.parse(tags);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      // If JSON parsing fails, treat as comma-separated string
+      return tags.split(/[#,\s]+/).map((tag: string) => tag.trim()).filter(Boolean);
+    }
+  }
+  return [];
+};
 
 const PostCard = ({ post }: { post: IPost }) => {
   const { user } = useAppSelector((state) => state.auth);
@@ -79,42 +102,78 @@ const PostCard = ({ post }: { post: IPost }) => {
         {post.caption && (
           <p className="mb-2 text-muted-foreground">{post.caption}</p>
         )}
-        {post.media &&
-          post.media.length > 0 &&
-          post.media[0].type === "image" && (
-            <div
-              className="w-full flex justify-center items-center rounded-md mb-2"
-              style={{ minHeight: 250, maxHeight: 400 }}
-            >
-              <img
-                src={post.media[0].url}
-                alt={post.title || "Post media"}
-                className="object-contain w-full h-full max-h-96 rounded-md cursor-pointer"
-                loading="lazy"
-                onClick={handleOpenPost}
-                style={{
-                  maxWidth: "100%",
-                  maxHeight: "400px",
-                  width: "auto",
-                  height: "auto",
-                  display: "block",
-                  margin: "0 auto",
-                }}
-              />
-            </div>
-          )}
-        {post.tags && post.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-2">
-            {post.tags.map((tag: string) => (
-              <span
-                key={tag}
-                className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded select-none"
+        {post.media && post.media.length > 0 && (
+          <div className="w-full mb-2 relative">
+            {post.media.length > 1 ? (
+              <Carousel className="w-full relative">
+                <CarouselContent>
+                  {post.media.map((mediaItem, index) => (
+                    <CarouselItem key={index}>
+                      <div
+                        className="w-full flex justify-center items-center rounded-md"
+                        style={{ minHeight: 250, maxHeight: 400 }}
+                      >
+                        <img
+                          src={mediaItem.url}
+                          alt={`${post.title || "Post media"} - ${index + 1}`}
+                          className="object-contain w-full h-full max-h-96 rounded-md cursor-pointer"
+                          loading="lazy"
+                          onClick={handleOpenPost}
+                          style={{
+                            maxWidth: "100%",
+                            maxHeight: "400px",
+                            width: "auto",
+                            height: "auto",
+                            display: "block",
+                            margin: "0 auto",
+                          }}
+                        />
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="!absolute !left-2 !top-1/2 !-translate-y-1/2 !z-10 bg-black/50 hover:bg-black/70 text-white border-white/20 shadow-lg" />
+                <CarouselNext className="!absolute !right-2 !top-1/2 !-translate-y-1/2 !z-10 bg-black/50 hover:bg-black/70 text-white border-white/20 shadow-lg" />
+              </Carousel>
+            ) : (
+              <div
+                className="w-full flex justify-center items-center rounded-md"
+                style={{ minHeight: 250, maxHeight: 400 }}
               >
-                {tag}
-              </span>
-            ))}
+                <img
+                  src={post.media[0].url}
+                  alt={post.title || "Post media"}
+                  className="object-contain w-full h-full max-h-96 rounded-md cursor-pointer"
+                  loading="lazy"
+                  onClick={handleOpenPost}
+                  style={{
+                    maxWidth: "100%",
+                    maxHeight: "400px",
+                    width: "auto",
+                    height: "auto",
+                    display: "block",
+                    margin: "0 auto",
+                  }}
+                />
+              </div>
+            )}
           </div>
         )}
+        {(() => {
+          const normalizedTags = normalizeTags(post.tags);
+          return normalizedTags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-2">
+              {normalizedTags.map((tag: string) => (
+                <span
+                  key={tag}
+                  className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded select-none"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          );
+        })()}
       </CardContent>
 
       <CardFooter className="flex flex-col items-start gap-2 pt-2">
@@ -146,23 +205,7 @@ const PostCard = ({ post }: { post: IPost }) => {
                 <Icons.Comment />
               </button>
             </CardAction>
-            <CardAction>
-              <button
-                className="p-2 rounded-full hover:bg-accent transition-colors cursor-pointer"
-                aria-label="Share"
-              >
-                <Icons.Share />
-              </button>
-            </CardAction>
           </div>
-          <CardAction>
-            <button
-              className="p-2 rounded-full hover:bg-accent transition-colors cursor-pointer"
-              aria-label="Bookmark"
-            >
-              <Icons.Bookmark />
-            </button>
-          </CardAction>
         </div>
         <div className="flex items-center gap-2 px-2.5 text-sm">
           <span className="font-semibold">{post.likes?.length || 0}</span>
@@ -175,9 +218,9 @@ const PostCard = ({ post }: { post: IPost }) => {
           onClick={handleOpenPost}
         >
           View all comments
-          {post.comments && (
+          {(post.commentsCount !== undefined ? post.commentsCount : post.comments?.length || 0) > 0 && (
             <span className="ml-1 text-muted-foreground">
-              ({post.comments.length})
+              ({post.commentsCount !== undefined ? post.commentsCount : post.comments?.length || 0})
             </span>
           )}
         </button>

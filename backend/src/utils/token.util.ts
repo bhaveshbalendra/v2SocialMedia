@@ -6,11 +6,7 @@ interface TokenPayload {
   userId: string;
 }
 
-/**
- * Verify JWT token
- * @param token JWT token to verify
- * @returns Decoded token payload or null if invalid
- */
+// Verify JWT token and return decoded payload or null if invalid
 export const verifyToken = (
   token: string
 ): { payload: TokenPayload | null; expired: boolean } => {
@@ -27,21 +23,13 @@ export const verifyToken = (
   }
 };
 
-/**
- * Extract token from authorization header
- * @param authHeader Authorization header string
- * @returns Token string or null if not found
- */
+// Extract token from authorization header
 export const extractTokenFromHeader = (authHeader?: string): string | null => {
   if (!authHeader || !authHeader.startsWith("Bearer ")) return null;
   return authHeader.split(" ")[1].trim();
 };
 
-/**
- * @param userId - User ID to generate tokens for
- * @returns { accessToken: string, refreshToken: string } - Generated access and refresh tokens
- * @description Generates access and refresh tokens for the user.
- */
+// Generates access and refresh tokens for the user
 export function generateTokens(userId: string | Types.ObjectId): {
   accessToken: string;
   refreshToken: string;
@@ -52,11 +40,7 @@ export function generateTokens(userId: string | Types.ObjectId): {
   return { accessToken, refreshToken };
 }
 
-/**
- * Generates a refresh token for the user.
- * @param userId - User ID to generate refresh token for
- * @returns {string} - Generated refresh token
- */
+// Generates a refresh token for the user
 export function generateRefreshToken(userId: string | Types.ObjectId): string {
   const jwtSecret = config.jwt.secret;
   const refreshTokenExpiry = Number(config.jwt.refreshTokenExpiry);
@@ -64,11 +48,7 @@ export function generateRefreshToken(userId: string | Types.ObjectId): string {
   return jwt.sign({ userId }, jwtSecret, { expiresIn: refreshTokenExpiry });
 }
 
-/**
- * Generate a access token for the user.
- * @param userId - User ID to generate access token for
- * @returns {string} - Generated access token
- */
+// Generates an access token for the user
 export function generateAccessToken(userId: string | Types.ObjectId): string {
   const jwtSecret = config.jwt.secret;
   const accessTokenExpiry = Number(config.jwt.accessTokenExpiry);

@@ -1,6 +1,5 @@
 import ConversationCard from "@/components/chat/ConversationCard";
 import Messages from "@/components/chat/Messages";
-import { Icons } from "@/components/export/Icons";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import useGetConversations from "@/hooks/chat/useGetConversations";
@@ -59,7 +58,7 @@ const ChatPage = () => {
   }
 
   return (
-    <div className="flex h-full bg-background lg:h-screen">
+    <div className="flex h-full bg-background lg:h-screen max-h-screen overflow-hidden">
       {/* Desktop: Side-by-side layout */}
       {/* Mobile/Tablet: Show conversations list or chat based on selection */}
 
@@ -72,15 +71,12 @@ const ChatPage = () => {
             ? "hidden md:flex"
             : "flex"
         }
-        flex-col h-full
+        flex-col h-full min-w-0 overflow-hidden
       `}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b bg-card sticky top-0 z-10">
           <h1 className="text-xl font-bold text-foreground">Messages</h1>
-          <Button variant="ghost" size="icon" title="New Message">
-            <Icons.SquarePlus className="h-5 w-5" />
-          </Button>
         </div>
 
         {/* Conversations List */}
@@ -114,7 +110,7 @@ const ChatPage = () => {
       {/* Chat Area */}
       <div
         className={`
-        flex-1 bg-background
+        flex-1 bg-background min-w-0 overflow-hidden
         ${
           !selectedConversation || isMobileConversationListOpen
             ? "hidden md:flex"

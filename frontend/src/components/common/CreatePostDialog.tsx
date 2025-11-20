@@ -44,6 +44,8 @@ import { useForm } from "react-hook-form";
 const CreatePostDialog = (): React.ReactElement => {
   // State to control dialog open/close
   const [open, setOpen] = useState(false);
+  // State to store selected file names
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   // Initialize React Hook Form with Zod validation
   // This provides type-safe form handling with real-time validation
@@ -96,9 +98,11 @@ const CreatePostDialog = (): React.ReactElement => {
       // Add media files to FormData
       // Multiple files can be uploaded simultaneously
       if (data.media && data.media.length > 0) {
-        for (let i = 0; i < data.media.length; i++) {
-          formData.append("media", data.media[i]);
-        }
+        // Convert FileList to Array for proper iteration
+        const filesArray = Array.from(data.media);
+        filesArray.forEach((file) => {
+          formData.append("media", file);
+        });
       }
 
       // Call API to create post
@@ -107,6 +111,7 @@ const CreatePostDialog = (): React.ReactElement => {
 
       // Reset form and close dialog on successful post creation
       reset();
+      setSelectedFiles([]);
       setOpen(false);
     } catch (error) {
       // Log error for debugging in production
@@ -116,7 +121,16 @@ const CreatePostDialog = (): React.ReactElement => {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen) => {
+        setOpen(isOpen);
+        if (!isOpen) {
+          reset();
+          setSelectedFiles([]);
+        }
+      }}
+    >
       {/* Dialog Trigger - Button that opens the modal */}
       <DialogTrigger asChild>
         <Button>
@@ -125,7 +139,7 @@ const CreatePostDialog = (): React.ReactElement => {
       </DialogTrigger>
 
       {/* Dialog Content - The modal itself */}
-      <DialogContent>
+      <DialogContent className="!max-w-[min(90vw,600px)] !w-[min(90vw,600px)] !max-h-[min(90vh,700px)] overflow-y-auto !left-1/2 !top-1/2 !-translate-x-1/2 !-translate-y-1/2 !m-0">
         <DialogHeader>
           <DialogTitle>Create Post</DialogTitle>
         </DialogHeader>
@@ -167,14 +181,50 @@ const CreatePostDialog = (): React.ReactElement => {
           {/* Media Upload Field */}
           <div className="space-y-2">
             <Label htmlFor="media">Media</Label>
-            <Input
-              type="file"
-              multiple
-              accept="image/jpeg,image/png,image/gif"
-              onChange={(e) =>
-                setValue("media", e.target.files, { shouldValidate: true })
-              }
-            />
+            <label
+              htmlFor="media"
+              className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-muted/50 hover:bg-muted/70 transition-colors"
+            >
+              <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                <Icons.Upload className="w-10 h-10 mb-3 text-muted-foreground" />
+                <p className="mb-2 text-sm text-foreground">
+                  <span className="font-semibold">Click to upload</span> or drag and drop
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  You can upload multiple images (PNG, JPG, GIF up to 2MB each)
+                </p>
+              </div>
+              <Input
+                id="media"
+                type="file"
+                multiple
+                accept="image/jpeg,image/png,image/gif"
+                className="hidden"
+                onChange={(e) => {
+                  const files = e.target.files;
+                  if (files && files.length > 0) {
+                    const filesArray = Array.from(files);
+                    setSelectedFiles(filesArray);
+                    setValue("media", files, { shouldValidate: true });
+                  } else {
+                    setSelectedFiles([]);
+                  }
+                }}
+              />
+            </label>
+            
+            {/* Selected Files Info */}
+            {selectedFiles.length > 0 && (
+              <div className="mt-3 p-3 bg-muted/50 rounded-lg border border-border">
+                <div className="flex items-center gap-2">
+                  <Icons.Upload className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                  <span className="text-sm font-semibold text-foreground">
+                    {selectedFiles.length} {selectedFiles.length === 1 ? 'image' : 'images'} selected
+                  </span>
+                </div>
+              </div>
+            )}
+            
             <ErrorDisplay error={errors.media} />
           </div>
 

@@ -1,4 +1,5 @@
 import { useAppDispatch } from "@/hooks/redux/useAppDispatch";
+import { useAppSelector } from "@/hooks/redux/useAppSelector";
 import {
   useCreateCommentMutation,
   useCreateReplyMutation,
@@ -7,7 +8,7 @@ import {
   useUpdateCommentMutation,
 } from "@/store/apis/commentApi";
 import { setSelectedPost } from "@/store/slices/postSlice";
-import { ICreateCommentRequest } from "@/types/comment.types";
+import { IComment, ICreateCommentRequest } from "@/types/comment.types";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -16,6 +17,7 @@ export const useComments = () => {
   const [isEditing, setIsEditing] = useState<string | null>(null);
 
   const dispatch = useAppDispatch();
+  const { user } = useAppSelector((state) => state.auth);
 
   // Mutations
   const [createComment, { isLoading: isCreatingComment }] =
@@ -33,21 +35,63 @@ export const useComments = () => {
     content,
     postId,
   }: ICreateCommentRequest) => {
+    if (!user) {
+      toast.error("You must be logged in to comment");
+      return;
+    }
+
+    // Create optimistic comment
+    const tempId = `temp-${Date.now()}`;
+    const nowISOString = new Date().toISOString();
+    const optimisticComment: IComment = {
+      _id: tempId,
+      id: tempId,
+      user: {
+        _id: user._id,
+        username: user.username || "",
+        profilePicture: user.profilePicture || "",
+      },
+      post: postId,
+      content: content.trim(),
+      likes: [],
+      likesCount: 0,
+      parentComment: null,
+      createdAt: nowISOString,
+    };
+
+    // Add optimistic comment immediately
+    dispatch(
+      setSelectedPost({
+        type: "ADD_COMMENT",
+        comment: optimisticComment,
+        postId,
+      })
+    );
+
     try {
       const res = await createComment({ postId, content }).unwrap();
 
       if (res.success && res.comment) {
-        // Update the selected post's comments array
+        // Replace optimistic comment with real comment
         dispatch(
           setSelectedPost({
-            type: "ADD_COMMENT",
+            type: "REPLACE_COMMENT",
+            oldCommentId: tempId,
             comment: res.comment,
             postId,
           })
         );
-        toast.success("Comment added successfully!");
+        // Don't show success toast for optimistic updates
       }
     } catch (error: unknown) {
+      // Remove optimistic comment on error
+      dispatch(
+        setSelectedPost({
+          type: "REMOVE_COMMENT",
+          commentId: tempId,
+          postId,
+        })
+      );
       const errorMessage =
         error && typeof error === "object" && "data" in error
           ? (error as { data?: { message?: string } }).data?.message

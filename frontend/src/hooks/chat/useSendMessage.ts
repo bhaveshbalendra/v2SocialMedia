@@ -29,8 +29,9 @@ const useSendMessage = () => {
 
       // Create optimistic message
       const nowISOString = new Date().toISOString();
+      const tempId = `temp-${Date.now()}`;
       const optimisticMessage: IMessage = {
-        id: `temp-${Date.now()}`, // Temporary ID
+        id: tempId, // Temporary ID
         senderId: userInfo._id,
         conversationId: selectedConversation._id,
         content: content.trim(),
@@ -53,11 +54,15 @@ const useSendMessage = () => {
           content: content.trim(),
         }).unwrap();
 
-        // Note: The real message will be received via socket.io and will replace the optimistic one
-        // or we could implement message ID mapping to update the optimistic message
+        // The real message will be received via socket.io and will replace the optimistic one
+        // The reducer handles this by matching content and senderId
       } catch (error) {
         console.error("Failed to send message:", error);
-        // TODO: Implement error handling - remove optimistic message or mark as failed
+        // Remove optimistic message on error
+        dispatch({
+          type: "chat/removeOptimisticMessage",
+          payload: tempId,
+        });
       }
     },
     [selectedConversation, userInfo, sendMessageMutation, dispatch]

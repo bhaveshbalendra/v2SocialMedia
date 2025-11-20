@@ -1,12 +1,12 @@
 import { Router } from "express";
 import {
-  createComment,
-  createReply,
-  deleteComment,
-  getCommentReplies,
-  getPostComments,
-  toggleCommentLike,
-  updateComment,
+  handleCreateComment,
+  handleCreateReply,
+  handleDeleteComment,
+  handleGetCommentReplies,
+  handleGetPostComments,
+  handleToggleCommentLike,
+  handleUpdateComment,
 } from "../controller/comment.controller";
 import { authenticate } from "../middleware/auth.middleware";
 import { validateRequest } from "../middleware/validator.middleware";
@@ -14,68 +14,40 @@ import { commentValidator } from "../utils/validators.util";
 
 const router = Router();
 
-/**
- * @route   POST /api/v2/comments/:postId
- * @desc    Create a comment on a post
- * @access  Private
- */
+// Create a comment on a post
 router.post(
   "/:postId",
   authenticate,
   validateRequest(commentValidator.create),
-  createComment
+  handleCreateComment
 );
 
-/**
- * @route   POST /api/v2/comments/:commentId/reply
- * @desc    Reply to a comment
- * @access  Private
- */
+// Reply to a comment
 router.post(
   "/:commentId/reply",
   authenticate,
   validateRequest(commentValidator.create),
-  createReply
+  handleCreateReply
 );
 
-/**
- * @route   GET /api/v2/comments/:postId
- * @desc    Get comments for a post
- * @access  Public
- */
-router.get("/:postId", getPostComments);
+// Get comments for a post
+router.get("/:postId", handleGetPostComments);
 
-/**
- * @route   GET /api/v2/comments/:commentId/replies
- * @desc    Get replies for a comment
- * @access  Public
- */
-router.get("/:commentId/replies", getCommentReplies);
+// Get replies for a comment
+router.get("/:commentId/replies", handleGetCommentReplies);
 
-/**
- * @route   PUT /api/v2/comments/:commentId
- * @desc    Update a comment
- * @access  Private
- */
+// Update a comment
 router.put(
   "/:commentId",
   authenticate,
   validateRequest(commentValidator.update),
-  updateComment
+  handleUpdateComment
 );
 
-/**
- * @route   DELETE /api/v2/comments/:commentId
- * @desc    Delete a comment
- * @access  Private
- */
-router.delete("/:commentId", authenticate, deleteComment);
+// Delete a comment
+router.delete("/:commentId", authenticate, handleDeleteComment);
 
-/**
- * @route   POST /api/v2/comments/:commentId/like
- * @desc    Like/Unlike a comment
- * @access  Private
- */
-router.post("/:commentId/like", authenticate, toggleCommentLike);
+// Like or unlike a comment
+router.post("/:commentId/like", authenticate, handleToggleCommentLike);
 
 export default router;

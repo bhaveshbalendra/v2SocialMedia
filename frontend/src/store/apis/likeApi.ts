@@ -76,14 +76,7 @@ export const likeApi = createApi({
         } catch {
           // Revert optimistic updates on failure
           patchResults.forEach((patchResult) => patchResult.undo());
-          toast.error("Failed to like post", {
-            action: {
-              label: "X",
-              onClick: () => {
-                toast.dismiss();
-              },
-            },
-          });
+          toast.error("Failed to like post");
         }
       },
     }),
@@ -137,14 +130,7 @@ export const likeApi = createApi({
           } catch {
             // Revert optimistic updates on failure
             patchResults.forEach((patchResult) => patchResult.undo());
-            toast.error("Failed to unlike post", {
-              action: {
-                label: "X",
-                onClick: () => {
-                  toast.dismiss();
-                },
-              },
-            });
+            toast.error("Failed to unlike post");
           }
         },
       }

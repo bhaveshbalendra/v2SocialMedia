@@ -1,3 +1,4 @@
+import FormError from "@/components/common/FormError";
 import { Icons } from "@/components/export/Icons";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +19,7 @@ import {
   loginSchema,
 } from "@/validations/loginValidators";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AlertCircle, Sparkles } from "lucide-react";
 import { signInWithPopup } from "firebase/auth";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router";
@@ -62,7 +64,34 @@ const LoginPage = () => {
 
   return (
     <div className="flex justify-center items-center min-h-dvh p-6 md:p-10">
-      <div className="max-w-sm w-full">
+      <div className="max-w-sm w-full space-y-4">
+        {/* Demo Account Info Card */}
+        <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2 mb-1">
+              <Sparkles className="h-5 w-5 text-primary" />
+              <CardTitle className="text-lg font-semibold">
+                Demo Account Available
+              </CardTitle>
+            </div>
+            <CardDescription className="text-sm">
+              Try our demo account to explore the application without creating
+              an account. Credentials are pre-filled below.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-start gap-2 p-2 bg-amber-50 dark:bg-amber-950/20 rounded-md border border-amber-200 dark:border-amber-900">
+              <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+              <p className="text-xs text-amber-800 dark:text-amber-300">
+                <strong>Disclaimer:</strong> This is a demo account for testing
+                purposes only. All data is shared and may be reset periodically.
+                Please do not use this account for personal or sensitive
+                information.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
         <Card className="gap-4">
           <CardHeader>
             <CardTitle>
@@ -85,11 +114,7 @@ const LoginPage = () => {
                     autoComplete="current-password"
                     required
                   />
-                  {errors.email_or_username && (
-                    <span className="text-red-500 text-sm">
-                      {errors.email_or_username.message}
-                    </span>
-                  )}
+                  <FormError error={errors.email_or_username} />
                 </div>
 
                 <div className="flex flex-col items-start gap-2">
@@ -102,11 +127,7 @@ const LoginPage = () => {
                     required
                     placeholder="Enter your password"
                   />
-                  {errors.password && (
-                    <span className="text-red-500 text-sm">
-                      {errors.password.message}
-                    </span>
-                  )}
+                  <FormError error={errors.password} />
                 </div>
 
                 <div className="flex flex-col gap-2">
@@ -124,9 +145,6 @@ const LoginPage = () => {
                     variant="outline"
                   >
                     <Icons.Google className="mr-2" /> Login with Google
-                  </Button>
-                  <Button type="button" disabled={isLoading} variant="outline">
-                    <Icons.Twitter className="mr-2" /> Login with X
                   </Button>
                 </div>
               </div>

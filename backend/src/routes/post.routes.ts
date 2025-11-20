@@ -13,17 +13,7 @@ import { postValidator } from "../utils/validators.util";
 // Initialize Express Router instance for post-related routes
 const router: Router = Router();
 
-/**
- * @route   POST /create-post
- * @desc    Create a new post (with up to 5 media files)
- * @access  Private (requires authentication)
- * @middlewares
- *   - authenticate: Ensures the user is logged in
- *   - uploadMultiple: Handles file uploads for the 'media' field (max 5 files)
- *   - validateRequest: Validates request body against post creation schema
- * @controller
- *   - handleCreatePost: Handles the business logic for post creation
- */
+// Create a new post with up to 5 media files
 router.post(
   "/create-post",
   authenticate,
@@ -32,53 +22,13 @@ router.post(
   handleCreatePost as RequestHandler
 );
 
-// The following routes are currently disabled. Uncomment to enable:
-
-/**
- * @route   GET /public
- * @desc    Get public posts for users not logged in
- * @access  Public
- */
+// Get public posts for non-authenticated users
 router.get("/public", handleGetPostsForNotLoginUser);
 
-/**
- * @route   GET /feed
- * @desc    Get personalized feed for logged-in users
- * @access  Private (requires authentication)
- */
+// Get personalized feed for authenticated users
 router.get("/feed", authenticate, handleGetPostForLoginUser);
 
-/**
- * @route   GET /debug
- * @desc    Debug endpoint to check posts in database
- * @access  Public (for debugging)
- */
+// Debug endpoint to check posts in database
 router.get("/debug", handleDebugPosts);
-
-// /**
-//  * @route   DELETE /
-//  * @desc    (Route not implemented) Delete a post
-//  */
-// router.delete("/:postId/delete");
-
-// /**
-//  * @route POST /api/v2/post/:postId/comment
-//  */
-// router.post("/:postId/comment");
-
-// /**
-//  * @route POST /api/v2/post/:postId/comment/all
-//  */
-// router.post("/:postId/comment/all");
-
-// /**
-//  * @route POST /api/v2/post/:postId/bookmark
-//  */
-// router.post("/:postId/bookmark");
-
-// /**
-//  * @route Delete /api/v2/post/:postId/bookmark
-//  */
-// router.delete("/:postId/bookmark");
 
 export default router;

@@ -1,3 +1,4 @@
+import useDeleteAllNotifications from "@/hooks/notifications/useDeleteAllNotifications";
 import useMarkReadNotification from "@/hooks/notifications/useMarkReadNotifiaction";
 import useNotification from "@/hooks/notifications/useNotification";
 import useProfile from "@/hooks/profiles/useProfile";
@@ -46,6 +47,9 @@ const NotificationModal = ({
   open: boolean;
 }) => {
   const { notifications, isLoading } = useNotification();
+  const { markAllNotificationsAsRead } = useMarkReadNotification();
+  const { handleDeleteAllNotifications, isLoading: isDeletingAll } =
+    useDeleteAllNotifications();
   const {
     handleAcceptFollowRequest,
     handleRejectFollowRequest,
@@ -55,8 +59,6 @@ const NotificationModal = ({
   const [processingRequests, setProcessingRequests] = useState<Set<string>>(
     new Set()
   );
-
-  const { markAllNotificationsAsRead } = useMarkReadNotification();
 
   const handleAcceptRequest = async ({
     requestId,
@@ -266,9 +268,9 @@ const NotificationModal = ({
           <DialogTitle className="text-xl font-bold mb-4">
             Notifications
           </DialogTitle>
-          {/* Mark All as Read Button */}
+          {/* Action Buttons */}
           {notifications && notifications.length > 0 && (
-            <div className="mt-4 pt-4 border-t">
+            <div className="mt-4 pt-4 border-t space-y-2">
               <Button
                 variant="outline"
                 size="sm"
@@ -276,6 +278,15 @@ const NotificationModal = ({
                 onClick={() => markAllNotificationsAsRead()}
               >
                 Mark all as read
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                className="w-full"
+                onClick={() => handleDeleteAllNotifications()}
+                disabled={isDeletingAll}
+              >
+                {isDeletingAll ? "Deleting..." : "Delete all notifications"}
               </Button>
             </div>
           )}

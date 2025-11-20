@@ -13,17 +13,9 @@ import {
 } from "../types/auth.types";
 import { generateTokens } from "../utils/token.util";
 
-/**
- * @class AuthService
- * @description Service class for handling authentication-related operations.
- */
+// Service class for handling authentication-related operations
 class AuthService {
-  /**
-   * Registers a new user.
-   * @param userData - User data for signup.
-   * @returns { userResponse: User, accessToken, refreshToken } - Created user object (without password) and tokens.
-   * @throws {AppError} - Throws an error if user already exists or creation fails.
-   */
+  // Registers a new user and returns user data with tokens
   async signupUser(
     userData: ISignupServiceParameter
   ): Promise<ISignupServiceReturn> {
@@ -118,13 +110,7 @@ class AuthService {
     // }
   }
 
-  /**
-   * Authenticates a user and issues tokens.
-   * @param email_or_username - User's email or username.
-   * @param password - User's password.
-   * @returns {Promise<object>} - User object (without password) and tokens.
-   * @throws {AppError} - Throws an error if user is not found or credentials are invalid.
-   */
+  // Authenticates a user and returns user data with tokens
   async loginUser({
     email_or_username,
     password,
@@ -178,14 +164,7 @@ class AuthService {
     };
   }
 
-  /**
-   * Handles Google login or registration.
-   * @param {Object} userData - User data from Google.
-   * @param {string} userData.email
-   * @param {string} userData.firstName
-   * @param {string} userData.lastName
-   * @param {string} userData.uid - Google UID
-   */
+  // Handles Google login or registration
   async google(userData: IGoogleServiceParameter) {
     // 1. Check if a user with the same email already exists
     let user = await User.findOne({ email: userData.email });
@@ -244,10 +223,7 @@ class AuthService {
     };
   }
 
-  /**
-   * Logs out the user by clearing the refresh token cookie.
-   * @param response - Express response object.
-   */
+  // Logs out the user by clearing the refresh token cookie
   async logout(response: Response): Promise<void> {
     // Clear the 'refreshToken' cookie to log out the user.
     response.clearCookie("refreshToken");

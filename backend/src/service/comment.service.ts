@@ -32,9 +32,7 @@ interface ILikeCommentParams {
 }
 
 class CommentService {
-  /**
-   * Create a new comment on a post
-   */
+  // Create a new comment on a post
   async createComment({ userId, postId, content }: ICreateCommentParams) {
     // Check if post exists
     const post = await Post.findById(postId);
@@ -86,10 +84,13 @@ class CommentService {
       })
       .select("-updatedAt -__v ");
 
-    // Emit real-time notification
-    for (const [socketUserId, socketIds] of userSocketMap.entries()) {
-      if (socketUserId !== userId) {
-        socketIds.forEach((socketId) => {
+    // Emit real-time comment update to post author only (if not commenting on own post)
+    if (post.author.toString() !== userId) {
+      const postAuthorId = post.author.toString();
+      const postAuthorSockets = userSocketMap.get(postAuthorId);
+
+      if (postAuthorSockets && postAuthorSockets.length > 0) {
+        postAuthorSockets.forEach((socketId) => {
           io.to(socketId).emit("newComment", {
             postId: postId,
             comment: populatedComment,
@@ -98,28 +99,10 @@ class CommentService {
       }
     }
 
-    // {
-    //     "_id": "6870e37049335dac9723d34e",
-    //     "user": {
-    //         "_id": "6843235b3116e92073ea1f0d",
-    //         "username": "bhavesh",
-    //         "profilePicture": ""
-    //     },
-    //     "post": "68709f70e69b0a4e159dcd33",
-    //     "content": "are you ok",
-    //     "likes": [],
-    //     "likesCount": 0,
-    //     "parentComment": null,
-    //     "createdAt": "2025-07-11T10:12:00.776Z",
-    //     "id": "6870e37049335dac9723d34e"
-    // }
-
     return populatedComment;
   }
 
-  /**
-   * Create a reply to a comment
-   */
+  // Create a reply to a comment
   async createReply({ userId, commentId, content }: ICreateReplyParams) {
     // Check if parent comment exists
     const parentComment = await Comment.findById(commentId).populate("post");
@@ -173,9 +156,7 @@ class CommentService {
     return populatedReply;
   }
 
-  /**
-   * Get comments for a post
-   */
+  // Get comments for a post
   async getPostComments(postId: string, cursor: string | null = null) {
     // Check if post exists
     const post = await Post.findById(postId);
@@ -239,9 +220,7 @@ class CommentService {
     };
   }
 
-  /**
-   * Update a comment
-   */
+  // Update a comment
   async updateComment({ userId, commentId, content }: IUpdateCommentParams) {
     const comment = await Comment.findById(commentId);
     if (!comment) {
@@ -266,9 +245,7 @@ class CommentService {
     return updatedComment;
   }
 
-  /**
-   * Delete a comment
-   */
+  // Delete a comment
   async deleteComment(userId: string, commentId: string) {
     const comment = await Comment.findById(commentId);
     if (!comment) {
@@ -301,9 +278,7 @@ class CommentService {
     return { message: "Comment deleted successfully" };
   }
 
-  /**
-   * Like/Unlike a comment
-   */
+  // Like/Unlike a comment
   async toggleCommentLike({ userId, commentId }: ILikeCommentParams) {
     const comment = await Comment.findById(commentId);
     if (!comment) {
@@ -354,9 +329,7 @@ class CommentService {
     }
   }
 
-  /**
-   * Get replies for a specific comment
-   */
+  // Get replies for a specific comment
   async getCommentReplies(
     commentId: string,
     page: number = 1,

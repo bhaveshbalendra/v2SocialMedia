@@ -1,9 +1,7 @@
 import { Model, model, Schema } from "mongoose";
 import { IPost, PostVisibility } from "../types/schema.types";
 
-/**
- * @description Post schema with validation and best practices
- */
+// Post schema with validation and best practices
 const postSchema: Schema<IPost> = new Schema<IPost>(
   {
     title: {

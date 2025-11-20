@@ -20,14 +20,7 @@ export const useLike = () => {
     if (isAuthenticated) {
       await likePost({ postId });
     } else {
-      toast.error("Please login to like a post", {
-        action: {
-          label: "X",
-          onClick: () => {
-            toast.dismiss();
-          },
-        },
-      });
+      toast.error("Please login to like a post");
       navigate("/login");
     }
   };

@@ -8,8 +8,6 @@ export interface MessageState {
   read: boolean;
 }
 
-// Define interfaces for the chat state
-
 export interface IConversation {
   __v?: number;
   createdAt?: string;
@@ -53,6 +51,7 @@ export interface ChatState {
   activeChat: string | null; // ID of the user you're actively chatting with
   unreadCounts: Record<string, number>; // Maps userId to number of unread messages
   selectedConversation: IConversation | null;
+  totalUnreadCount: number; // Total unread messages across all conversations
 }
 
 export interface IFetchConversationsApiResponse {

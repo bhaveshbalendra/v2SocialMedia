@@ -3,15 +3,9 @@ import asyncHandler from "express-async-handler";
 import { config } from "../config/app.config";
 import authService from "../service/auth.service";
 
-/**
- * @description Handles user signup by calling the authService to create a new user.
- * @param {Request} request - The request object containing user data.
- * @param {Response} response - The response object to send the result.
- * @returns {Promise<any>} - A promise that resolves to the response object.
- * @throws {AppError} - Throws an app error if user creation fails.
- */
+// Handle user signup
 const handleSignupUser = asyncHandler(
-  async (request: Request, response: Response): Promise<void> => {
+  async (request: Request, response: Response) => {
     const userData = request.body;
     // Call the signupUser method from authService with data from the request body
     const {
@@ -35,20 +29,12 @@ const handleSignupUser = asyncHandler(
       user,
       accessToken,
     });
-
-    return;
   }
 );
 
-/**
- * @description Handles user login by authenticating credentials and issuing tokens.
- * @param {Request} request - The request object containing login credentials.
- * @param {Response} response - The response object to send the result.
- * @returns {Promise<any>} - A promise that resolves to the response object.
- * @throws {AppError} - Throws an app error if login fails.
- */
+// Handle user login
 const handleLoginUser = asyncHandler(
-  async (request: Request, response: Response): Promise<void> => {
+  async (request: Request, response: Response) => {
     // Extract credentials from request body
     const { email_or_username, password } = request.body;
 
@@ -77,14 +63,9 @@ const handleLoginUser = asyncHandler(
   }
 );
 
-/**
- * @description Returns the authenticated user's information.
- * @param {Request} request - The request object with user info (populated by middleware).
- * @param {Response} response - The response object to send the result.
- * @returns {Promise<any>} - A promise that resolves to the response object.
- */
+// Get authenticated user's information
 const handleAuthUserRoutes = asyncHandler(
-  async (request: Request, response: Response): Promise<void> => {
+  async (request: Request, response: Response) => {
     // Retrieve user and accessToken from request (assumed to be set by authentication middleware)
     const user = request.user;
     const accessToken = request.accessToken;
@@ -108,14 +89,9 @@ const handleAuthUserRoutes = asyncHandler(
   }
 );
 
-/**
- * @description Handles user logout by clearing the refresh token.
- * @param {Request} request - The request object.
- * @param {Response} response - The response object to send the result.
- * @returns {Promise<any>} - A promise that resolves to the response object.
- */
+// Handle user logout
 const handleLogout = asyncHandler(
-  async (request: Request, response: Response): Promise<void> => {
+  async (request: Request, response: Response) => {
     // Call the logout method in authService to clear the refresh token cookie
     await authService.logout(response);
     // Respond with a success message
@@ -123,12 +99,12 @@ const handleLogout = asyncHandler(
       message: "User Logout successfully",
       success: true,
     });
-    return;
   }
 );
 
+// Handle Google OAuth login
 const handleGoogleLogin = asyncHandler(
-  async (request: Request, response: Response): Promise<void> => {
+  async (request: Request, response: Response) => {
     const { firstName, lastName, uid, email } = request.body;
     const { user, accessToken, refreshToken } = await authService.google({
       firstName,

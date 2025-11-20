@@ -2,118 +2,75 @@ import { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import * as settingsService from "../service/settings.service";
 
-/**
- * Get user settings
- * @route GET /api/settings
- */
-export const getUserSettings = asyncHandler(
-  async (req: Request, res: Response): Promise<any> => {
-    const userId = req.user?._id;
-
-    if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: "User not authenticated",
-      });
-    }
+// Get user settings
+const handleGetUserSettings = asyncHandler(
+  async (request: Request, response: Response) => {
+    const userId = request.user._id;
 
     const settings = await settingsService.getUserSettings(userId);
 
-    return res.status(200).json({
+    response.status(200).json({
       success: true,
-      settings,
       message: "User settings fetched successfully",
+      settings,
     });
   }
 );
 
-/**
- * Update privacy settings
- * @route PATCH /api/settings/privacy
- */
-export const updatePrivacy = asyncHandler(
-  async (req: Request, res: Response): Promise<any> => {
-    const userId = req.user?._id;
-    const { isPrivate } = req.body;
-
-    if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: "User not authenticated",
-      });
-    }
+// Update privacy settings
+const handleUpdatePrivacy = asyncHandler(
+  async (request: Request, response: Response) => {
+    const userId = request.user._id;
+    const { isPrivate } = request.body;
 
     if (typeof isPrivate !== "boolean") {
-      return res.status(400).json({
+      response.status(400).json({
         success: false,
         message: "Invalid privacy setting",
       });
+      return;
     }
 
     await settingsService.updatePrivacy(userId, isPrivate);
 
-    return res.status(200).json({
+    response.status(200).json({
       success: true,
       message: "Privacy settings updated successfully",
     });
   }
 );
 
-/**
- * Update notification settings
- * @route PATCH /api/settings/notifications
- */
-export const updateNotifications = async (req: Request, res: Response) => {
-  try {
-    const userId = req.user?._id;
-    const { email, push } = req.body;
-
-    if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: "User not authenticated",
-      });
-    }
+// Update notification settings
+const handleUpdateNotifications = asyncHandler(
+  async (request: Request, response: Response) => {
+    const userId = request.user._id.toString();
+    const { email, push } = request.body;
 
     if (
       (email !== undefined && typeof email !== "boolean") ||
       (push !== undefined && typeof push !== "boolean")
     ) {
-      return res.status(400).json({
+      response.status(400).json({
         success: false,
         message: "Invalid notification settings",
       });
+      return;
     }
 
     await settingsService.updateNotifications(userId, { email, push });
 
-    return res.status(200).json({
+    response.status(200).json({
       success: true,
       message: "Notification settings updated successfully",
     });
-  } catch (error: any) {
-    return res.status(500).json({
-      success: false,
-      message: error.message || "Failed to update notification settings",
-    });
   }
-};
+);
 
-/**
- * Update profile settings
- * @route PATCH /api/settings/profile
- */
-export const updateProfile = async (req: Request, res: Response) => {
-  try {
-    const userId = req.user?._id;
-    const { username, email, password } = req.body;
-
-    if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: "User not authenticated",
-      });
-    }
+// Update profile settings
+const handleUpdateProfile = asyncHandler(
+  async (request: Request, response: Response) => {
+    const userId = request.user._id.toString();
+    const { username, email, password } = request.body;
 
     await settingsService.updateProfile(userId, {
       username,
@@ -121,53 +78,42 @@ export const updateProfile = async (req: Request, res: Response) => {
       password,
     });
 
-    return res.status(200).json({
+    response.status(200).json({
       success: true,
       message: "Profile updated successfully",
     });
-  } catch (error: any) {
-    return res.status(500).json({
-      success: false,
-      message: error.message || "Failed to update profile",
-    });
   }
-};
+);
 
-/**
- * Update premium status
- * @route PATCH /api/settings/premium
- */
-export const updatePremiumStatus = async (req: Request, res: Response) => {
-  try {
-    const userId = req.user?._id;
-    const { isPremium } = req.body;
-
-    if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: "User not authenticated",
-      });
-    }
+// Update premium status
+const handleUpdatePremiumStatus = asyncHandler(
+  async (request: Request, response: Response) => {
+    const userId = request.user._id.toString();
+    const { isPremium } = request.body;
 
     if (typeof isPremium !== "boolean") {
-      return res.status(400).json({
+      response.status(400).json({
         success: false,
         message: "Invalid premium status",
       });
+      return;
     }
 
     await settingsService.updatePremiumStatus(userId, isPremium);
 
-    return res.status(200).json({
+    response.status(200).json({
       success: true,
       message: isPremium
         ? "Account upgraded to premium successfully"
         : "Premium subscription cancelled successfully",
     });
-  } catch (error: any) {
-    return res.status(500).json({
-      success: false,
-      message: error.message || "Failed to update premium status",
-    });
   }
+);
+
+export {
+  handleGetUserSettings,
+  handleUpdateNotifications,
+  handleUpdatePremiumStatus,
+  handleUpdatePrivacy,
+  handleUpdateProfile,
 };

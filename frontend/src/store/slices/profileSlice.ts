@@ -38,6 +38,46 @@ export const profileSlice = createSlice({
     setError: (state, action) => {
       state.error = action.payload;
     },
+    // Optimistic follow update
+    optimisticFollow: (
+      state: IUserState,
+      action: PayloadAction<{
+        currentUserId: string;
+        currentUserInfo: { username: string; profilePicture: string };
+      }>
+    ) => {
+      if (state.userProfileData) {
+        // Add current user to followers if not already there
+        const isAlreadyFollowing = state.userProfileData.followers?.some(
+          (f: { _id: string }) => f._id === action.payload.currentUserId
+        );
+        if (!isAlreadyFollowing) {
+          if (!state.userProfileData.followers) {
+            state.userProfileData.followers = [];
+          }
+          state.userProfileData.followers.push({
+            _id: action.payload.currentUserId,
+            username: action.payload.currentUserInfo.username,
+            profilePicture: action.payload.currentUserInfo.profilePicture,
+          });
+        }
+      }
+    },
+    // Optimistic unfollow update
+    optimisticUnfollow: (
+      state: IUserState,
+      action: PayloadAction<{ currentUserId: string }>
+    ) => {
+      if (state.userProfileData) {
+        // Remove current user from followers
+        if (state.userProfileData.followers) {
+          state.userProfileData.followers =
+            state.userProfileData.followers.filter(
+              (f: { _id: string }) => f._id !== action.payload.currentUserId
+            );
+        }
+      }
+    },
   },
 });
 
@@ -47,5 +87,7 @@ export const {
   setChatFriends,
   setIsLoading,
   setError,
+  optimisticFollow,
+  optimisticUnfollow,
 } = profileSlice.actions;
 export const profileReducer = profileSlice.reducer;

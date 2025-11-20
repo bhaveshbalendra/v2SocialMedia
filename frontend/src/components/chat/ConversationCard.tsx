@@ -1,6 +1,8 @@
 import { useAppDispatch } from "@/hooks/redux/useAppDispatch";
 import { useAppSelector } from "@/hooks/redux/useAppSelector";
+import { useMarkMessagesAsReadMutation } from "@/store/apis/chatApi";
 import {
+  markMessagesAsRead,
   setActiveChat,
   setSelectedConversation,
 } from "@/store/slices/chatSlice";
@@ -25,8 +27,9 @@ const ConversationCard = ({
     (state) => state.chat
   );
   const userInfo = useAppSelector((state) => state.auth.user);
+  const [markMessagesAsReadMutation] = useMarkMessagesAsReadMutation();
 
-  const handleSelectedFriend = (conversation: IConversation) => {
+  const handleSelectedFriend = async (conversation: IConversation) => {
     dispatch(setSelectedConversation(conversation));
 
     // Set active chat and clear unread count
@@ -35,6 +38,18 @@ const ConversationCard = ({
     );
     if (otherParticipant) {
       dispatch(setActiveChat(otherParticipant._id));
+      
+      // Mark messages as read when opening conversation
+      try {
+        await markMessagesAsReadMutation({
+          conversationId: conversation._id,
+        }).unwrap();
+        
+        // Update local state to clear unread count
+        dispatch(markMessagesAsRead(otherParticipant._id));
+      } catch (error) {
+        console.error("Failed to mark messages as read:", error);
+      }
     }
 
     // Call onSelect for mobile responsiveness
@@ -77,6 +92,11 @@ const ConversationCard = ({
             )}
           </AvatarFallback>
         </Avatar>
+
+        {/* Unread indicator - red dot */}
+        {unreadCount > 0 && (
+          <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-red-500 rounded-full border-2 border-background"></div>
+        )}
 
         {/* Online indicator - you can implement this later */}
         {/* <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-background"></div> */}

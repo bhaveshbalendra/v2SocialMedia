@@ -5,8 +5,6 @@ import express, { Application } from "express";
 import http from "http";
 import { config } from "./config/app.config";
 import { connectToMongoDB } from "./config/mongoDB.config";
-import { initializeSocketServer } from "./utils/socket.util";
-
 import { handleError } from "./middleware/error.middleware";
 import authRouter from "./routes/auth.routes";
 import chatRouter from "./routes/chat.routes";
@@ -17,8 +15,7 @@ import notificationRouter from "./routes/notification.routes";
 import postRouter from "./routes/post.routes";
 import profileRouter from "./routes/profile.routes";
 import settingsRouter from "./routes/settings.routes";
-import userRouter from "./routes/user.route";
-import { createRateLimiter } from "./utils/rateLimiter.util";
+import { initializeSocketServer } from "./utils/socket.util";
 async function startServer() {
   try {
     await connectToMongoDB();
@@ -29,9 +26,6 @@ async function startServer() {
     app.use(bodyParser.json());
     app.use(express.urlencoded({ extended: true }));
     app.use(cookieParser());
-
-    // Global Rate Limiter (e.g., 100 requests per minute per IP)
-    // app.use(createRateLimiter({ windowMs: 60 * 1000, max: 100 }));
 
     // Enable CORS with appropriate configuration
     app.use(
@@ -59,7 +53,6 @@ async function startServer() {
     app.use("/api/v2/follows", followRouter);
     app.use("/api/v2/notifications", notificationRouter);
     app.use("/api/v2/settings", settingsRouter);
-    app.use("/api/v2/users", userRouter);
     app.use("/api/v2/likes", likeRouter);
     app.use("/api/v2/comments", commentRouter);
     app.use("/api/v2/profiles", profileRouter);

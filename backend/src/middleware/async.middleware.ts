@@ -1,11 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-/**
- * Async Handler middleware
- * Wraps async functions in a try-catch block and forwards errors to the error middleware
- * @param fn Async function to wrap
- * @returns Express middleware function with error handling
- */
+// Async Handler middleware - wraps async functions and forwards errors to error middleware
 export const asyncHandler =
   (fn: (req: Request, res: Response, next: NextFunction) => Promise<any>) =>
   (req: Request, res: Response, next: NextFunction) => {

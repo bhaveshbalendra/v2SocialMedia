@@ -20,8 +20,7 @@ const useNotification = () => {
     if (data) {
       dispatch(setNotifications(data.notifications));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+  }, [data, dispatch]);
 
   return { notifications, unreadCount, isLoading, error };
 };

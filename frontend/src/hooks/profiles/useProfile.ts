@@ -10,13 +10,18 @@ import { useAppDispatch } from "@/hooks/redux/useAppDispatch";
 import { useAppSelector } from "@/hooks/redux/useAppSelector";
 import { useDeleteNotificationMutation } from "@/store/apis/notificationApi";
 import { removeNotification } from "@/store/slices/notificationSlice";
-import { setUserProfile } from "@/store/slices/profileSlice";
+import {
+  optimisticFollow,
+  optimisticUnfollow,
+  setUserProfile,
+} from "@/store/slices/profileSlice";
 import { useEffect } from "react";
 import { useParams } from "react-router";
 
 const useProfile = () => {
   const param = useParams();
   const dispatch = useAppDispatch();
+  const { user } = useAppSelector((state) => state.auth);
 
   // Only call the API when we have a valid username
   const shouldSkipQuery = !param.username || param.username.trim() === "";
@@ -25,6 +30,7 @@ const useProfile = () => {
     data,
     isLoading: isLoadingProfile,
     error: errorProfile,
+    refetch: refetchProfile,
   } = useGetUserProfileQuery(param.username || "", {
     skip: shouldSkipQuery, // Skip the query if no valid username
   });
@@ -52,17 +58,54 @@ const useProfile = () => {
 
   const handleFollow = async () => {
     try {
-      if (param.username) {
+      if (param.username && user?._id) {
+        // Optimistic update
+        dispatch(
+          optimisticFollow({
+            currentUserId: user._id,
+            currentUserInfo: {
+              username: user.username || "",
+              profilePicture: user.profilePicture || "",
+            },
+          })
+        );
         await followUser(param.username).unwrap();
-        // Optionally refetch the profile data to get updated follow status
+        // Refetch to get the latest data
+        refetchProfile();
       }
     } catch (error) {
-      console.error("Failed to follow/unfollow user:", error);
+      // Revert optimistic update on error
+      if (user?._id) {
+        dispatch(optimisticUnfollow({ currentUserId: user._id }));
+      }
+      console.error("Failed to follow user:", error);
     }
   };
 
   const handleUnfollow = async () => {
-    await unfollowUser(data?.user._id || "");
+    try {
+      if (param.username && user?._id) {
+        // Optimistic update
+        dispatch(optimisticUnfollow({ currentUserId: user._id }));
+        await unfollowUser(param.username).unwrap();
+        // Refetch to get the latest data
+        refetchProfile();
+      }
+    } catch (error) {
+      // Revert optimistic update on error
+      if (user?._id) {
+        dispatch(
+          optimisticFollow({
+            currentUserId: user._id,
+            currentUserInfo: {
+              username: user.username || "",
+              profilePicture: user.profilePicture || "",
+            },
+          })
+        );
+      }
+      console.error("Failed to unfollow user:", error);
+    }
   };
   const handleAcceptFollowRequest = async ({
     requestId,

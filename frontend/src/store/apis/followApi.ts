@@ -35,6 +35,7 @@ export const followApi = createApi({
       }),
       invalidatesTags: (_result, _error, username) => [
         { type: "Profile", id: username },
+        { type: "Profile", id: "LIST" },
         { type: "Follow", id: "LIST" },
       ],
     }),
@@ -45,6 +46,7 @@ export const followApi = createApi({
       }),
       invalidatesTags: (_result, _error, username) => [
         { type: "Profile", id: username },
+        { type: "Profile", id: "LIST" },
         { type: "Follow", id: "LIST" },
       ],
     }),

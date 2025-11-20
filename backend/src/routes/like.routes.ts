@@ -1,28 +1,16 @@
-import { RequestHandler, Router } from "express";
+import { Router } from "express";
 import {
   handleLikePost,
-  handleUnLikePost,
+  handleUnlikePost,
 } from "../controller/like.controller";
 import { authenticate } from "../middleware/auth.middleware";
 
 const router = Router();
 
-/**
- * @route POST /api/v2/post/:postId/likes
- * @desc Like a post
- * @access Private (requires authentication)
- */
-router.post("/:postId/likes", authenticate, handleLikePost as RequestHandler);
+// Like a post
+router.post("/:postId/likes", authenticate, handleLikePost);
 
-/**
- * @route DELETE /api/v2/post/:postId/unlike
- * @desc Unlike a post
- * @access Private (requires authentication)
- */
-router.delete(
-  "/:postId/unlike",
-  authenticate,
-  handleUnLikePost as RequestHandler
-);
+// Unlike a post
+router.delete("/:postId/unlike", authenticate, handleUnlikePost);
 
 export default router;

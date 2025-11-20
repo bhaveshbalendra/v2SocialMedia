@@ -2,8 +2,8 @@
 import { useEffect } from "react";
 import { Provider } from "react-redux";
 import { createBrowserRouter, RouterProvider } from "react-router";
-import { Toaster } from "sonner";
 // import RouteSpinner from "./components/common/RouteSpinner";
+import { Toaster } from "./components/ui/sonner";
 import { ThemeProvider } from "./components/layouts/theme-provider";
 import { useTokenPolling } from "./hooks/auth/useSyncAuthCredentials";
 import { routesConfig } from "./routes/AppRoutes";

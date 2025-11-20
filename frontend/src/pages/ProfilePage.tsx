@@ -1,5 +1,4 @@
 import RouteSpinner from "@/components/common/RouteSpinner";
-import { Icons } from "@/components/export/Icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -37,48 +36,46 @@ const ProfilePage = () => {
     const isFollowing = followers.find((follower) => follower._id === userId);
 
     return (
-      <div className="max-w-2xl mx-auto py-8 px-4">
+      <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6">
         {/* Profile Header */}
-        <div className="flex flex-col sm:flex-row items-center gap-6 mb-8">
-          <Avatar className="w-28 h-28">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-8 mb-8 sm:mb-12">
+          <Avatar className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0">
             <AvatarImage src={profilePicture} alt={username} />
             <AvatarFallback>{username}</AvatarFallback>
           </Avatar>
 
-          <div className="flex-1 w-full">
-            <div>
+          <div className="flex-1 w-full space-y-4">
+            <div className="space-y-4">
               <div>
-                <span className="text-xl font-semibold">{username}</span>
-                <Button variant="outline" size="sm">
-                  <Icons.ThreeDots />
-                </Button>
+                <h1 className="text-2xl sm:text-3xl font-bold mb-4">{username}</h1>
               </div>
-              <div className="flex flex-col sm:flex-row items-center gap-4 mb-2">
-                {/* {user.isOwnProfile && (
-                  <Button size="sm" variant="outline">
-                    Edit Profile
-                  </Button>
-                )} */}
+              
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                 {userId !== userData._id && (
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={isFollowing ? handleUnfollow : handleFollow}
+                    className="w-full sm:w-auto"
                   >
                     {isFollowing ? "Unfollow" : "Follow"}
                   </Button>
                 )}
 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleMessageUser(userData._id)}
-                >
-                  Message
-                </Button>
+                {userId !== userData._id && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleMessageUser(userData._id)}
+                    className="w-full sm:w-auto"
+                  >
+                    Message
+                  </Button>
+                )}
               </div>
             </div>
-            <div className="flex gap-6 text-sm mb-2">
+            
+            <div className="flex gap-6 sm:gap-8 text-sm sm:text-base">
               <span>
                 <span className="font-bold">{posts.length || 0}</span> posts
               </span>
@@ -91,12 +88,17 @@ const ProfilePage = () => {
                 following
               </span>
             </div>
-            <div className="text-muted-foreground">{bio}</div>
+            
+            {bio && (
+              <div className="text-sm sm:text-base text-muted-foreground">
+                {bio}
+              </div>
+            )}
           </div>
         </div>
 
         {/* Posts Grid */}
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-1 sm:gap-2">
           {posts.map((post: IUserPostForProfileData) => (
             <Card
               key={post._id}

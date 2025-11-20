@@ -21,20 +21,25 @@ export function useSocket() {
 
     // Only connect to socket if user is authenticated
     if (isAuthenticated && user && accessToken) {
-      // Create socket instance
-      socketInstance = io(
-        import.meta.env.VITE_SOCKET_URL || "http://localhost:8000",
-        {
-          auth: {
-            token: accessToken,
-          },
-          withCredentials: true,
-          autoConnect: true,
-          reconnection: true,
-          reconnectionAttempts: 5,
-          reconnectionDelay: 1000,
-        }
-      );
+      // Create socket instance with consistent URL and better error handling
+      const socketUrl = 
+        import.meta.env.VITE_SOCKETIO_BACKEND_URL || 
+        import.meta.env.VITE_SOCKET_URL || 
+        "http://localhost:8000";
+      
+      socketInstance = io(socketUrl, {
+        auth: {
+          token: accessToken,
+        },
+        withCredentials: true,
+        autoConnect: true,
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
+        timeout: 20000,
+        transports: ["websocket", "polling"], // Try websocket first, fallback to polling
+      });
 
       // Register user in socket system
       socketInstance.on("connect", () => {
@@ -50,9 +55,25 @@ export function useSocket() {
       socketInstance.on("notification", (notification) => {
         console.log("Notification received:", notification);
       });
-      // Handle errors
+      // Handle errors with better diagnostics
       socketInstance.on("connect_error", (error) => {
         console.error("Socket connection error:", error);
+        
+        // Check if it's a blocked request (ERR_BLOCKED_BY_CLIENT)
+        const errorMessage = error.message || String(error);
+        if (errorMessage.includes("blocked") || errorMessage.includes("TransportError")) {
+          console.warn(
+            "⚠️ Socket.IO connection blocked by browser/client.\n" +
+            "This is usually caused by:\n" +
+            "• Ad blockers or browser extensions\n" +
+            "• Firewall/network restrictions\n" +
+            "• Browser security settings\n\n" +
+            "Solutions:\n" +
+            "• Disable ad blockers for localhost\n" +
+            "• Check browser extension settings\n" +
+            "• Try a different browser or incognito mode"
+          );
+        }
       });
 
       socketInstance.on("postLiked", (data: ILikePostRTM) => {
@@ -67,8 +88,8 @@ export function useSocket() {
         }
       });
 
-      socketInstance.on("newComment", (data: ICommentRTM) => {
-        console.log(data);
+      socketInstance.on("newComment", (_data: ICommentRTM) => {
+        // Comment notifications are handled in useSocketConnect
       });
 
       // Handle incoming real-time messages
@@ -108,8 +129,7 @@ export function useSocket() {
         socketInstance.disconnect();
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, user, accessToken]);
+  }, [isAuthenticated, user, accessToken, dispatch, posts]);
 
   return socket;
 }

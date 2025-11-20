@@ -1,41 +1,28 @@
 import { Router } from "express";
-
 import {
-  findOrCreateConversation,
-  getConversations,
-  getMessages,
-  sendMessage,
+  handleFindOrCreateConversation,
+  handleGetConversations,
+  handleGetMessages,
+  handleMarkMessagesAsRead,
+  handleSendMessage,
 } from "../controller/chat.controller";
 import { authenticate } from "../middleware/auth.middleware";
 
 const router = Router();
 
-/**
- * @route   GET /api/v2/chat/conversations
- * @desc    Get all conversations
- * @access  Private
- */
-router.get("/conversations", authenticate, getConversations);
+// Get all conversations for authenticated user
+router.get("/conversations", authenticate, handleGetConversations);
 
-/**
- * @route   POST /api/v2/chat/individual
- * @desc    Create a new one-on-one chat
- * @access  Private
- */
-router.post("/individual", authenticate, sendMessage);
+// Send a message in a one-on-one chat
+router.post("/individual", authenticate, handleSendMessage);
 
-/**
- * @route   POST /api/v2/chat/find-or-create
- * @desc    Find or create a conversation with a specific user
- * @access  Private
- */
-router.post("/find-or-create", authenticate, findOrCreateConversation);
+// Find or create a conversation with a specific user
+router.post("/find-or-create", authenticate, handleFindOrCreateConversation);
 
-/**
- * @route   GET /api/v2/chat/messages/:conversationId
- * @desc    Get all messages for a conversation
- * @access  Private
- */
-router.get("/messages/:conversationId", authenticate, getMessages);
+// Get all messages for a conversation
+router.get("/messages/:conversationId", authenticate, handleGetMessages);
+
+// Mark messages as read for a conversation
+router.patch("/messages/:conversationId/read", authenticate, handleMarkMessagesAsRead);
 
 export default router;

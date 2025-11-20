@@ -1,6 +1,11 @@
 import { Router } from "express";
-import * as settingsController from "../controller/settings.controller";
-import { getUserSettings } from "../controller/settings.controller";
+import {
+  handleGetUserSettings,
+  handleUpdateNotifications,
+  handleUpdatePremiumStatus,
+  handleUpdatePrivacy,
+  handleUpdateProfile,
+} from "../controller/settings.controller";
 import { authenticate } from "../middleware/auth.middleware";
 
 const router = Router();
@@ -9,18 +14,18 @@ const router = Router();
 router.use(authenticate);
 
 // Get user settings
-router.get("/", getUserSettings);
+router.get("/", handleGetUserSettings);
 
 // Update privacy settings
-router.patch("/privacy", settingsController.updatePrivacy);
+router.patch("/privacy", handleUpdatePrivacy);
 
-// // Update notification settings
-// router.patch("/notifications", settingsController.updateNotifications);
+// Update notification settings
+router.patch("/notifications", handleUpdateNotifications);
 
-// // Update profile settings
-// router.patch("/profile", settingsController.updateProfile);
+// Update profile settings
+router.patch("/profile", handleUpdateProfile);
 
-// // Update premium status
-// router.patch("/premium", settingsController.updatePremiumStatus);
+// Update premium status
+router.patch("/premium", handleUpdatePremiumStatus);
 
 export default router;

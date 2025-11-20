@@ -63,6 +63,16 @@ export const chatApi = createApi({
       }),
       invalidatesTags: ["Conversations"],
     }),
+    markMessagesAsRead: builder.mutation<
+      { success: boolean; message: string },
+      { conversationId: string }
+    >({
+      query: ({ conversationId }) => ({
+        url: `/messages/${conversationId}/read`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Messages", "Conversations"],
+    }),
   }),
 });
 
@@ -71,4 +81,5 @@ export const {
   useSendMessageMutation,
   useFetchMessagesQuery,
   useFindOrCreateConversationMutation,
+  useMarkMessagesAsReadMutation,
 } = chatApi;

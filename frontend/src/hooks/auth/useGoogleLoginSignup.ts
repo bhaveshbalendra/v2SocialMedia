@@ -19,14 +19,7 @@ export function useGoogleLoginSignup() {
           accessToken: result.data.accessToken,
         })
       );
-      toast.success(result.data.message || "Google Login successful", {
-        action: {
-          label: "X",
-          onClick: () => {
-            toast.dismiss();
-          },
-        },
-      });
+      toast.success(result.data.message || "Google Login successful");
       navigate("/"); // Adjust to your protected route
     }
     // Errors are handled globally by errorMiddleware

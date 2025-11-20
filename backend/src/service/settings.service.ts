@@ -16,9 +16,7 @@ interface UpdateProfileParams {
   password?: string;
 }
 
-/**
- * Get user settings
- */
+// Get user settings
 export const getUserSettings = async (
   userId: Types.ObjectId
 ): Promise<Settings> => {
@@ -56,9 +54,7 @@ export const getUserSettings = async (
   };
 };
 
-/**
- * Update privacy settings
- */
+// Update privacy settings
 export const updatePrivacy = async (
   userId: Types.ObjectId,
   isPrivate: boolean
@@ -98,9 +94,7 @@ export const updatePrivacy = async (
   return;
 };
 
-/**
- * Update notification settings
- */
+// Update notification settings
 export const updateNotifications = async (
   userId: string,
   params: UpdateNotificationsParams
@@ -132,9 +126,7 @@ export const updateNotifications = async (
   await user.save();
 };
 
-/**
- * Update profile settings
- */
+// Update profile settings
 export const updateProfile = async (
   userId: string,
   params: UpdateProfileParams
@@ -165,18 +157,10 @@ export const updateProfile = async (
     user.email = params.email;
   }
 
-  // Update password if provided
-  //   if (params.password) {
-  //     const salt = await bcrypt.genSalt(10);
-  //     user.password = await bcrypt.hash(params.password, salt);
-  //   }
-
   await user.save();
 };
 
-/**
- * Update premium status
- */
+// Update premium status
 export const updatePremiumStatus = async (
   userId: string,
   isPremium: boolean

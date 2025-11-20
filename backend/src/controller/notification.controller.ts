@@ -2,101 +2,103 @@ import { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import notificationService from "../service/notification.service";
 
-/**
- * Notification Controller
- * Handles user notification management
- */
-const NotificationController = {
-  /**
-   * @desc    Get all notifications for a user
-   * @route   GET /api/notifications
-   * @access  Private
-   */
-  getNotifications: asyncHandler(async (req: Request, res: Response) => {
-    const userId = req.user!._id;
+// Get all notifications for a user
+const handleGetNotifications = asyncHandler(
+  async (request: Request, response: Response) => {
+    const userId = request.user._id.toString();
 
     const notifications = await notificationService.getUserNotifications(
-      userId.toString()
+      userId
     );
 
-    res.status(200).json({
+    response.status(200).json({
       success: true,
       message: "Notifications fetched successfully",
       notifications,
     });
-  }),
+  }
+);
 
-  /**
-   * @desc    Mark a notification as read
-   * @route   PATCH /api/notifications/:id/read
-   * @access  Private
-   */
-  markAsRead: asyncHandler(async (req: Request, res: Response) => {
-    const userId = req.user!._id;
-    const notificationId = req.params.id;
+// Mark a notification as read
+const handleMarkNotificationAsRead = asyncHandler(
+  async (request: Request, response: Response) => {
+    const userId = request.user._id.toString();
+    const notificationId = request.params.id;
 
-    await notificationService.markAsRead(notificationId, userId.toString());
+    await notificationService.markAsRead(notificationId, userId);
 
-    res.status(200).json({
+    response.status(200).json({
       success: true,
       message: "Notification marked as read",
     });
-  }),
+  }
+);
 
-  /**
-   * @desc    Mark all notifications as read
-   * @route   PATCH /api/notifications/read-all
-   * @access  Private
-   */
-  markAllAsRead: asyncHandler(async (req: Request, res: Response) => {
-    const userId = req.user!._id;
+// Mark all notifications as read
+const handleMarkAllNotificationsAsRead = asyncHandler(
+  async (request: Request, response: Response) => {
+    const userId = request.user._id.toString();
 
-    await notificationService.markAllAsRead(userId.toString());
+    await notificationService.markAllAsRead(userId);
 
-    res.status(200).json({
+    response.status(200).json({
       success: true,
       message: "All notifications marked as read",
     });
-  }),
+  }
+);
 
-  /**
-   * @desc    Delete a notification
-   * @route   DELETE /api/notifications/:id
-   * @access  Private
-   */
-  deleteNotification: asyncHandler(async (req: Request, res: Response) => {
-    const userId = req.user!._id;
-    const notificationId = req.params.id;
+// Delete a notification
+const handleDeleteNotification = asyncHandler(
+  async (request: Request, response: Response) => {
+    const userId = request.user._id.toString();
+    const notificationId = request.params.id;
 
-    await notificationService.deleteNotification(
-      notificationId,
-      userId.toString()
-    );
+    await notificationService.deleteNotification(notificationId, userId);
 
-    res.status(200).json({
+    response.status(200).json({
       success: true,
-      message: "Notification deleted",
+      message: "Notification deleted successfully",
     });
-  }),
+  }
+);
 
-  /**
-   * @desc    Get unread notification count
-   * @route   GET /api/notifications/unread-count
-   * @access  Private
-   */
-  getUnreadCount: asyncHandler(async (req: Request, res: Response) => {
-    const userId = req.user!._id;
+// Get unread notification count
+const handleGetUnreadCount = asyncHandler(
+  async (request: Request, response: Response) => {
+    const userId = request.user._id.toString();
 
     const notifications = await notificationService.getUserNotifications(
-      userId.toString()
+      userId
     );
     const unreadCount = notifications.filter((n) => !n.read).length;
 
-    res.status(200).json({
+    response.status(200).json({
       success: true,
       data: { count: unreadCount },
     });
-  }),
-};
+  }
+);
 
-export default NotificationController;
+// Delete all notifications for a user
+const handleDeleteAllNotifications = asyncHandler(
+  async (request: Request, response: Response) => {
+    const userId = request.user._id.toString();
+
+    await notificationService.deleteAllNotifications(userId);
+
+    response.status(200).json({
+      success: true,
+      message: "All notifications deleted successfully",
+    });
+  }
+);
+
+export {
+  handleDeleteAllNotifications,
+  handleDeleteNotification,
+  handleGetNotifications,
+  handleGetUnreadCount,
+  handleMarkAllNotificationsAsRead,
+  handleMarkNotificationAsRead,
+};

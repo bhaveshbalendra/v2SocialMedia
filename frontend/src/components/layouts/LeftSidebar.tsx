@@ -35,6 +35,7 @@ const LeftSidebar: FC<{ isLoading: boolean }> = ({ isLoading }) => {
   const { handleLogout, isLoading: isLoadingLogout } = useLogout();
   const { toggle } = useToggleTheme();
   const { unreadCount } = useNotification();
+  const { totalUnreadCount } = useAppSelector((state) => state.chat);
 
   const [searchOpen, setSearchOpen] = useState<boolean>(false);
   const [notificationOpen, setNotificationOpen] = useState<boolean>(false);
@@ -92,40 +93,51 @@ const LeftSidebar: FC<{ isLoading: boolean }> = ({ isLoading }) => {
                 <span>Search</span>
               </button>
             </li>
-            {/* Messages */}
-            <li>
-              <Link
-                to={PATH.MESSAGES}
-                className={`flex items-center gap-3 px-3 py-2 rounded 
-                  bg-background text-foreground 
-                  hover:bg-muted hover:text-foreground 
-                  dark:hover:bg-muted dark:hover:text-foreground
-                  ${isActive(PATH.MESSAGES) ? "bg-muted/80 font-bold" : ""}
-                `}
-                onClick={(e) => handleNavClick(e, PATH.MESSAGES)}
-              >
-                <Icons.Message size={22} />
-                <span>Messages</span>
-              </Link>
-            </li>
-            {/* Notifications */}
-            <li>
-              <button
-                type="button"
-                className="flex items-center gap-3 px-3 py-2 rounded bg-background text-foreground hover:bg-muted hover:text-foreground dark:hover:bg-muted dark:hover:text-foreground w-full"
-                onClick={() => setNotificationOpen(true)}
-              >
-                <div className="relative">
-                  <Icons.Notifications size={22} />
-                  {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                      {unreadCount > 9 ? "9+" : unreadCount}
-                    </span>
-                  )}
-                </div>
-                <span>Notifications</span>
-              </button>
-            </li>
+            {/* Messages - Only show when logged in */}
+            {user && (
+              <li>
+                <Link
+                  to={PATH.MESSAGES}
+                  className={`flex items-center gap-3 px-3 py-2 rounded 
+                    bg-background text-foreground 
+                    hover:bg-muted hover:text-foreground 
+                    dark:hover:bg-muted dark:hover:text-foreground
+                    ${isActive(PATH.MESSAGES) ? "bg-muted/80 font-bold" : ""}
+                  `}
+                  onClick={(e) => handleNavClick(e, PATH.MESSAGES)}
+                >
+                  <div className="relative">
+                    <Icons.Message size={22} />
+                    {totalUnreadCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                        {totalUnreadCount > 9 ? "9+" : totalUnreadCount}
+                      </span>
+                    )}
+                  </div>
+                  <span>Messages</span>
+                </Link>
+              </li>
+            )}
+            {/* Notifications - Only show when logged in */}
+            {user && (
+              <li>
+                <button
+                  type="button"
+                  className="flex items-center gap-3 px-3 py-2 rounded bg-background text-foreground hover:bg-muted hover:text-foreground dark:hover:bg-muted dark:hover:text-foreground w-full"
+                  onClick={() => setNotificationOpen(true)}
+                >
+                  <div className="relative">
+                    <Icons.Notifications size={22} />
+                    {unreadCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                        {unreadCount > 9 ? "9+" : unreadCount}
+                      </span>
+                    )}
+                  </div>
+                  <span>Notifications</span>
+                </button>
+              </li>
+            )}
           </ul>
         </nav>
       </div>
@@ -136,7 +148,7 @@ const LeftSidebar: FC<{ isLoading: boolean }> = ({ isLoading }) => {
         </div>
       ) : (
         <div className="relative px-3 flex flex-col gap-2 py-2">
-          <CreatePostDialog />
+          {user && <CreatePostDialog />}
 
           <Button onClick={toggle}>
             <Icons.DarkMode />
@@ -197,7 +209,6 @@ const LeftSidebar: FC<{ isLoading: boolean }> = ({ isLoading }) => {
         </div>
       )}
       {/* Modals */}
-      {/* <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} /> */}
       <UserSearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
       <NotificationModal
         onClick={() => setNotificationOpen(!notificationOpen)}

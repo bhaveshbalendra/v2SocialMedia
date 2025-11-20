@@ -1,15 +1,10 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import commentService from "../service/comment.service";
 
-/**
- * @description Create a comment on a post
- * @route POST /api/v2/comments/:postId
- * @access Private
- */
-
-const createComment = asyncHandler(
-  async (request: Request, response: Response): Promise<any> => {
+// Create a comment on a post
+const handleCreateComment = asyncHandler(
+  async (request: Request, response: Response) => {
     const { postId } = request.params;
     const { content } = request.body;
     const userId = request.user._id;
@@ -28,13 +23,9 @@ const createComment = asyncHandler(
   }
 );
 
-/**
- * @description Create a reply to a comment
- * @route POST /api/v2/comments/:commentId/reply
- * @access Private
- */
-const createReply = asyncHandler(
-  async (request: Request, response: Response): Promise<any> => {
+// Create a reply to a comment
+const handleCreateReply = asyncHandler(
+  async (request: Request, response: Response) => {
     const { commentId } = request.params;
     const { content } = request.body;
     const userId = request.user._id;
@@ -53,13 +44,9 @@ const createReply = asyncHandler(
   }
 );
 
-/**
- * @description Get comments for a post
- * @route GET /api/v2/comments/:postId
- * @access Public
- */
-const getPostComments = asyncHandler(
-  async (request: Request, response: Response): Promise<any> => {
+// Get comments for a post
+const handleGetPostComments = asyncHandler(
+  async (request: Request, response: Response) => {
     const { postId } = request.params;
     const cursor = (request.query.nextCursor as string) || null;
 
@@ -73,13 +60,9 @@ const getPostComments = asyncHandler(
   }
 );
 
-/**
- * @description Get replies for a comment
- * @route GET /api/v2/comments/:commentId/replies
- * @access Public
- */
-const getCommentReplies = asyncHandler(
-  async (request: Request, response: Response): Promise<any> => {
+// Get replies for a comment
+const handleGetCommentReplies = asyncHandler(
+  async (request: Request, response: Response) => {
     const { commentId } = request.params;
     const page = parseInt(request.query.page as string) || 1;
     const limit = parseInt(request.query.limit as string) || 10;
@@ -98,13 +81,9 @@ const getCommentReplies = asyncHandler(
   }
 );
 
-/**
- * @description Update a comment
- * @route PUT /api/v2/comments/:commentId
- * @access Private
- */
-const updateComment = asyncHandler(
-  async (request: Request, response: Response): Promise<any> => {
+// Update a comment
+const handleUpdateComment = asyncHandler(
+  async (request: Request, response: Response) => {
     const { commentId } = request.params;
     const { content } = request.body;
     const userId = request.user._id;
@@ -123,13 +102,9 @@ const updateComment = asyncHandler(
   }
 );
 
-/**
- * @description Delete a comment
- * @route DELETE /api/v2/comments/:commentId
- * @access Private
- */
-const deleteComment = asyncHandler(
-  async (request: Request, response: Response): Promise<any> => {
+// Delete a comment
+const handleDeleteComment = asyncHandler(
+  async (request: Request, response: Response) => {
     const { commentId } = request.params;
     const userId = request.user._id;
 
@@ -142,13 +117,9 @@ const deleteComment = asyncHandler(
   }
 );
 
-/**
- * @description Like/Unlike a comment
- * @route POST /api/v2/comments/:commentId/like
- * @access Private
- */
-const toggleCommentLike = asyncHandler(
-  async (request: Request, response: Response): Promise<any> => {
+// Like or unlike a comment
+const handleToggleCommentLike = asyncHandler(
+  async (request: Request, response: Response) => {
     const { commentId } = request.params;
     const userId = request.user._id;
 
@@ -165,11 +136,11 @@ const toggleCommentLike = asyncHandler(
 );
 
 export {
-  createComment,
-  createReply,
-  deleteComment,
-  getCommentReplies,
-  getPostComments,
-  toggleCommentLike,
-  updateComment,
+  handleCreateComment,
+  handleCreateReply,
+  handleDeleteComment,
+  handleGetCommentReplies,
+  handleGetPostComments,
+  handleToggleCommentLike,
+  handleUpdateComment,
 };

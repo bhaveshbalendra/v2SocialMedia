@@ -19,14 +19,7 @@ export function useLogin() {
           accessToken: result.data.accessToken,
         })
       );
-      toast.success(result.data.message || "Signup successful", {
-        action: {
-          label: "X",
-          onClick: () => {
-            toast.dismiss();
-          },
-        },
-      });
+      toast.success(result.data.message || "Signup successful");
       navigate("/"); // Adjust to your protected route
     }
     // Errors are handled globally by errorMiddleware

@@ -13,6 +13,7 @@ const initialState: ChatState = {
   selectedConversation: null,
   activeChat: null,
   unreadCounts: {},
+  totalUnreadCount: 0,
 };
 
 const chatSlice = createSlice({
@@ -46,6 +47,11 @@ const chatSlice = createSlice({
       if (msg.senderId !== state.activeChat) {
         const senderId = msg.senderId;
         state.unreadCounts[senderId] = (state.unreadCounts[senderId] || 0) + 1;
+        // Recalculate total unread count
+        state.totalUnreadCount = Object.values(state.unreadCounts).reduce(
+          (sum, count) => sum + count,
+          0
+        );
       }
     },
     addRealTimeMessage: (state, action: PayloadAction<IMessage>) => {
@@ -53,12 +59,30 @@ const chatSlice = createSlice({
       const msg = {
         ...action.payload,
       };
+
+      // Check if there's an optimistic message (temp-*) with the same content and sender
+      // This handles the case where the sender receives their own message back
+      const optimisticMessageIndex = state.messages.findIndex(
+        (m) =>
+          m.id?.startsWith("temp-") &&
+          m.content === msg.content &&
+          m.senderId === msg.senderId &&
+          m.conversationId === msg.conversationId
+      );
+
+      if (optimisticMessageIndex !== -1) {
+        // Replace the optimistic message with the real one
+        state.messages[optimisticMessageIndex] = msg;
+        return;
+      }
+
       // Check if this message already exists (prevent duplicates)
       const existingMessage = state.messages.find(
         (m) =>
           m.id === msg.id ||
           (m.content === msg.content &&
             m.senderId === msg.senderId &&
+            m.conversationId === msg.conversationId &&
             Math.abs(
               new Date(m.createdAt || "").getTime() -
                 new Date(msg.createdAt || "").getTime()
@@ -68,6 +92,7 @@ const chatSlice = createSlice({
         console.log("Duplicate message detected, skipping");
         return;
       }
+
       // Add message to the messages array if it belongs to the current conversation
       if (
         state.selectedConversation &&
@@ -93,6 +118,11 @@ const chatSlice = createSlice({
       if (msg.senderId !== state.activeChat) {
         const senderId = msg.senderId;
         state.unreadCounts[senderId] = (state.unreadCounts[senderId] || 0) + 1;
+        // Recalculate total unread count
+        state.totalUnreadCount = Object.values(state.unreadCounts).reduce(
+          (sum, count) => sum + count,
+          0
+        );
       }
     },
     setOnlineUsers: (state, action: PayloadAction<OnlineUserState[]>) => {
@@ -102,6 +132,11 @@ const chatSlice = createSlice({
       state.activeChat = action.payload;
       // Reset unread count when opening a chat
       state.unreadCounts[action.payload] = 0;
+      // Recalculate total unread count
+      state.totalUnreadCount = Object.values(state.unreadCounts).reduce(
+        (sum, count) => sum + count,
+        0
+      );
     },
     markMessagesAsRead: (state, action: PayloadAction<string>) => {
       const senderId = action.payload;
@@ -112,6 +147,11 @@ const chatSlice = createSlice({
         return msg;
       });
       state.unreadCounts[senderId] = 0;
+      // Recalculate total unread count
+      state.totalUnreadCount = Object.values(state.unreadCounts).reduce(
+        (sum, count) => sum + count,
+        0
+      );
     },
     updateMessageOptimistically: (state, action: PayloadAction<IMessage>) => {
       // Ensure createdAt/updatedAt are strings

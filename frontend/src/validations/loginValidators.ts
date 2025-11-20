@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 export const initialLoginCredentials = {
-  email_or_username: "",
-  password: "",
+  email_or_username: "demo@email.com",
+  password: "demos1234",
 };
 
 export const loginSchema = z.object({
