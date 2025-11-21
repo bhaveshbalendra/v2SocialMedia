@@ -1,4 +1,5 @@
 import FormError from "@/components/common/FormError";
+import DemoLoginCard from "@/components/common/DemoLoginCard";
 import { Icons } from "@/components/export/Icons";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useGoogleLoginSignup } from "@/hooks/auth/useGoogleLoginSignup";
 import { useLogin } from "@/hooks/auth/useLogin";
+import { PATH } from "@/routes/pathConstants";
 import { auth, provider } from "@/utils/firebase_googleLogin";
 import {
   initialLoginCredentials,
@@ -19,7 +21,7 @@ import {
   loginSchema,
 } from "@/validations/loginValidators";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle, Sparkles } from "lucide-react";
+import { AlertCircle, Home } from "lucide-react";
 import { signInWithPopup } from "firebase/auth";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router";
@@ -65,32 +67,18 @@ const LoginPage = () => {
   return (
     <div className="flex justify-center items-center min-h-dvh p-6 md:p-10">
       <div className="max-w-sm w-full space-y-4">
+        {/* Go Home Button */}
+        <div className="flex justify-start">
+          <Link to={PATH.HOME}>
+            <Button variant="ghost" size="sm" className="gap-2">
+              <Home className="h-4 w-4" />
+              Go Home
+            </Button>
+          </Link>
+        </div>
+
         {/* Demo Account Info Card */}
-        <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-2 mb-1">
-              <Sparkles className="h-5 w-5 text-primary" />
-              <CardTitle className="text-lg font-semibold">
-                Demo Account Available
-              </CardTitle>
-            </div>
-            <CardDescription className="text-sm">
-              Try our demo account to explore the application without creating
-              an account. Credentials are pre-filled below.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-start gap-2 p-2 bg-amber-50 dark:bg-amber-950/20 rounded-md border border-amber-200 dark:border-amber-900">
-              <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
-              <p className="text-xs text-amber-800 dark:text-amber-300">
-                <strong>Disclaimer:</strong> This is a demo account for testing
-                purposes only. All data is shared and may be reset periodically.
-                Please do not use this account for personal or sensitive
-                information.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <DemoLoginCard />
 
         <Card className="gap-4">
           <CardHeader>
@@ -157,6 +145,12 @@ const LoginPage = () => {
               >
                 Sign up
               </Link>
+            </div>
+            <div className="mt-4 flex items-start gap-1.5 p-2 bg-blue-50 dark:bg-blue-950/20 rounded border border-blue-200 dark:border-blue-900">
+              <AlertCircle className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+              <p className="text-xs text-blue-800 dark:text-blue-300 leading-tight">
+                Takes about 50 seconds to restart. If slow, refresh the page.
+              </p>
             </div>
           </CardContent>
         </Card>
